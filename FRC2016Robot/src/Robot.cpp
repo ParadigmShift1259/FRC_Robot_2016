@@ -1,31 +1,55 @@
+/**
+ * Main Robot class
+ *
+ * Should be configured properly for the 2016 code
+ */
+
 #include "WPILib.h"
 
-class Robot: public IterativeRobot
-{
+class Robot: public IterativeRobot {
 private:
 
-	void RobotInit()
-	{
+	/**
+	 * Called upon robot startup
+	 */
+	void RobotInit() {
 	}
 
-	void AutonomousInit()
-	{
+	/**
+	 * Called upon the start of autonomous
+	 */
+	void AutonomousInit() {
 	}
 
-	void AutonomousPeriodic()
-	{
+	/**
+	 * Loops in autonomous after the init has finished
+	 */
+	void AutonomousPeriodic() {
 	}
 
-	void TeleopInit()
-	{
+	/**
+	 * Called upon at the start of the user operated period
+	 */
+	void TeleopInit() {
+
 	}
 
-	void TeleopPeriodic()
-	{
+	/**
+	 * Loops after the user operated init has finished
+	 */
+	void TeleopPeriodic() {
 	}
 
-	void TestPeriodic()
-	{
+	/**
+	 * Called upon the start of the test period
+	 */
+	void TestInit() {
+	}
+
+	/**
+	 * Loops after the the test init has finished
+	 */
+	void TestPeriodic() {
 	}
 };
 
