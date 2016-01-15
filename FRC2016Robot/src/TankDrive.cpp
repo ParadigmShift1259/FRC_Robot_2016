@@ -1,8 +1,5 @@
 /*
- * TankDrive.cpp
- *
- *  Created on: Jan 15, 2016
- *      Author: selforsjd
+ * Class that controls the tank drive
  */
 
 #include <TankDrive.h>

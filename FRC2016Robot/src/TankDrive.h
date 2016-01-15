@@ -1,8 +1,5 @@
 /*
- * TankDrive.h
- *
- *  Created on: Jan 15, 2016
- *      Author: selforsjd
+ * Class that controls the tank drive
  */
 
 #ifndef SRC_TANKDRIVE_H_

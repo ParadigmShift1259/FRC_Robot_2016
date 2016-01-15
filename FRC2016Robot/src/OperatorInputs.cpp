@@ -1,8 +1,5 @@
 /*
- * OperatorInputs.cpp
- *
- *  Created on: Jan 15, 2016
- *      Author: selforsjd
+ * Class for Interfacing with the control systems
  */
 
 #include <OperatorInputs.h>

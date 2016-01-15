@@ -1,8 +1,5 @@
 /*
- * OperatorInputs.h
- *
- *  Created on: Jan 15, 2016
- *      Author: selforsjd
+ * Class for Interfacing with the control systems
  */
 
 #ifndef SRC_OPERATORINPUTS_H_
