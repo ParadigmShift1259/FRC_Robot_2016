@@ -240,11 +240,11 @@ Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 	        leftSpeed = leftEncoder->GetRate();
 	        rightSpeed = rightEncoder->GetRate();
 
-	        rampLeftPower(coasting * LeftMotor(), 0.5 / driverstation->GetInstance().GetBatteryVoltage()); //Left Motors are forward=negative
+	        rampLeftPower(coasting * LeftMotor(), 0.05 / driverstation->GetInstance().GetBatteryVoltage()); //Left Motors are forward=negative
 	        SmartDashboard::PutNumber("LeftTalons", -leftTalons->Get()); //Left Motors are forward=negative
 	        SmartDashboard::PutNumber("LeftSpeed", -leftSpeed); //Left Motors are forward=negative
 
-	        rampRightPower(coasting * RightMotor(), 0.5 / driverstation->GetInstance().GetBatteryVoltage()); //Right Motors are forward=positive
+	        rampRightPower(coasting * RightMotor(), 0.05 / driverstation->GetInstance().GetBatteryVoltage()); //Right Motors are forward=positive
 	        SmartDashboard::PutNumber("JoystickY", joyStickY);
 	        SmartDashboard::PutNumber("RightTalons", rightTalons->Get()); //Right Motors are forward=positive
 	        SmartDashboard::PutNumber("RightSpeed", rightSpeed); //Right Motors are forward=positive
