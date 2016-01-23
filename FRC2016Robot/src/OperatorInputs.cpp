@@ -1,5 +1,5 @@
 /*
- * OperatorInputs.cpp
+xs * OperatorInputs.cpp
  *
  *  Created on: Jan 15, 2016
  *      Author: Programming
@@ -45,7 +45,7 @@ bool OperatorInputs::isShooterTriggerPressed()
 	return (RIGHT_TRIGGER_MIN <= triggerPressed && triggerPressed <= RIGHT_TRIGGER_MAX);
 }
 
-bool OperatorInputs::isLeftShooterTriggerPressed()
+bool OperatorInputs::xBoxLeftTrigger()
 {
 	triggerPressed = xBox->GetRawAxis(XBOX_LEFT_TRIGGER_AXIS);
 	return (LEFT_TRIGGER_MIN <= triggerPressed && triggerPressed <= LEFT_TRIGGER_MAX);

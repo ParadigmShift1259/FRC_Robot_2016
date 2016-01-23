@@ -17,7 +17,7 @@ public:
 	virtual ~OperatorInputs();
 	bool xBoxStartButton();
 	bool isShooterTriggerPressed();
-	bool isLeftShooterTriggerPressed();
+	bool xBoxLeftTrigger();
 	bool isSetKickerPositionButtonPressed();
 	bool xBoxBackButton();
 	bool button7();
