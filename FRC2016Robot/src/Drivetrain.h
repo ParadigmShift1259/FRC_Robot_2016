@@ -12,63 +12,54 @@ class Drivetrain
 public:
 	Drivetrain(OperatorInputs *inputs, DriverStation *ds);
 	~Drivetrain();
+
 	void rampLeftPower(double desiredPow, double rampSpeed);
 	void rampRightPower(double desiredPow, double rampSpeed);
 	void resetEncoders();
-	double getRightPulses();
-	double getLeftPulses();
-	double getRightEncoderDistance();
-	double getLeftEncoderDistance();
-	double fix(double v);
-	double LeftMotor();
-	double RightMotor();
+	double fix(double v, double &invMaxValueXPlusY);
+	double LeftMotor(double &invMaxValueXPlusY);
+	double RightMotor(double &invMaxValueXPlusY);
 	void compareEncoders();
 	void breakTime();
 	void setPower();
-	void shift();
+	void childProofShift();
+	
+	double getRightEncoderPulses() {return rightEncoder->GetRaw();}
+	double getLeftEncoderPulses() {return leftEncoder->GetRaw();}
+	double getRightEncoderDistance() {return rightEncoder->GetDistance();}
+	double getLeftEncoderDistance() {return leftEncoder->GetDistance();}
+	void setCoasting(double newCoasting) {coasting = newCoasting;}
+	double getLeftPow() {return leftPow;}
+	double getRightPow() {return rightPow;}
+	double getRatio() {return ratio;}
+	bool getIsHighGear() {return isHighGear;}
+	bool getIsLeftFaster() {return isLeftFaster;}
+	double getLeftSpeed() {return leftSpeed;}
+	double getRightSpeed() {return rightSpeed;}
+	//bool getChildProofConfirmed() {return childProofConfirmed;}
+
 	void setSpeedPositive();
-	void childProofing();
-	void setCoasting(double newCoasting);
+	void setGearLow();
 
 protected:
-	int Encoder_Top_Speed;
-	int LEFT_PORT;
-	int SECOND_LEFT_PORT;
-	int RIGHT_PORT;
-	int SECOND_RIGHT_PORT;
-	int SHIFT_PORT_LOW;
-	int SHIFT_PORT_HIGH;
-	int SHIFT_MODULE;
-	double joyStickX;
-	double joyStickY;
+
+	void shift(); //moved to protected to prevent people from accidentally calling it in Robot.cpp
+	bool isDownShifting;
 	double leftPow;
 	double rightPow;
-	double totalSpeed;
-	long sleeptime;
-	double speedMult;
-	double fixNum;
 	double maxLeftEncoderRate;
 	double maxRightEncoderRate;
 	double ratio;
 	double rightEncoderFix;
 	double leftEncoderFix;
-	long sleepTime;
 	bool isHighGear; //Robot starts in low gear
-	bool nemo;
-	bool isLeftHigher;
+	bool isLeftFaster;
 	double leftSpeed;
 	double rightSpeed;
-	double encoderDeadzone;
-	double encoderWaitTime;
-	double leftChildProofSetter;
-	double rightChildProofSetter;
-	bool childProofConfirmed;
-	double DISTANCE_PER_PULSE;
 	bool previousTriggerPressed; //what the trigger value was before the current press, allows for trigger to stay pressed w/o flipping
 	double previousLeftPow;
 	double previousRightPow;
 	double coasting;
-	double teleopRamp;
 
 	OperatorInputs *operatorInputs;
 	DriverStation *driverstation;

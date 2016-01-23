@@ -6,7 +6,11 @@
  */
 
 #include <OperatorInputs.h>
+#include <cmath>
 #include "Const.h"
+
+using namespace std;
+
 
 OperatorInputs::OperatorInputs()
 {
@@ -36,18 +40,18 @@ bool OperatorInputs::xBoxStartButton()
 }
 
 bool OperatorInputs::isShooterTriggerPressed() {
-        triggerPressed = xBox->GetRawAxis(XBOX_TRIGGER_RAW_AXIS);
+        triggerPressed = xBox->GetRawAxis(XBOX_RIGHT_TRIGGER_AXIS);
         return (RIGHT_TRIGGER_MIN <= triggerPressed && triggerPressed <= RIGHT_TRIGGER_MAX);
     }
 
 bool OperatorInputs::isLeftShooterTriggerPressed() {
-        triggerPressed = xBox->GetRawAxis(XBOX_TRIGGER_RAW_AXIS);
+        triggerPressed = xBox->GetRawAxis(XBOX_LEFT_TRIGGER_AXIS);
         return (LEFT_TRIGGER_MIN <= triggerPressed && triggerPressed <= LEFT_TRIGGER_MAX);
 
     }
 
 bool OperatorInputs::isSetKickerPositionButtonPressed() {
-        triggerPressed = xBox->GetRawAxis(XBOX_TRIGGER_RAW_AXIS);
+        triggerPressed = xBox->GetRawAxis(XBOX_LEFT_TRIGGER_AXIS);
         return (LEFT_TRIGGER_MIN <= triggerPressed && triggerPressed <= LEFT_TRIGGER_MAX);
     }
 
@@ -110,10 +114,12 @@ double OperatorInputs::xboxLeftY() {
 */
 double OperatorInputs::joystickX() {
         return deadzoneFilterX(joystick->GetX());
+		//return joystick->GetX();
     }
 
 double OperatorInputs::joystickY() {
-        return deadzoneFilterY(joystick->GetY());
+		return deadzoneFilterY(joystick->GetY());
+		//return joystick->GetY();
     }
 
 double OperatorInputs::joystickZ() {
@@ -132,7 +138,7 @@ double OperatorInputs::deadzoneFilterY(double joyStickValue) {
             return 0;
         }
         double sub = joyStickValue/abs(joyStickValue);
-        return (joyStickValue-sub*DEADZONE_Y)/0.8;
+        return (joyStickValue-sub*DEADZONE_Y)/(1.0-DEADZONE_Y);
 
     }
 
@@ -141,7 +147,7 @@ double OperatorInputs::deadzoneFilterX(double joyStickValue) {
             return 0;
         }
         double sub = joyStickValue/abs(joyStickValue);
-        return (joyStickValue-sub*DEADZONE_X)/0.8;
+        return (joyStickValue-sub*DEADZONE_X)/(1.0-DEADZONE_X);
     }
 
 bool OperatorInputs::shifter() {

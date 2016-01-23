@@ -6,55 +6,28 @@
 #include <Talon.h>
 #include <CanTalon.h>
 #include <Encoder.h>
-
+#include "Const.h"
+#include <cmath>
 
 using namespace std;
 
 
 Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 {
-	LEFT_PORT = 0;
-	SECOND_LEFT_PORT = 2;
-	RIGHT_PORT = 1;
-	SECOND_RIGHT_PORT = 3;
-	SHIFT_PORT_LOW = 1;
-	SHIFT_PORT_HIGH = 2;
-	SHIFT_MODULE = 1;
-
-	Encoder_Top_Speed = 20000;
-
-	joyStickX = 0;
-	joyStickY = 0;
-
 	leftPow = 0;
 	rightPow = 0;
-	totalSpeed = 0;
-	sleeptime = 1000;
-
-	speedMult = 1;
-	fixNum = 0;
 	maxLeftEncoderRate = 0;
 	maxRightEncoderRate = 0;
 	ratio = 1;
-	rightEncoderFix = 0;
-	leftEncoderFix = 0;
-	sleepTime = 0100;
 	isHighGear = false; //Robot starts in low gear
-	nemo = false;
-	isLeftHigher = true;
+	isLeftFaster = true;
 	leftSpeed = 0;
 	rightSpeed = 0;
-	encoderDeadzone = 1000;
-	encoderWaitTime = 168;
-	leftChildProofSetter = 0;
-	rightChildProofSetter = 0;
-	childProofConfirmed = false;
-	DISTANCE_PER_PULSE = 0.0006708;
+	
 	previousTriggerPressed = false; //what the trigger value was before the current press, allows for trigger to stay pressed w/o flipping
 	previousLeftPow = 0;
 	previousRightPow = 0;
 	coasting = 1;
-	teleopRamp = 0.08;
 
 	operatorInputs = inputs;
 	leftTalons = new CANTalon(LEFT_PORT);
@@ -63,8 +36,11 @@ Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 	rightTalons1 = new CANTalon(SECOND_RIGHT_PORT);
 	gearShift = new Solenoid(SHIFT_MODULE, SHIFT_PORT_LOW);
 
+	//Setup Encoders
 	leftEncoder = new Encoder(3, 4);
 	rightEncoder = new Encoder(5, 6);
+	leftEncoderFix = 0;
+	rightEncoderFix = 0;
 	timer = new Timer();
 	driverstation = ds;
 	//Start all wheels off
@@ -83,248 +59,224 @@ Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 	rightTalons1->ConfigEncoderCodesPerRev(1024);
 
 	//Starts in low gear
-	gearShift->Set(!isHighGear);
+	gearShift->Set(FLIP_HIGH_GEAR ^ isHighGear);
 	leftEncoder->SetDistancePerPulse(-DISTANCE_PER_PULSE);
 	rightEncoder->SetDistancePerPulse(DISTANCE_PER_PULSE);
 
+	isDownShifting = false;
+
 }
 
-	    Drivetrain::~Drivetrain()
-	    {
-	    	delete leftTalons;
-	    	delete leftTalons1;
-	    	delete rightTalons;
-	    	delete rightTalons1;
-	    	delete gearShift;
-	    	delete leftEncoder;
-	    	delete rightEncoder;
-	    	delete timer;
-	    }
+Drivetrain::~Drivetrain()
+{
+	delete leftTalons;
+	delete leftTalons1;
+	delete rightTalons;
+	delete rightTalons1;
+	delete gearShift;
+	delete leftEncoder;
+	delete rightEncoder;
+	delete timer;
+}
 
-	    void Drivetrain::rampLeftPower(double desiredPow, double rampSpeed) { //Makes it so that robot can't go stop to full
-	        if (abs(desiredPow - previousLeftPow) < rampSpeed) {
-	            previousLeftPow = desiredPow;
-	        } else if (previousLeftPow < desiredPow) {
-	            previousLeftPow += rampSpeed;
-	        } else if (previousLeftPow > desiredPow) {
-	            previousLeftPow -= rampSpeed;
-	        }
-	        leftTalons->Set(-previousLeftPow);
-	        leftTalons1->Set(-previousLeftPow);
+void Drivetrain::childProofShift()
+{//current setting is start in low gear
+	SmartDashboard::PutNumber("Abs",std::abs(0.5));
+	bool triggerPressed = operatorInputs->joystickTriggerPressed();
+	if (triggerPressed && !previousTriggerPressed)
+	{
+		if(isHighGear)
+		{
+			isDownShifting = true;
+//			if(previousLeftPow >= ENCODER_TOP_SPEED || previousRightPow >= ENCODER_TOP_SPEED)
+	//		{ //May be dangerous
+//					rampLeftPower(coasting * LeftMotor(), 0.5 / driverstation->GetInstance().GetBatteryVoltage());
+//					rampRightPower(coasting * LeftMotor(), 0.5 / driverstation->GetInstance().GetBatteryVoltage());
+				SmartDashboard::PutNumber("isDownShifting", isDownShifting);
+		//	}
+		}
+		else
+		{
+			shift();
+			isDownShifting = false;
+			SmartDashboard::PutNumber("isDownShifting", isDownShifting);
+		}
+	}
+	if(isDownShifting && abs(previousLeftPow) < ENCODER_TOP_SPEED && abs(previousRightPow) < ENCODER_TOP_SPEED)
+	{
+		shift();
+		isDownShifting = false;
+		SmartDashboard::PutNumber("isDownShifting", isDownShifting);
+	}
+	previousTriggerPressed = triggerPressed;
+}
 
-	    }
-
-	    void Drivetrain::rampRightPower(double desiredPow, double rampSpeed) { //Makes it so that robot can't go stop to full
-	        if (abs(desiredPow - previousRightPow) < rampSpeed) {
-	            previousRightPow = desiredPow;
-	        } else if (previousRightPow < desiredPow) {
-	            previousRightPow += rampSpeed;
-	        } else if (previousRightPow > desiredPow) {
-	            previousRightPow -= rampSpeed;
-	        }
-	        rightTalons->Set(previousRightPow);
-	        rightTalons1->Set(previousRightPow);
-
-	    }
-
-	    void Drivetrain::resetEncoders() { //Resets current raw encoder value to 0
-	        leftEncoder->Reset();
-	        rightEncoder->Reset();
-	        gearShift->Set(!isHighGear);
-	    }
-
-
-
-	    double Drivetrain::getRightPulses() { //Returns raw value of right talon encoder
-	        return rightEncoder->GetRaw();
-	    }
-
-	    double Drivetrain::getLeftPulses() { //Returns raw value of left talon encoder
-	        return leftEncoder->GetRaw();
-	    }
-
-	    double Drivetrain::getRightEncoderDistance() { //Returns the distance per pulse of the right encoder
-	        return rightEncoder->GetDistance();
-	    }
-
-	    double Drivetrain::getLeftEncoderDistance() { //Returns the distance per pulse of the left encoder
-	        return leftEncoder->GetDistance();
-	    }
-
-	    double Drivetrain::fix(double v) {
-	        return v / fixNum;
-	    }
-
-	    double Drivetrain::LeftMotor() {
-	        double fixLeftPow = fix(leftPow);
-	        //moved rightSpeed to class scope, it is being set in setPower()
-
-	        if (leftPow != 0 && rightPow != 0) {
-	            maxLeftEncoderRate = abs(leftSpeed / leftPow);
-	            if (min(abs(leftSpeed), abs(rightSpeed)) > encoderDeadzone) {
-	                breakTime();
-	            }
-	            if (isLeftHigher) {
-	                fixLeftPow = ratio * fixLeftPow;
-	            }
-	            leftChildProofSetter = abs(fixLeftPow);
-	        }
-
-	        return (fixLeftPow);
-	    }
-
-	    double Drivetrain::RightMotor() {
+//Sets the motors to coasting mode, shifts, and then sets them back to break mode
+void Drivetrain::shift()
+{
+	leftTalons->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Coast);
+	leftTalons1->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Coast);
+	rightTalons->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Coast);
+	rightTalons1->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Coast);
+	isHighGear = !isHighGear;
+	gearShift->Set(FLIP_HIGH_GEAR ^ isHighGear);
+	leftTalons->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
+	leftTalons1->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
+	rightTalons->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
+	rightTalons1->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
+}
 
 
-	        //moved rightSpeed to class scope, it is being set in setPower()
-	        double fixRightPow = fix(rightPow);
+void Drivetrain::setPower() 
+{
+	double joyStickX;
+	double joyStickY;
+	double invMaxValueXPlusY;
+	joyStickX = operatorInputs->joystickX();
+	if(isDownShifting)
+		{
+		joyStickY=0;
+		}
+	else
+		{
+		joyStickY = operatorInputs->joystickY();
+		}
+	//set fixnum = the maxiumum value for this angle on the joystick
+	if (joyStickX == 0 || joyStickY == 0) 
+	{
+		invMaxValueXPlusY = 1;
+	} else {
+		if (abs(joyStickX) > abs(joyStickY)) {
+			double invMaxValueXPlusYMult = 1 / abs(joyStickX);
+			invMaxValueXPlusY = abs(joyStickY) * invMaxValueXPlusYMult + 1;
+			//Invert for later use
+			invMaxValueXPlusY = 1 / invMaxValueXPlusY;
+		} else {
+			double invMaxValueXPlusYMult = 1 / abs(joyStickY);
+			invMaxValueXPlusY = abs(joyStickX) * invMaxValueXPlusYMult + 1;
+			//Invert for later use
+			invMaxValueXPlusY = 1 / invMaxValueXPlusY;
+		}
+	}
+	leftPow = -joyStickY + joyStickX;
+	rightPow = -joyStickY - joyStickX;
+	leftSpeed = leftTalons->GetSpeed();
+	rightSpeed = rightTalons->GetSpeed();
+	double invBatteryVoltage = 1 / driverstation->GetInstance().GetBatteryVoltage();
+	double batteryRamping = RAMPING_RATE*invBatteryVoltage;
 
-	        if (leftPow != 0 && rightPow != 0) {
-	            maxRightEncoderRate = abs(rightSpeed / rightPow);
-	            if (min(abs(leftSpeed), abs(rightSpeed)) > encoderDeadzone) {
-	                breakTime();
-	            }
-	            if (!isLeftHigher) {
-	                fixRightPow = ratio * fixRightPow;
-	            }
-	            rightChildProofSetter = abs(fixRightPow);
-	        }
+	rampLeftPower(coasting * LeftMotor(invMaxValueXPlusY), batteryRamping); //Left Motors are forward=negative
+	SmartDashboard::PutNumber("LeftPrevious", -previousLeftPow); //Left Motors are forward=negative
+	SmartDashboard::PutNumber("LeftPow", -leftPow); //Left Motors are forward=negative
 
-	        return (fixRightPow);
+	rampRightPower(coasting * RightMotor(invMaxValueXPlusY), batteryRamping); //Right Motors are forward=positive
+	//SmartDashboard::PutNumber("JoystickY", joyStickY);
+	SmartDashboard::PutNumber("RightPrevious", previousRightPow); //Right Motors are forward=positive
+	SmartDashboard::PutNumber("RightPow", rightPow); //Right Motors are forward=positive
+	SmartDashboard::PutString("Gear",isHighGear?"High":"Low");
+}
 
-	    }
+void Drivetrain::rampLeftPower(double desiredPow, double rampSpeed)
+{ //Makes it so that robot can't go stop to full
+	if (abs(desiredPow - previousLeftPow) < rampSpeed) {
+		previousLeftPow = desiredPow;
+	} else if (previousLeftPow < desiredPow) {
+		previousLeftPow += rampSpeed;
+	} else if (previousLeftPow > desiredPow) {
+		previousLeftPow -= rampSpeed;
+	}
+	leftTalons->Set(-previousLeftPow);
+	leftTalons1->Set(-previousLeftPow);
+}
 
-	    void Drivetrain::compareEncoders() { //If left motor speed is bigger than the right motor speed return true, else false
-	        if (maxRightEncoderRate > maxLeftEncoderRate) {
-	            ratio = maxLeftEncoderRate / maxRightEncoderRate;
-	            leftEncoderFix = maxRightEncoderRate * ratio;
-	            isLeftHigher = false;
+void Drivetrain::rampRightPower(double desiredPow, double rampSpeed)
+{ //Makes it so that robot can't go stop to full
+	if (abs(desiredPow - previousRightPow) < rampSpeed) {
+		previousRightPow = desiredPow;
+	} else if (previousRightPow < desiredPow) {
+		previousRightPow += rampSpeed;
+	} else if (previousRightPow > desiredPow) {
+		previousRightPow -= rampSpeed;
+	}
+	rightTalons->Set(previousRightPow);
+	rightTalons1->Set(previousRightPow);
+}
 
-	        } else if (maxLeftEncoderRate > maxRightEncoderRate) {
-	            ratio = maxRightEncoderRate / maxLeftEncoderRate;
-	            rightEncoderFix = maxLeftEncoderRate * ratio;
-	            isLeftHigher = true;
-	        } else {
-	            ratio = 1;
+double Drivetrain::LeftMotor(double &invMaxValueXPlusY) {
+	double fixLeftPow = fix(leftPow, invMaxValueXPlusY);
+	//moved rightSpeed to class scope, it is being set in setPower()
 
-	        }
-	    }
+	if (leftPow != 0 && rightPow != 0) {
+		maxLeftEncoderRate = abs(leftSpeed / leftPow);
+		if (min(abs(leftSpeed), abs(rightSpeed)) > ENCODER_TOP_SPEED) {
+			breakTime();
+		}
+		if (isLeftFaster) {
+			fixLeftPow = ratio * fixLeftPow;
+		}
+	}
 
-	    void Drivetrain::breakTime() {
-	        SmartDashboard::PutNumber("Ratio", ratio);
-	        SmartDashboard::PutBoolean("Left > Right", isLeftHigher);
-	        SmartDashboard::PutNumber("Timer time", timer->Get());
-	        if (timer->Get() > encoderWaitTime) {
-	            compareEncoders();
-	            timer->Reset();
-	        }
-	    }
+	return (fixLeftPow);
+}
 
-	    void Drivetrain::setPower() {
-	        joyStickX = operatorInputs->joystickX();
-	        joyStickY = operatorInputs->joystickY();
-	        //set fixnum = the maxiumum value for this angle on the joystick
-	        if (joyStickX == 0 || joyStickY == 0) {
-	            fixNum = 1;
-	        } else {
-	            if (abs(joyStickX) > abs(joyStickY)) {
-	                double fixNumMult = 1 / abs(joyStickX);
-	                fixNum = abs(joyStickY) * fixNumMult + 1;
-	            } else {
-	                double fixNumMult = 1 / abs(joyStickY);
-	                fixNum = abs(joyStickX) * fixNumMult + 1;
-	            }
-	        }
-	        leftPow = -joyStickY + joyStickX;
-	        rightPow = -joyStickY - joyStickX;
-	        leftSpeed = leftEncoder->GetRate();
-	        rightSpeed = rightEncoder->GetRate();
-
-	        rampLeftPower(coasting * LeftMotor(), 0.05 / driverstation->GetInstance().GetBatteryVoltage()); //Left Motors are forward=negative
-	        SmartDashboard::PutNumber("LeftTalons", -leftTalons->Get()); //Left Motors are forward=negative
-	        SmartDashboard::PutNumber("LeftSpeed", -leftSpeed); //Left Motors are forward=negative
-
-	        rampRightPower(coasting * RightMotor(), 0.05 / driverstation->GetInstance().GetBatteryVoltage()); //Right Motors are forward=positive
-	        SmartDashboard::PutNumber("JoystickY", joyStickY);
-	        SmartDashboard::PutNumber("RightTalons", rightTalons->Get()); //Right Motors are forward=positive
-	        SmartDashboard::PutNumber("RightSpeed", rightSpeed); //Right Motors are forward=positive
-	        //System.out.println("High gear :" + isHighGear);
-	    }
-
-
-	    void Drivetrain::shift() {//current setting is start in high gear
-	        bool triggerPressed = operatorInputs->joystickTriggerPressed();
-	        //System.out.println("Trigger Pressed :" + triggerPressed);
-	        if (triggerPressed && !previousTriggerPressed) {
-	        	if(isHighGear){
-	        		if(leftTalons->GetEncVel() < Encoder_Top_Speed){
-		        		leftTalons->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Coast);
-		        		leftTalons1->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Coast);
-		        		rightTalons->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Coast);
-		        		rightTalons1->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Coast);
-		        		isHighGear = !isHighGear;
-		        		gearShift->Set(isHighGear);
-		        		leftTalons->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
-						leftTalons1->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
-						rightTalons->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
-						rightTalons1->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
-	        		}else{
-	        			/**
-	        			while(leftTalons->GetEncVel() < Encoder_Top_Speed){
-	        				rampLeftPower
-
-	        			}
-	        			*/
+double Drivetrain::RightMotor(double &invMaxValueXPlusY) {
 
 
-	        		}
+	//moved rightSpeed to class scope, it is being set in setPower()
+	double fixRightPow = fix(rightPow, invMaxValueXPlusY);
 
-	        	}
-	        	else{
-	        		leftTalons->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Coast);
-	        		leftTalons1->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Coast);
-	        		rightTalons->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Coast);
-	        		rightTalons1->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Coast);
-	        		isHighGear = !isHighGear;
-	        		gearShift->Set(isHighGear);
-	        		leftTalons->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
-	        		leftTalons1->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
-	        		rightTalons->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
-	        		rightTalons1->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
-	        	}
-	            isHighGear = !isHighGear;
-	            //Shifts gear
-	            gearShift->Set(isHighGear);
+	if (leftPow != 0 && rightPow != 0) {
+		maxRightEncoderRate = abs(rightSpeed / rightPow);
+		if (min(abs(leftSpeed), abs(rightSpeed)) > ENCODER_TOP_SPEED) {
+			breakTime();
+		}
+		if (!isLeftFaster) {
+			fixRightPow = ratio * fixRightPow;
+		}
+	}
 
-	        }
+	return (fixRightPow);
 
-	        previousTriggerPressed = triggerPressed;
+}
 
-	    }
+void Drivetrain::compareEncoders() 
+{ //If left motor speed is bigger than the right motor speed return true, else false
+	if (maxRightEncoderRate > maxLeftEncoderRate) {
+		ratio = maxLeftEncoderRate / maxRightEncoderRate;
+		leftEncoderFix = maxRightEncoderRate * ratio;
+		isLeftFaster = false;
 
+	} else if (maxLeftEncoderRate > maxRightEncoderRate) {
+		ratio = maxRightEncoderRate / maxLeftEncoderRate;
+		rightEncoderFix = maxLeftEncoderRate * ratio;
+		isLeftFaster = true;
+	} else {
+		ratio = 1;
+	}
+}
 
-	    void Drivetrain::setSpeedPositive() {
-	        totalSpeed = (leftPow + rightPow) / 2;
-	        if (isHighGear == true) {
-	            totalSpeed = (leftPow + rightPow);
-	        }
-	        if (totalSpeed < 0) {
-	            totalSpeed = -totalSpeed;
-	        }
-	    }
+void Drivetrain::resetEncoders()
+{ //Resets current raw encoder value to 0
+	leftEncoder->Reset();
+	rightEncoder->Reset();
+	gearShift->Set(!(FLIP_HIGH_GEAR^isHighGear));
+}
 
-	    void Drivetrain::childProofing() { //Low to high and speed, High to low when speed is under a certain value
+double Drivetrain::fix(double v, double &invMaxValueXPlusY) {
+	return v * invMaxValueXPlusY;
+}
 
-	        if (rightChildProofSetter < .75 && leftChildProofSetter < .75) {
-	            childProofConfirmed = true;
-	        } else {
-	            childProofConfirmed = false;
-	        }
-	    }
+void Drivetrain::breakTime() {
+	SmartDashboard::PutNumber("Ratio", ratio);
+	SmartDashboard::PutBoolean("Left > Right", isLeftFaster);
+	SmartDashboard::PutNumber("Timer time", timer->Get());
+	if (timer->Get() > ENCODER_WAIT_TIME) {
+		compareEncoders();
+		timer->Reset();
+	}
+}
 
-	    void Drivetrain::setCoasting(double newCoasting) {
-	        coasting = newCoasting;
-	    }
-
-
-
+void Drivetrain::setGearLow() {
+	isHighGear=false;
+	gearShift->Set(true ^ isHighGear);
+}

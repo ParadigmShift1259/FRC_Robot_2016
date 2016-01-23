@@ -67,7 +67,7 @@ private:
 	{
 
 		drivetrain->setPower();
-
+		drivetrain->childProofShift();
 	}
 
 	void TestPeriodic()
@@ -78,6 +78,7 @@ private:
 	void DisabledInit()
 	{
 		compressor->Stop();
+		drivetrain->setGearLow();
 	}
 };
 
