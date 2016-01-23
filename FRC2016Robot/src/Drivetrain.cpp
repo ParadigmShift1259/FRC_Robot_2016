@@ -94,12 +94,9 @@ void Drivetrain::childProofShift()
 		if(isHighGear)
 		{
 			isDownShifting = true;
-//			if(previousLeftPow >= ENCODER_TOP_SPEED || previousRightPow >= ENCODER_TOP_SPEED)
-	//		{ //May be dangerous
-//					rampLeftPower(coasting * LeftMotor(), 0.5 / driverstation->GetInstance().GetBatteryVoltage());
-//					rampRightPower(coasting * LeftMotor(), 0.5 / driverstation->GetInstance().GetBatteryVoltage());
+
 				SmartDashboard::PutNumber("isDownShifting", isDownShifting);
-		//	}
+
 		}
 		else
 		{
