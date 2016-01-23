@@ -32,8 +32,14 @@ Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 	operatorInputs = inputs;
 	leftTalons = new CANTalon(LEFT_PORT);
 	leftTalons1 = new CANTalon(SECOND_LEFT_PORT);
+	//set leftTalons1 to follow leftTalons
+	leftTalons1->SetControlMode(CANSpeedController::ControlMode::kFollower);
+	leftTalons1->Set(LEFT_PORT);
 	rightTalons = new CANTalon(RIGHT_PORT);
 	rightTalons1 = new CANTalon(SECOND_RIGHT_PORT);
+	//set rightTalons1 to follow rightTalons
+	rightTalons1->SetControlMode(CANSpeedController::ControlMode::kFollower);
+	rightTalons1->Set(RIGHT_PORT);
 	gearShift = new Solenoid(SHIFT_MODULE, SHIFT_PORT_LOW);
 
 	//Setup Encoders
@@ -45,18 +51,18 @@ Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 	driverstation = ds;
 	//Start all wheels off
 	leftTalons->Set(0);
-	leftTalons1->Set(0);
+	//leftTalons1->Set(0);
 	rightTalons->Set(0);
-	rightTalons1->Set(0);
+	//rightTalons1->Set(0);
 
 	leftTalons->SetFeedbackDevice(CANTalon::QuadEncoder);
-	leftTalons1->SetFeedbackDevice(CANTalon::QuadEncoder);
+	//leftTalons1->SetFeedbackDevice(CANTalon::QuadEncoder);
 	rightTalons->SetFeedbackDevice(CANTalon::QuadEncoder);
-	rightTalons1->SetFeedbackDevice(CANTalon::QuadEncoder);
+	//rightTalons1->SetFeedbackDevice(CANTalon::QuadEncoder);
 	leftTalons->ConfigEncoderCodesPerRev(1024);
-	leftTalons1->ConfigEncoderCodesPerRev(1024);
+	//leftTalons1->ConfigEncoderCodesPerRev(1024);
 	rightTalons->ConfigEncoderCodesPerRev(1024);
-	rightTalons1->ConfigEncoderCodesPerRev(1024);
+	//rightTalons1->ConfigEncoderCodesPerRev(1024);
 
 	//Starts in low gear
 	gearShift->Set(FLIP_HIGH_GEAR ^ isHighGear);
@@ -82,7 +88,7 @@ Drivetrain::~Drivetrain()
 void Drivetrain::childProofShift()
 {//current setting is start in low gear
 	SmartDashboard::PutNumber("Abs",std::abs(0.5));
-	bool triggerPressed = operatorInputs->joystickTriggerPressed();
+	bool triggerPressed = operatorInputs->joystickTriggerPressed()||operatorInputs->xBoxAButton();
 	if (triggerPressed && !previousTriggerPressed)
 	{
 		if(isHighGear)
@@ -132,14 +138,14 @@ void Drivetrain::setPower()
 	double joyStickX;
 	double joyStickY;
 	double invMaxValueXPlusY;
-	joyStickX = operatorInputs->joystickX();
+	joyStickX = operatorInputs->joystickX()+operatorInputs->xboxLeftX();
 	if(isDownShifting)
 		{
 		joyStickY=0;
 		}
 	else
 		{
-		joyStickY = operatorInputs->joystickY();
+		joyStickY = operatorInputs->joystickY()+operatorInputs->xboxLeftY();
 		}
 	//set fixnum = the maxiumum value for this angle on the joystick
 	if (joyStickX == 0 || joyStickY == 0) 
@@ -186,7 +192,7 @@ void Drivetrain::rampLeftPower(double desiredPow, double rampSpeed)
 		previousLeftPow -= rampSpeed;
 	}
 	leftTalons->Set(-previousLeftPow);
-	leftTalons1->Set(-previousLeftPow);
+	//leftTalons1->Set(-previousLeftPow);
 }
 
 void Drivetrain::rampRightPower(double desiredPow, double rampSpeed)
@@ -199,7 +205,7 @@ void Drivetrain::rampRightPower(double desiredPow, double rampSpeed)
 		previousRightPow -= rampSpeed;
 	}
 	rightTalons->Set(previousRightPow);
-	rightTalons1->Set(previousRightPow);
+	//rightTalons1->Set(previousRightPow);
 }
 
 double Drivetrain::LeftMotor(double &invMaxValueXPlusY) {

@@ -43,6 +43,7 @@ public:
 private:
     double deadzoneFilterY(double joyStickValue);
     double deadzoneFilterX(double joyStickValue);
+    double deadzoneFilterZ(double joyStickValue);
 
 protected:
 	 double triggerPressed;
