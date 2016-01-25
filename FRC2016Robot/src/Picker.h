@@ -9,8 +9,10 @@
 #define SRC_PICKER_H_
 #include "SpeedController.h"
 #include "Solenoid.h"
+#include "OperatorInputs.h"
 
-class Picker {
+class Picker
+{
 
 public:
 	Picker(OperatorInputs* inputs);

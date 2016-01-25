@@ -1,9 +1,9 @@
+#include "Shooter.h"
+#include "Spark.h"
 
 
 
-
-
-Shooter::Shooter(OperatorInputs inputs)
+Shooter::Shooter(OperatorInputs* inputs)
 {
 	wheelMotor = new Spark(4);
 	arm = new Solenoid(4);

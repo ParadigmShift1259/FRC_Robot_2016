@@ -10,7 +10,6 @@
 Picker::Picker(OperatorInputs* inputs)
 {
 	pickerMotor = 0;
-	motorSpeed = 0;
 	pickerSolenoid = new Solenoid(3);
 	xBox = inputs;
 	solenoidAction = false;
