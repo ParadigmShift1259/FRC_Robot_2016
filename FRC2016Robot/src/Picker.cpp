@@ -30,7 +30,7 @@ bool Picker::setSolenoidAction(bool sa)
 
 bool Picker::motorDirection()
 {
-
+	return true;
 }
 
 double Picker::motorSpeed()
