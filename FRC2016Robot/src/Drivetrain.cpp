@@ -42,11 +42,14 @@ Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 	rightTalons1->Set(RIGHT_PORT);
 	gearShift = new Solenoid(SHIFT_MODULE, SHIFT_PORT_LOW);
 
+	leftPosition = 0;
+	rightPosition = 0;
+
 	//Setup Encoders
-	leftEncoder = new Encoder(3, 4);
-	rightEncoder = new Encoder(5, 6);
-	leftEncoderFix = 0;
-	rightEncoderFix = 0;
+	//leftEncoder = new Encoder(3, 4);
+	//rightEncoder = new Encoder(5, 6);
+	//leftEncoderFix = 0;
+	//rightEncoderFix = 0;
 	timer = new Timer();
 	driverstation = ds;
 	//Start all wheels off
@@ -66,8 +69,8 @@ Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 
 	//Starts in low gear
 	gearShift->Set(FLIP_HIGH_GEAR ^ isHighGear);
-	leftEncoder->SetDistancePerPulse(-DISTANCE_PER_PULSE);
-	rightEncoder->SetDistancePerPulse(DISTANCE_PER_PULSE);
+	//leftEncoder->SetDistancePerPulse(-DISTANCE_PER_PULSE);
+	//rightEncoder->SetDistancePerPulse(DISTANCE_PER_PULSE);
 
 	isDownShifting = false;
 
@@ -80,8 +83,8 @@ Drivetrain::~Drivetrain()
 	delete rightTalons;
 	delete rightTalons1;
 	delete gearShift;
-	delete leftEncoder;
-	delete rightEncoder;
+	//delete leftEncoder;
+	//delete rightEncoder;
 	delete timer;
 }
 
@@ -246,24 +249,24 @@ void Drivetrain::compareEncoders()
 { //If left motor speed is bigger than the right motor speed return true, else false
 	if (maxRightEncoderRate > maxLeftEncoderRate) {
 		ratio = maxLeftEncoderRate / maxRightEncoderRate;
-		leftEncoderFix = maxRightEncoderRate * ratio;
+		//leftEncoderFix = maxRightEncoderRate * ratio;
 		isLeftFaster = false;
 
 	} else if (maxLeftEncoderRate > maxRightEncoderRate) {
 		ratio = maxRightEncoderRate / maxLeftEncoderRate;
-		rightEncoderFix = maxLeftEncoderRate * ratio;
+		//rightEncoderFix = maxLeftEncoderRate * ratio;
 		isLeftFaster = true;
 	} else {
 		ratio = 1;
 	}
 }
 
-void Drivetrain::resetEncoders()
+/*void Drivetrain::resetEncoders()
 { //Resets current raw encoder value to 0
 	leftEncoder->Reset();
 	rightEncoder->Reset();
 	gearShift->Set(!(FLIP_HIGH_GEAR^isHighGear));
-}
+}*/
 
 double Drivetrain::fix(double v, double &invMaxValueXPlusY) {
 	return v * invMaxValueXPlusY;
@@ -282,4 +285,27 @@ void Drivetrain::breakTime() {
 void Drivetrain::setGearLow() {
 	isHighGear=false;
 	gearShift->Set(true ^ isHighGear);
+}
+
+void Drivetrain::testDrive() {
+	double joyStickX;
+	double joyStickY;
+	joyStickX = operatorInputs->joystickX()+operatorInputs->xboxLeftX();
+	joyStickY = operatorInputs->joystickY()+operatorInputs->xboxLeftY();
+	leftPow = (-joyStickY + joyStickX+leftPow)*0.5;
+	rightPow = (-joyStickY - joyStickX+rightPow)*0.5;
+	leftPow = leftPow >1 ? 1 : (leftPow < -1 ? -1 : leftPow);
+	rightPow = rightPow >1 ? 1 : (rightPow < -1 ? -1 : rightPow);
+	leftTalons->Set(leftPow);
+	rightTalons->Set(rightPow);
+	leftSpeed = leftTalons->GetSpeed();
+	leftSpeed = leftTalons->GetPosition();
+	rightSpeed = rightTalons->GetSpeed();
+	rightSpeed = rightTalons->GetPosition();
+	SmartDashboard::PutNumber("leftPow", leftPow);
+	SmartDashboard::PutNumber("leftSpeed", leftSpeed);
+	SmartDashboard::PutNumber("leftPosition", leftPosition);
+	SmartDashboard::PutNumber("rightPow", rightPow);
+	SmartDashboard::PutNumber("rightSpeed", rightSpeed);
+	SmartDashboard::PutNumber("rightPosition", rightPosition);
 }

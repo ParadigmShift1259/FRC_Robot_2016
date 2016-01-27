@@ -15,7 +15,7 @@ public:
 
 	void rampLeftPower(double desiredPow, double rampSpeed);
 	void rampRightPower(double desiredPow, double rampSpeed);
-	void resetEncoders();
+	//void resetEncoders();
 	double fix(double v, double &invMaxValueXPlusY);
 	double LeftMotor(double &invMaxValueXPlusY);
 	double RightMotor(double &invMaxValueXPlusY);
@@ -24,10 +24,10 @@ public:
 	void setPower();
 	void childProofShift();
 	
-	double getRightEncoderPulses() {return rightEncoder->GetRaw();}
-	double getLeftEncoderPulses() {return leftEncoder->GetRaw();}
-	double getRightEncoderDistance() {return rightEncoder->GetDistance();}
-	double getLeftEncoderDistance() {return leftEncoder->GetDistance();}
+	//double getRightEncoderPulses() {return rightEncoder->GetRaw();}
+	//double getLeftEncoderPulses() {return leftEncoder->GetRaw();}
+	//double getRightEncoderDistance() {return rightEncoder->GetDistance();}
+	//double getLeftEncoderDistance() {return leftEncoder->GetDistance();}
 	void setCoasting(double newCoasting) {coasting = newCoasting;}
 	double getLeftPow() {return leftPow;}
 	double getRightPow() {return rightPow;}
@@ -41,6 +41,8 @@ public:
 	void setSpeedPositive();
 	void setGearLow();
 
+	void testDrive();
+
 protected:
 
 	void shift(); //moved to protected to prevent people from accidentally calling it in Robot.cpp
@@ -50,8 +52,8 @@ protected:
 	double maxLeftEncoderRate;
 	double maxRightEncoderRate;
 	double ratio;
-	double rightEncoderFix;
-	double leftEncoderFix;
+	//double rightEncoderFix;
+	//double leftEncoderFix;
 	bool isHighGear; //Robot starts in low gear
 	bool isLeftFaster;
 	double leftSpeed;
@@ -59,6 +61,8 @@ protected:
 	bool previousTriggerPressed; //what the trigger value was before the current press, allows for trigger to stay pressed w/o flipping
 	double previousLeftPow;
 	double previousRightPow;
+	double leftPosition;
+	double rightPosition;
 	double coasting;
 
 	OperatorInputs *operatorInputs;
@@ -68,11 +72,12 @@ protected:
 	CANTalon *leftTalons1;
 	CANTalon *rightTalons1;
 	Solenoid *gearShift;
-	Encoder *leftEncoder;
-	Encoder *rightEncoder;
+	//Encoder *leftEncoder;
+	//Encoder *rightEncoder;
 	Timer *timer;
 
 };
+
 
 
 #endif /* SRC_DRIVETRAIN_H_ */

@@ -70,9 +70,15 @@ private:
 		drivetrain->childProofShift();
 	}
 
+	void TestInit()
+	{
+
+	}
+
 	void TestPeriodic()
 	{
-		lw->Run();
+		//lw->Run();
+		drivetrain->testDrive();
 	}
 
 	void DisabledInit()
