@@ -2,6 +2,10 @@
 #include "OperatorInputs.h"
 #include "drivetrain.h"
 #include "compressor.h"
+#include "Climber.h"
+#include "Opener.h"
+#include "Picker.h"
+#include "Shooter.h"
 
 class Robot: public IterativeRobot
 {
@@ -14,6 +18,10 @@ private:
 	Drivetrain *drivetrain;
 	OperatorInputs *inputs;
 	Compressor *compressor;
+	Climber *climber;
+	Opener *opener;
+	Picker *picker;
+	Shooter *shooter;
 
 	void RobotInit()
 	{
@@ -24,6 +32,12 @@ private:
 		inputs = new OperatorInputs();
 		drivetrain = new Drivetrain( inputs,&m_ds);
 		compressor = new Compressor(0);
+		picker = new Picker(inputs);
+		climber = new Climber(inputs);
+		opener = new Opener(inputs);
+		shooter = new Shooter(inputs);
+
+
 	}
 
 
@@ -65,9 +79,10 @@ private:
 
 	void TeleopPeriodic()
 	{
-
+		opener->MoveUp();
 		drivetrain->setPower();
 		drivetrain->childProofShift();
+
 	}
 
 	void TestInit()

@@ -91,7 +91,7 @@ Drivetrain::~Drivetrain()
 void Drivetrain::childProofShift()
 {//current setting is start in low gear
 	SmartDashboard::PutNumber("Abs",std::abs(0.5));
-	bool triggerPressed = operatorInputs->joystickTriggerPressed()||operatorInputs->xBoxAButton();
+	bool triggerPressed = operatorInputs->joystickTriggerPressed()||operatorInputs->xBoxLeftTrigger();
 	if (triggerPressed && !previousTriggerPressed)
 	{
 		if(isHighGear)

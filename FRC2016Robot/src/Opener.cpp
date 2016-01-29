@@ -1,11 +1,12 @@
 #include <Opener.h>
 #include <Spark.h>
+#include <Const.h>
 
 Opener::Opener(OperatorInputs *inputs)
 {
 
 
-	Spark1 = new Spark(0);
+	Spark1 = new Spark(SPARK_OPENER);
 	Input = inputs;
 
 }

@@ -18,7 +18,8 @@ public:
 	Picker(OperatorInputs* inputs);
 	~Picker();
 	bool solenoidAction;
-	bool setSolenoidAction(bool sa);
+	void setSolenoidAction(bool sa);
+	void StartMotor();
 	bool motorDirection();  //True would be like clockwise, and False etc.
 	double motorSpeed();
 	void movePicker();
@@ -33,8 +34,8 @@ protected:
 	SpeedController* pickerMotor;
 	Solenoid* pickerSolenoid;
 	OperatorInputs* xBox;
-	bool previousLeftBumper;
-	bool previousLeftTrigger;
+	bool previousA;
+	bool previousB;
 
 };
 

@@ -48,7 +48,7 @@ bool OperatorInputs::xBoxStartButton()
 	return xBox->GetRawButton(START_BUTTON);
 }
 
-bool OperatorInputs::isShooterTriggerPressed()
+bool OperatorInputs::xBoxRightTrigger()
 {
 	triggerPressed = xBox->GetRawAxis(XBOX_RIGHT_TRIGGER_AXIS);
 	return (RIGHT_TRIGGER_MIN <= triggerPressed && triggerPressed <= RIGHT_TRIGGER_MAX);

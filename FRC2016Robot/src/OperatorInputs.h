@@ -18,7 +18,7 @@ public:
 	bool xBoxStartButton();
 	bool xBoxDPadUp();
 	bool xBoxDPadDown();
-	bool isShooterTriggerPressed();
+	bool xBoxRightTrigger();
 	bool xBoxLeftTrigger();
 	bool isSetKickerPositionButtonPressed();
 	bool xBoxBackButton();

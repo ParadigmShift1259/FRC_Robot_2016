@@ -1,5 +1,5 @@
-#ifndef SRC_CLIMBER_H_
-#define SRC_CLIMBER_H_
+#ifndef SRC_SHOOTER_H_
+#define SRC_SHOOTER_H_
 #include <SpeedController.h>
 #include <Solenoid.h>
 #include "OperatorInputs.h"

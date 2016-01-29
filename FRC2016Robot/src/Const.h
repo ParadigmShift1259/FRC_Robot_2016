@@ -34,7 +34,7 @@
 	#define DEADZONE_X  0.17
 	#define DEADZONE_Z  0.17
 
-	//Drivetrain
+	//  Drivetrain
 	//	Talons
 	#define LEFT_PORT 0
 	#define SECOND_LEFT_PORT 2
@@ -51,5 +51,21 @@
 	#define ENCODER_TOP_SPEED 0.6
 	#define ENCODER_WAIT_TIME 168
 	#define DISTANCE_PER_PULSE 0.0006708
+
+	//  Various Things
+	//Pickup
+	#define PICKER_SOLENOID 1
+	#define INGEST_MOTOR 0
+
+	//Opener
+	#define SPARK_OPENER 1
+
+	//Shooter
+	#define ACTUATOR_SOLENOID 2
+	#define SPARK_SHOOTER 2
+
+	//Climber
+	#define PISTON 3
+	#define SPARK_WINCH 3
 
 #endif /* SRC_CONST_H_ */

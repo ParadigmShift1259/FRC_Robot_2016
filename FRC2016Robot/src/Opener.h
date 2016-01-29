@@ -1,5 +1,5 @@
-#ifndef SRC_CLIMBER_H_
-#define SRC_CLIMBER_H_
+#ifndef SRC_OPENER_H_
+#define SRC_OPENER_H_
 #include "OperatorInputs.h"
 #include "SpeedController.h"
 class Opener

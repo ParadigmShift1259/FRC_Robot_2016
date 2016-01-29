@@ -6,15 +6,17 @@
  */
 
 #include <Picker.h>
+#include <Spark.h>
+#include <Const.h>
 
 Picker::Picker(OperatorInputs* inputs)
 {
-	pickerMotor = 0;
-	pickerSolenoid = new Solenoid(3);
+	pickerMotor = new Spark(INGEST_MOTOR);
+	pickerSolenoid = new Solenoid(PICKER_SOLENOID);
 	xBox = inputs;
 	solenoidAction = false;
-	previousLeftBumper = false;
-	previousLeftTrigger = false;
+	previousA = false;
+	previousB = false;
 }
 
 Picker::~Picker()
@@ -23,7 +25,12 @@ Picker::~Picker()
 	delete xBox;
 }
 
-bool Picker::setSolenoidAction(bool sa)
+void Picker::StartMotor()
+{
+	pickerMotor->Set(1);
+}
+
+void Picker::setSolenoidAction(bool sa)
 {
 	solenoidAction = sa;
 }
@@ -41,21 +48,33 @@ double Picker::motorSpeed()
 
 void Picker::movePicker()
 {
-	bool leftBumper = xBox->xBoxLeftBumper();
-	bool leftTrigger = xBox->xBoxLeftTrigger();
-	if(!(leftBumper&&leftTrigger))
+	bool aButton = xBox->xBoxAButton();
+	bool bButton = xBox->xBoxBButton();
+	bool bumper = xBox->xBoxRightBumper();
+	if(!(aButton&&bButton))
 	{
-		if(leftBumper&&!previousLeftBumper)
+		if(aButton&&!previousA)
 		{
 			setSolenoidAction(true);
 			pickerSolenoid->Set(solenoidAction);
-
 		}
 
-		if(leftTrigger&&!previousLeftTrigger)
+		if(bButton&&!previousB)
 		{
 			setSolenoidAction(false);
 			pickerSolenoid->Set(solenoidAction);
 		}
+
+		if(bumper)
+		{
+			pickerMotor->Set(-1);
+		}
+		else
+		{
+			pickerMotor->Set(1);
+		}
+
 	}
+	previousA = aButton;
+	previousB = bButton;
 }
