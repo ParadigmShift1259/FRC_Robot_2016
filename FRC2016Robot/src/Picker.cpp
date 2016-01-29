@@ -39,16 +39,6 @@ double Picker::motorSpeed()
 }
 
 
-void Picker::pickerUp()
-{
-
-}
-
-void Picker::pickerDown()
-{
-
-}
-
 void Picker::movePicker()
 {
 	bool leftBumper = xBox->xBoxLeftBumper();

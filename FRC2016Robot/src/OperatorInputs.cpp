@@ -33,6 +33,15 @@ OperatorInputs::~OperatorInputs()
 //        this.shiftUp = true;
 //    }
 
+bool OperatorInputs::xBoxDPadUp()
+{
+	return (xBox->GetPOV() == 0);
+}
+
+bool OperatorInputs::xBoxDPadDown()
+{
+	return (xBox->GetPOV() == 180);
+}
 
 bool OperatorInputs::xBoxStartButton()
 { //Returns true if start button is pressed

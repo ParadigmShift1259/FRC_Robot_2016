@@ -19,13 +19,13 @@ Climber::~Climber()
 
 void Climber::WinchStuff()
 {
-	if(Input->xBoxYButton())
+	if(Input->xBoxDPadUp())
 	{
 		PistonActivator->Set(true);
 	}
-	if(Input->xBoxStartButton())
+	if(Input->xBoxDPadDown)
 	{
-	//	Spark1->Set // Not sure how to use the set thing
+		Spark1->Set(1);
 	}
 }
 
