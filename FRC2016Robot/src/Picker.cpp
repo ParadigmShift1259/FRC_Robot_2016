@@ -1,9 +1,4 @@
-/*
- * Picker.cpp
- *
- *  Created on: Jan 23, 2016
- *      Author: Developer
- */
+// picker.cpp
 
 
 #include <Picker.h>
@@ -11,12 +6,12 @@
 #include <Const.h>
 
 
-Picker::Picker(OperatorInputs* inputs)
+Picker::Picker(OperatorInputs* operinputs)
 {
+	xBox = operinputs;
 	pickerMotor = new Spark(INGEST_MOTOR);
 	pickerDeploy = new Solenoid(PICKER_DEPLOY);
 	pickerVent = new Solenoid(PICKER_VENT);
-	xBox = inputs;
 	deployed = false;
 	deployedcounter = 0;
 	previousA = false;
@@ -55,7 +50,7 @@ double Picker::motorSpeed()
 }
 
 
-void Picker::movePicker()
+void Picker::Loop()
 {
 	bool aButton = xBox->xBoxAButton();
 	bool bButton = xBox->xBoxBButton();

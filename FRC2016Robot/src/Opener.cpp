@@ -1,13 +1,16 @@
+// opener.cpp
+
+
 #include <Opener.h>
 #include "smartdashboard/smartdashboard.h"
 #include <Spark.h>
 #include <Const.h>
 
 
-Opener::Opener(OperatorInputs *inputs)
+Opener::Opener(OperatorInputs *operinputs)
 {
 	Spark1 = new Spark(SPARK_OPENER);
-	Input = inputs;
+	inputs = operinputs;
 	counter = 0;
 }
 
@@ -18,15 +21,15 @@ Opener::~Opener()
 }
 
 
-void Opener::MoveUp()
+void Opener::Loop()
 {
-	if (Input->xBoxXButton())
+	if (inputs->xBoxXButton())
 	{
 		Spark1->Set(1);
 		counter = 0;
 	}
 	else
-	if (Input->xBoxYButton())
+	if (inputs->xBoxYButton())
 	{
 		Spark1->Set(-1);
 		counter = 0;

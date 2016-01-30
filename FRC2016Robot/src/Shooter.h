@@ -1,5 +1,10 @@
+// shooter.h
+
+
 #ifndef SRC_SHOOTER_H_
 #define SRC_SHOOTER_H_
+
+
 #include <SpeedController.h>
 #include <Solenoid.h>
 #include "OperatorInputs.h"
@@ -8,20 +13,15 @@
 class Shooter
 {
 public:
-	Shooter(OperatorInputs* inputs);
+	Shooter(OperatorInputs* operinputs);
 	~Shooter();
-	void ShootBall();
-
-
-
+	void Loop();
 
 protected:
-	SpeedController *wheelMotor;
+	OperatorInputs *inputs;
 	Solenoid *arm;
-	OperatorInputs *input;
-
-
-
-
+	SpeedController *wheelMotor;
 };
+
+
 #endif

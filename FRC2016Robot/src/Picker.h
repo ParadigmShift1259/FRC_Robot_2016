@@ -1,9 +1,5 @@
-/*
- * Picker.h
- *
- *  Created on: Jan 23, 2016
- *      Author: Developer
- */
+// picker.h
+
 
 #ifndef SRC_PICKER_H_
 #define SRC_PICKER_H_
@@ -17,13 +13,13 @@
 class Picker
 {
 public:
-	Picker(OperatorInputs* inputs);
+	Picker(OperatorInputs* operinputs);
 	~Picker();
 	void setDeployAction(bool deployaction);
 	void StartMotor();
 	bool motorDirection();  	//True would be like clockwise, and False etc.
 	double motorSpeed();
-	void movePicker();
+	void Loop();
 	void pickUp();
 	void shoot();
 
@@ -32,10 +28,10 @@ private:
 	void pickerDown();
 
 protected:
+	OperatorInputs* xBox;
 	SpeedController* pickerMotor;
 	Solenoid* pickerDeploy;
 	Solenoid* pickerVent;
-	OperatorInputs* xBox;
 	bool deployed;
 	int deployedcounter;
 	bool previousA;

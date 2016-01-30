@@ -1,14 +1,12 @@
-/*
- * OperatorInputs.h
- *
- *  Created on: Jan 15, 2016
- *      Author: Programming
- */
+// operatorinputs.h
+
 
 #ifndef SRC_OPERATORINPUTS_H_
 #define SRC_OPERATORINPUTS_H_
 
+
 #include <joystick.h>
+
 
 class OperatorInputs
 {
@@ -48,11 +46,10 @@ private:
     double deadzoneFilterZ(double joyStickValue);
 
 protected:
-	 double triggerPressed;
-
 	 Joystick *joystick;
 	 Joystick *xBox;
-
+	 double triggerPressed;
 };
+
 
 #endif /* SRC_OPERATORINPUTS_H_ */

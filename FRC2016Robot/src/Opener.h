@@ -1,3 +1,6 @@
+// opener.h
+
+
 #ifndef SRC_OPENER_H_
 #define SRC_OPENER_H_
 
@@ -9,13 +12,13 @@
 class Opener
 {
 public:
-	Opener(OperatorInputs *inputs);
+	Opener(OperatorInputs *operinputs);
 	~Opener();
-	void MoveUp();
+	void Loop();
 
 protected:
+	OperatorInputs *inputs;
 	SpeedController *Spark1;
-	OperatorInputs *Input;
 	int counter;
 };
 

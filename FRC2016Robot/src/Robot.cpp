@@ -1,3 +1,6 @@
+// robot.cpp
+
+
 #include "WPILib.h"
 #include "OperatorInputs.h"
 #include "drivetrain.h"
@@ -6,6 +9,7 @@
 #include "Opener.h"
 #include "Picker.h"
 #include "Shooter.h"
+
 
 class Robot: public IterativeRobot
 {
@@ -22,6 +26,7 @@ private:
 	Opener *opener;
 	Picker *picker;
 	Shooter *shooter;
+
 
 	void RobotInit()
 	{
@@ -75,6 +80,7 @@ private:
 	void TeleopInit()
 	{
 		compressor->Start();
+		drivetrain->Init();
 	}
 
 
@@ -82,19 +88,20 @@ private:
 	{
 		drivetrain->setPower();
 		drivetrain->childProofShift();
-		opener->MoveUp();
-		picker->movePicker();
+		opener->Loop();
+		picker->Loop();
 	}
 
 
 	void TestInit()
 	{
+		drivetrain->Init();
 	}
 
 
 	void TestPeriodic()
 	{
-		drivetrain->testDrive();
+		drivetrain->TestLoop();
 	}
 
 

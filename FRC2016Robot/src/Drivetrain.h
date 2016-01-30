@@ -1,3 +1,6 @@
+// drivetrain.h
+
+
 #ifndef SRC_DRIVETRAIN_H_
 #define SRC_DRIVETRAIN_H_
 
@@ -7,11 +10,13 @@
 #include "OperatorInputs.h"
 #include <driverstation.h>
 
+
 class Drivetrain
 {
 public:
 	Drivetrain(OperatorInputs *inputs, DriverStation *ds);
 	~Drivetrain();
+	void Init();
 
 	void rampLeftPower(double desiredPow, double rampSpeed);
 	void rampRightPower(double desiredPow, double rampSpeed);
@@ -41,7 +46,7 @@ public:
 	void setSpeedPositive();
 	void setGearLow();
 
-	void testDrive();
+	void TestLoop();
 
 protected:
 
@@ -75,7 +80,6 @@ protected:
 	//Encoder *leftEncoder;
 	//Encoder *rightEncoder;
 	Timer *timer;
-
 };
 
 

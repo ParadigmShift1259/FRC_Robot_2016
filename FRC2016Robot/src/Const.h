@@ -1,9 +1,4 @@
-/*
- * Const.h
- *
- *  Created on: Jan 16, 2016
- *      Author: Programming
- */
+// const.h
 
 
 #ifndef SRC_CONST_H_
@@ -68,7 +63,6 @@
 #define DISTANCE_PER_PULSE 0.0006708
 
 
-//  Various Things
 //Pickup
 #define PICKER_DEPLOY 1
 #define PICKER_VENT 2

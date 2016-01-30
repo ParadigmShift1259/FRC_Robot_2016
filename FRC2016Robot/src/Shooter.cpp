@@ -1,24 +1,29 @@
+// shooter.cpp
+
+
 #include "Shooter.h"
 #include "Spark.h"
 #include "Const.h"
 
 
-Shooter::Shooter(OperatorInputs* inputs)
+Shooter::Shooter(OperatorInputs* operinputs)
 {
-	wheelMotor = new Spark(SPARK_SHOOTER);
+	inputs = operinputs;
 	arm = new Solenoid(ACTUATOR_SOLENOID);
-	input = inputs;
+	wheelMotor = new Spark(SPARK_SHOOTER);
 }
 
 
 Shooter::~Shooter()
 {
+	delete arm;
+	delete wheelMotor;
 }
 
 
-void Shooter::ShootBall()
+void Shooter::Loop()
 {
-	if (input->xBoxRightTrigger())
+	if (inputs->xBoxRightTrigger())
 	{
 		arm->Set(true);
 	}
