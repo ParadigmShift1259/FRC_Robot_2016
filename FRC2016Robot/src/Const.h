@@ -70,7 +70,9 @@
 
 //  Various Things
 //Pickup
-#define PICKER_SOLENOID 1
+#define PICKER_DEPLOY 1
+#define PICKER_VENT 2
+#define PICKER_VENT_DELAY 50
 #define INGEST_MOTOR 0
 
 

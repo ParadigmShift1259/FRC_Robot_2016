@@ -5,40 +5,49 @@
  *      Author: Developer
  */
 
+
 #include <Picker.h>
 #include <Spark.h>
 #include <Const.h>
 
+
 Picker::Picker(OperatorInputs* inputs)
 {
 	pickerMotor = new Spark(INGEST_MOTOR);
-	pickerSolenoid = new Solenoid(PICKER_SOLENOID);
+	pickerDeploy = new Solenoid(PICKER_DEPLOY);
+	pickerVent = new Solenoid(PICKER_VENT);
 	xBox = inputs;
-	solenoidAction = false;
+	deployed = false;
+	deployedcounter = 0;
 	previousA = false;
 	previousB = false;
 }
 
+
 Picker::~Picker()
 {
-	delete pickerSolenoid;
-	delete xBox;
+	delete pickerDeploy;
+	delete pickerVent;
 }
+
 
 void Picker::StartMotor()
 {
 	pickerMotor->Set(1);
 }
 
-void Picker::setSolenoidAction(bool sa)
+
+void Picker::setDeployAction(bool deployaction)
 {
-	solenoidAction = sa;
+	deployed = deployaction;
 }
+
 
 bool Picker::motorDirection()
 {
 	return true;
 }
+
 
 double Picker::motorSpeed()
 {
@@ -51,29 +60,39 @@ void Picker::movePicker()
 	bool aButton = xBox->xBoxAButton();
 	bool bButton = xBox->xBoxBButton();
 	bool bumper = xBox->xBoxRightBumper();
-	if(!(aButton&&bButton))
+
+	if (!(aButton && bButton))
 	{
-		if(aButton&&!previousA)
+		if (aButton && !previousA)
 		{
-			setSolenoidAction(true);
-			pickerSolenoid->Set(solenoidAction);
+			setDeployAction(true);
+			pickerDeploy->Set(true);
+			deployedcounter = 0;
 		}
+		if (bButton && !previousB)
+		{
+			setDeployAction(false);
+			pickerVent->Set(false);
+			pickerDeploy->Set(deployed);
+			deployedcounter = 0;
+		}
+	}
 
-		if(bButton&&!previousB)
-		{
-			setSolenoidAction(false);
-			pickerSolenoid->Set(solenoidAction);
-		}
-
-		if(bumper)
-		{
-			pickerMotor->Set(-1);
-		}
+	if (deployed)
+	{
+		if (deployedcounter < PICKER_VENT_DELAY)
+			deployedcounter++;
 		else
-		{
-			pickerMotor->Set(1);
-		}
+			pickerVent->Set(true);
+	}
 
+	if (bumper)
+	{
+		pickerMotor->Set(-1);
+	}
+	else
+	{
+		pickerMotor->Set(1);
 	}
 	previousA = aButton;
 	previousB = bButton;

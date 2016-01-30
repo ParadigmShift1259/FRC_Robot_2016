@@ -1,6 +1,5 @@
 #include "Drivetrain.h"
-
-#include <algorithm>
+//#include <algorithm>
 #include "smartdashboard/smartdashboard.h"
 #include <Timer.h>
 #include <Talon.h>
@@ -8,6 +7,7 @@
 #include <Encoder.h>
 #include "Const.h"
 #include <cmath>
+
 
 using namespace std;
 
@@ -88,18 +88,19 @@ Drivetrain::~Drivetrain()
 	delete timer;
 }
 
+
 void Drivetrain::childProofShift()
-{//current setting is start in low gear
-	SmartDashboard::PutNumber("Abs",std::abs(0.5));
+{
+	//current setting is start in low gear
+
+	//SmartDashboard::PutNumber("Abs",std::abs(0.5));
 	bool triggerPressed = operatorInputs->joystickTriggerPressed()||operatorInputs->xBoxLeftTrigger();
 	if (triggerPressed && !previousTriggerPressed)
 	{
 		if(isHighGear)
 		{
 			isDownShifting = true;
-
-				SmartDashboard::PutNumber("isDownShifting", isDownShifting);
-
+			SmartDashboard::PutNumber("isDownShifting", isDownShifting);
 		}
 		else
 		{
@@ -108,7 +109,7 @@ void Drivetrain::childProofShift()
 			SmartDashboard::PutNumber("isDownShifting", isDownShifting);
 		}
 	}
-	if(isDownShifting && abs(previousLeftPow) < ENCODER_TOP_SPEED && abs(previousRightPow) < ENCODER_TOP_SPEED)
+	if (isDownShifting && abs(previousLeftPow) < ENCODER_TOP_SPEED && abs(previousRightPow) < ENCODER_TOP_SPEED)
 	{
 		shift();
 		isDownShifting = false;
@@ -140,24 +141,29 @@ void Drivetrain::setPower()
 	double invMaxValueXPlusY;
 	joyStickX = operatorInputs->joystickX()+operatorInputs->xboxLeftX();
 	if(isDownShifting)
-		{
+	{
 		joyStickY=0;
-		}
+	}
 	else
-		{
+	{
 		joyStickY = operatorInputs->joystickY()+operatorInputs->xboxLeftY();
-		}
+	}
 	//set fixnum = the maxiumum value for this angle on the joystick
 	if (joyStickX == 0 || joyStickY == 0) 
 	{
 		invMaxValueXPlusY = 1;
-	} else {
-		if (abs(joyStickX) > abs(joyStickY)) {
+	}
+	else
+	{
+		if (abs(joyStickX) > abs(joyStickY))
+		{
 			double invMaxValueXPlusYMult = 1 / abs(joyStickX);
 			invMaxValueXPlusY = abs(joyStickY) * invMaxValueXPlusYMult + 1;
 			//Invert for later use
 			invMaxValueXPlusY = 1 / invMaxValueXPlusY;
-		} else {
+		}
+		else
+		{
 			double invMaxValueXPlusYMult = 1 / abs(joyStickY);
 			invMaxValueXPlusY = abs(joyStickX) * invMaxValueXPlusYMult + 1;
 			//Invert for later use
@@ -183,12 +189,20 @@ void Drivetrain::setPower()
 }
 
 void Drivetrain::rampLeftPower(double desiredPow, double rampSpeed)
-{ //Makes it so that robot can't go stop to full
-	if (abs(desiredPow - previousLeftPow) < rampSpeed) {
+{
+	//Makes it so that robot can't go stop to full
+	if (abs(desiredPow - previousLeftPow) < rampSpeed)
+	{
 		previousLeftPow = desiredPow;
-	} else if (previousLeftPow < desiredPow) {
+	}
+	else
+	if (previousLeftPow < desiredPow)
+	{
 		previousLeftPow += rampSpeed;
-	} else if (previousLeftPow > desiredPow) {
+	}
+	else
+	if (previousLeftPow > desiredPow)
+	{
 		previousLeftPow -= rampSpeed;
 	}
 	leftTalons->Set(-previousLeftPow);
@@ -196,67 +210,86 @@ void Drivetrain::rampLeftPower(double desiredPow, double rampSpeed)
 }
 
 void Drivetrain::rampRightPower(double desiredPow, double rampSpeed)
-{ //Makes it so that robot can't go stop to full
-	if (abs(desiredPow - previousRightPow) < rampSpeed) {
+{
+	//Makes it so that robot can't go stop to full
+	if (abs(desiredPow - previousRightPow) < rampSpeed)
+	{
 		previousRightPow = desiredPow;
-	} else if (previousRightPow < desiredPow) {
+	}
+	else
+	if (previousRightPow < desiredPow)
+	{
 		previousRightPow += rampSpeed;
-	} else if (previousRightPow > desiredPow) {
+	}
+	else
+	if (previousRightPow > desiredPow)
+	{
 		previousRightPow -= rampSpeed;
 	}
 	rightTalons->Set(previousRightPow);
 	//rightTalons1->Set(previousRightPow);
 }
 
-double Drivetrain::LeftMotor(double &invMaxValueXPlusY) {
+double Drivetrain::LeftMotor(double &invMaxValueXPlusY)
+{
 	double fixLeftPow = fix(leftPow, invMaxValueXPlusY);
 	//moved rightSpeed to class scope, it is being set in setPower()
 
-	if (leftPow != 0 && rightPow != 0) {
+	if (leftPow != 0 && rightPow != 0)
+	{
 		maxLeftEncoderRate = abs(leftSpeed / leftPow);
-		if (min(abs(leftSpeed), abs(rightSpeed)) > ENCODER_TOP_SPEED) {
+		if (min(abs(leftSpeed), abs(rightSpeed)) > ENCODER_TOP_SPEED)
+		{
 			breakTime();
 		}
-		if (isLeftFaster) {
+		if (isLeftFaster)
+		{
 			fixLeftPow = ratio * fixLeftPow;
 		}
 	}
-
 	return (fixLeftPow);
 }
 
-double Drivetrain::RightMotor(double &invMaxValueXPlusY) {
-
-
+double Drivetrain::RightMotor(double &invMaxValueXPlusY)
+{
 	//moved rightSpeed to class scope, it is being set in setPower()
+
 	double fixRightPow = fix(rightPow, invMaxValueXPlusY);
 
-	if (leftPow != 0 && rightPow != 0) {
+	if (leftPow != 0 && rightPow != 0)
+	{
 		maxRightEncoderRate = abs(rightSpeed / rightPow);
-		if (min(abs(leftSpeed), abs(rightSpeed)) > ENCODER_TOP_SPEED) {
+		if (min(abs(leftSpeed), abs(rightSpeed)) > ENCODER_TOP_SPEED)
+		{
 			breakTime();
 		}
-		if (!isLeftFaster) {
+		if (!isLeftFaster)
+		{
 			fixRightPow = ratio * fixRightPow;
 		}
 	}
-
 	return (fixRightPow);
-
 }
 
 void Drivetrain::compareEncoders() 
-{ //If left motor speed is bigger than the right motor speed return true, else false
-	if (maxRightEncoderRate > maxLeftEncoderRate) {
+{
+	//If left motor speed is bigger than the right motor speed return true, else false
+
+	if (maxRightEncoderRate > maxLeftEncoderRate)
+	{
 		ratio = maxLeftEncoderRate / maxRightEncoderRate;
 		//leftEncoderFix = maxRightEncoderRate * ratio;
 		isLeftFaster = false;
-
-	} else if (maxLeftEncoderRate > maxRightEncoderRate) {
+	}
+	else
+	if (maxLeftEncoderRate > maxRightEncoderRate)
+	{
 		ratio = maxRightEncoderRate / maxLeftEncoderRate;
 		//rightEncoderFix = maxLeftEncoderRate * ratio;
 		isLeftFaster = true;
-	} else {
+	}
+	else
+	{
 		ratio = 1;
 	}
 }
@@ -268,26 +301,31 @@ void Drivetrain::compareEncoders()
 	gearShift->Set(!(FLIP_HIGH_GEAR^isHighGear));
 }*/
 
-double Drivetrain::fix(double v, double &invMaxValueXPlusY) {
+double Drivetrain::fix(double v, double &invMaxValueXPlusY)
+{
 	return v * invMaxValueXPlusY;
 }
 
-void Drivetrain::breakTime() {
+void Drivetrain::breakTime()
+{
 	SmartDashboard::PutNumber("Ratio", ratio);
 	SmartDashboard::PutBoolean("Left > Right", isLeftFaster);
 	SmartDashboard::PutNumber("Timer time", timer->Get());
-	if (timer->Get() > ENCODER_WAIT_TIME) {
+	if (timer->Get() > ENCODER_WAIT_TIME)
+	{
 		compareEncoders();
 		timer->Reset();
 	}
 }
 
-void Drivetrain::setGearLow() {
+void Drivetrain::setGearLow()
+{
 	isHighGear=false;
 	gearShift->Set(true ^ isHighGear);
 }
 
-void Drivetrain::testDrive() {
+void Drivetrain::testDrive()
+{
 	double joyStickX;
 	double joyStickY;
 	joyStickX = operatorInputs->joystickX()+operatorInputs->xboxLeftX();

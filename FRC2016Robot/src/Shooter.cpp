@@ -10,15 +10,15 @@ Shooter::Shooter(OperatorInputs* inputs)
 	input = inputs;
 }
 
+
 Shooter::~Shooter()
 {
-
-
 }
+
 
 void Shooter::ShootBall()
 {
-	if(input->xBoxRightTrigger())
+	if (input->xBoxRightTrigger())
 	{
 		arm->Set(true);
 	}

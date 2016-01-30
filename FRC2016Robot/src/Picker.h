@@ -7,20 +7,21 @@
 
 #ifndef SRC_PICKER_H_
 #define SRC_PICKER_H_
+
+
 #include "SpeedController.h"
 #include "Solenoid.h"
 #include "OperatorInputs.h"
 
+
 class Picker
 {
-
 public:
 	Picker(OperatorInputs* inputs);
 	~Picker();
-	bool solenoidAction;
-	void setSolenoidAction(bool sa);
+	void setDeployAction(bool deployaction);
 	void StartMotor();
-	bool motorDirection();  //True would be like clockwise, and False etc.
+	bool motorDirection();  	//True would be like clockwise, and False etc.
 	double motorSpeed();
 	void movePicker();
 	void pickUp();
@@ -32,11 +33,14 @@ private:
 
 protected:
 	SpeedController* pickerMotor;
-	Solenoid* pickerSolenoid;
+	Solenoid* pickerDeploy;
+	Solenoid* pickerVent;
 	OperatorInputs* xBox;
+	bool deployed;
+	int deployedcounter;
 	bool previousA;
 	bool previousB;
-
 };
+
 
 #endif /* SRC_PICKER_H_ */

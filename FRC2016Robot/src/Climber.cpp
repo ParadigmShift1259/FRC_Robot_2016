@@ -1,15 +1,15 @@
 #include <Climber.h>
 #include <Spark.h>
 #include "Const.h"
+
+
 Climber::Climber(OperatorInputs *inputs)
 {
-
-
 	Spark1 = new Spark(SPARK_WINCH);
 	PistonActivator = new Solenoid(PISTON);
 	Input = inputs;
-
 }
+
 
 Climber::~Climber()
 {
@@ -17,15 +17,20 @@ Climber::~Climber()
 	delete PistonActivator;
 }
 
+
 void Climber::WinchStuff()
 {
-	if(Input->xBoxDPadUp())
+	if (Input->xBoxDPadUp())
 	{
 		PistonActivator->Set(true);
 	}
-	if(Input->xBoxDPadDown())
+	else
+	if (Input->xBoxDPadDown())
 	{
 		Spark1->Set(1);
 	}
+	else
+	{
+		Spark1->Set(0);
+	}
 }
-

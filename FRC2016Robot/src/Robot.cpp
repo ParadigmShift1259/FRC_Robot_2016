@@ -80,9 +80,10 @@ private:
 
 	void TeleopPeriodic()
 	{
-		opener->MoveUp();
 		drivetrain->setPower();
 		drivetrain->childProofShift();
+		opener->MoveUp();
+		picker->movePicker();
 	}
 
 
