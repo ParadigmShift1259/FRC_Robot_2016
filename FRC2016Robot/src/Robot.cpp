@@ -36,8 +36,6 @@ private:
 		climber = new Climber(inputs);
 		opener = new Opener(inputs);
 		shooter = new Shooter(inputs);
-
-
 	}
 
 
@@ -63,6 +61,7 @@ private:
 		}
 	}
 
+
 	void AutonomousPeriodic()
 	{
 		if(autoSelected == autoNameCustom){
@@ -72,29 +71,31 @@ private:
 		}
 	}
 
+
 	void TeleopInit()
 	{
 		compressor->Start();
 	}
+
 
 	void TeleopPeriodic()
 	{
 		opener->MoveUp();
 		drivetrain->setPower();
 		drivetrain->childProofShift();
-
 	}
+
 
 	void TestInit()
 	{
-
 	}
+
 
 	void TestPeriodic()
 	{
-		//lw->Run();
 		drivetrain->testDrive();
 	}
+
 
 	void DisabledInit()
 	{
@@ -102,5 +103,6 @@ private:
 		drivetrain->setGearLow();
 	}
 };
+
 
 START_ROBOT_CLASS(Robot)
