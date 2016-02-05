@@ -5,7 +5,7 @@
 #define SRC_OPERATORINPUTS_H_
 
 
-#include <joystick.h>
+#include <Joystick.h>
 
 
 class OperatorInputs
