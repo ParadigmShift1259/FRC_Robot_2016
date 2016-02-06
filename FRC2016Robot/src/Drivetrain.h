@@ -9,15 +9,16 @@
 #include <SpeedController.h>
 #include "OperatorInputs.h"
 #include <driverstation.h>
-
-
+#include <timer.h>
+#include <ADXRS450_Gyro.h>
 class Drivetrain
 {
 public:
+
 	Drivetrain(OperatorInputs *inputs, DriverStation *ds);
 	~Drivetrain();
 	void Init();
-
+	void driveDistance(double distance);
 	void rampLeftPower(double desiredPow, double rampSpeed);
 	void rampRightPower(double desiredPow, double rampSpeed);
 	//void resetEncoders();
@@ -28,6 +29,7 @@ public:
 	void breakTime();
 	void setPower();
 	void childProofShift();
+	bool getIsTurning();
 	
 	//double getRightEncoderPulses() {return rightEncoder->GetRaw();}
 	//double getLeftEncoderPulses() {return leftEncoder->GetRaw();}
@@ -41,15 +43,15 @@ public:
 	bool getIsLeftFaster() {return isLeftFaster;}
 	double getLeftSpeed() {return leftSpeed;}
 	double getRightSpeed() {return rightSpeed;}
-	//bool getChildProofConfirmed() {return childProofConfirmed;}
-
+	bool getIsDoneDriving();
+	void turnAngle();
 	void setSpeedPositive();
 	void setGearLow();
-
+	void setAngle(double angle);
 	void TestLoop();
 
 protected:
-
+	bool isDoneDriving;
 	void shift(); //moved to protected to prevent people from accidentally calling it in Robot.cpp
 	bool isDownShifting;
 	double leftPow;
@@ -69,6 +71,8 @@ protected:
 	double leftPosition;
 	double rightPosition;
 	double coasting;
+	bool isTurning;
+	double angle;
 
 	OperatorInputs *operatorInputs;
 	DriverStation *driverstation;
@@ -80,6 +84,9 @@ protected:
 	//Encoder *leftEncoder;
 	//Encoder *rightEncoder;
 	Timer *timer;
+	Timer *timer1;
+//	ADXRS450_Gyro *gyro;
+	double prevGyro;
 };
 
 

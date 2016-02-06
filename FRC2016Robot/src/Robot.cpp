@@ -9,11 +9,13 @@
 #include "Opener.h"
 #include "Picker.h"
 #include "Shooter.h"
+#include "relay.h"
 
 
 class Robot: public IterativeRobot
 {
 private:
+	bool prevPress;
 	int hasCalibrated = false;
 	IMAQdxSession session;
 	Image *frame;
@@ -30,7 +32,8 @@ private:
 	Opener *opener;
 	Picker *picker;
 	Shooter *shooter;
-
+	Relay *relay;
+	int counter = 0;
 	void RobotInit()
 	{
 		chooser = new SendableChooser();
@@ -44,6 +47,8 @@ private:
 		climber = new Climber(inputs);
 		opener = new Opener(inputs);
 		shooter = new Shooter(inputs);
+		relay = new Relay(0);
+		/*
 		// create an image
 		frame = imaqCreateImage(IMAQ_IMAGE_RGB, 0);
 		//the camera name (ex "cam0") can be found through the roborio web interface
@@ -54,7 +59,9 @@ private:
 		imaqError = IMAQdxConfigureGrab(session);
 		if(imaqError != IMAQdxErrorSuccess) {
 		DriverStation::ReportError("IMAQdxConfigureGrab error: " + std::to_string((long)imaqError) + "\n");
+
 		}
+		**/
 }
 
 
@@ -69,6 +76,7 @@ private:
 	 */
 	void AutonomousInit()
 	{
+		counter = 0;
 		autoSelected = *((std::string*)chooser->GetSelected());
 		//std::string autoSelected = SmartDashboard::GetString("Auto Selector", autoNameDefault);
 		std::cout << "Auto selected: " << autoSelected << std::endl;
@@ -83,11 +91,32 @@ private:
 
 	void AutonomousPeriodic()
 	{
+		if(counter<4)
+		if(drivetrain->getIsDoneDriving() == false)
+		{
+			drivetrain->driveDistance(2.0);
+		}
+		if(drivetrain->getIsDoneDriving() == true)
+		{
+			drivetrain->setAngle(90);
+		}
+		if(drivetrain->getIsTurning() == true)
+		{
+			//drivetrain->turnAngle();
+		}
+		if(drivetrain->getIsTurning() == false && drivetrain->getIsDoneDriving() == true)
+		{
+			counter++;
+			drivetrain->driveDistance(2);
+		}
+
+		/*
 		if(autoSelected == autoNameCustom){
 			//Custom Auto goes here
 		} else {
 			//Default Auto goes here
 		}
+		*/
 	}
 
 
@@ -106,14 +135,28 @@ private:
 	{
 		drivetrain->setPower();
 		drivetrain->childProofShift();
-		opener->Loop();
-		picker->Loop();
-		IMAQdxGrab(session, frame, true, NULL);
+		//opener->Loop();
+		//picker->Loop();
+		/**IMAQdxGrab(session, frame, true, NULL);
 		if(imaqError != IMAQdxErrorSuccess) {
 			DriverStation::ReportError("IMAQdxGrab error: " + std::to_string((long)imaqError) + "\n");
 		} else {
 		//	imaqDrawShapeOnImage(frame, frame, { 10, 10, 100, 100 }, DrawMode::IMAQ_DRAW_VALUE, ShapeMode::IMAQ_SHAPE_OVAL, 0.0f);
 			CameraServer::GetInstance()->SetImage(frame);
+		}*/
+		if(inputs->button7() == true && prevPress == false)
+		{
+			if(relay->Get() == Relay::Value::kOff)
+			{
+			relay->Set(Relay::Value::kForward);
+			}else{
+			relay->Set(Relay::Value::kOff);
+			}
+			prevPress = true;
+		}
+		if(inputs->button7() == false)
+		{
+			prevPress = false;
 		}
 	}
 

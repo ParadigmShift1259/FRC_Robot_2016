@@ -54,7 +54,7 @@
 
 
 //	Ramping
-#define RAMPING_RATE 0.5
+#define RAMPING_RATE 0.35
 
 
 //	Encoders

@@ -16,9 +16,12 @@ using namespace std;
 
 Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 {
+	angle = 0;
+	isTurning = false;
+	isDoneDriving = false;
 	operatorInputs = inputs;
 	driverstation = ds;
-
+	prevGyro = 0.0;
 	leftPow = 0;
 	rightPow = 0;
 	maxLeftEncoderRate = 0;
@@ -47,13 +50,16 @@ Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 	rightTalons1->SetControlMode(CANSpeedController::ControlMode::kFollower);
 	rightTalons1->Set(RIGHT_PORT);
 	gearShift = new Solenoid(SHIFT_MODULE, SHIFT_PORT_LOW);
-
+	//gyro = new ADXRS450_Gyro();
+	//gyro->Calibrate();
+	//gyro->Reset();
 	//Setup Encoders
 	//leftEncoder = new Encoder(3, 4);
 	//rightEncoder = new Encoder(5, 6);
 	//leftEncoderFix = 0;
 	//rightEncoderFix = 0;
 	timer = new Timer();
+	timer1 = new Timer();
 	//Start all wheels off
 	leftTalons->Set(0);
 	//leftTalons1->Set(0);
@@ -107,11 +113,72 @@ void Drivetrain::Init()
 	previousLeftPow = 0;
 	previousRightPow = 0;
 	coasting = 1;
-
+	angle = 0;
 	leftTalons->SetPosition(0);
 	rightTalons->SetPosition(0);
+	timer1->Reset();
 }
 
+bool Drivetrain::getIsDoneDriving()
+{
+	return isDoneDriving;
+}
+
+bool Drivetrain::getIsTurning()
+{
+	return isTurning;
+}
+
+void Drivetrain::setAngle(double angle1)
+{
+	//angle = angle1+gyro->GetAngle();
+	isTurning = false;
+}
+
+/**void Drivetrain::turnAngle()
+{
+	if(angle<gyro->GetAngle())
+	{
+		isTurning = true;
+		double invBatteryVoltage = 1 / driverstation->GetInstance().GetBatteryVoltage();
+		double batteryRamping = RAMPING_RATE*invBatteryVoltage;
+		rampLeftPower(0,batteryRamping);
+		rampRightPower(0.5,batteryRamping);
+	}
+	if(angle>gyro->GetAngle())
+	{
+		isTurning = true;
+		double invBatteryVoltage = 1 / driverstation->GetInstance().GetBatteryVoltage();
+		double batteryRamping = RAMPING_RATE*invBatteryVoltage;
+		rampLeftPower(0.5,batteryRamping);
+		rampRightPower(0,batteryRamping);
+	}
+	if(abs(gyro->GetAngle()-angle)<5)
+	{
+		isTurning = false;
+	}
+
+}**/
+
+void Drivetrain::driveDistance(double distance)
+{
+	double invBatteryVoltage = 1 / driverstation->GetInstance().GetBatteryVoltage();
+	double batteryRamping = RAMPING_RATE*invBatteryVoltage;
+	if(timer1->Get() <= distance)
+	{
+		isDoneDriving = false;
+		timer1->Start();
+
+		rampLeftPower(0.5,batteryRamping);
+		rampRightPower(0.5,batteryRamping);
+	}
+	if(timer1->Get() >= distance)
+	{
+		rampLeftPower(0,batteryRamping);
+		rampRightPower(0,batteryRamping);
+		isDoneDriving = true;
+	}
+}
 
 void Drivetrain::childProofShift()
 {
@@ -194,8 +261,8 @@ void Drivetrain::setPower()
 			invMaxValueXPlusY = 1 / invMaxValueXPlusY;
 		}
 	}
-	leftPow = -joyStickY + joyStickX;
-	rightPow = -joyStickY - joyStickX;
+	leftPow = -joyStickY + joyStickX/2;
+	rightPow = -joyStickY - joyStickX/2;
 	leftSpeed = leftTalons->GetSpeed();
 	rightSpeed = rightTalons->GetSpeed();
 	leftPosition = leftTalons->GetPosition();
@@ -237,7 +304,7 @@ void Drivetrain::rampLeftPower(double desiredPow, double rampSpeed)
 	{
 		previousLeftPow -= rampSpeed;
 	}
-	leftTalons->Set(-previousLeftPow);
+	leftTalons->Set(-previousLeftPow*.975);
 	//leftTalons1->Set(-previousLeftPow);
 }
 
