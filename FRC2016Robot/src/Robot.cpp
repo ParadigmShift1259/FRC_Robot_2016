@@ -31,7 +31,6 @@ private:
 	Picker *picker;
 	Shooter *shooter;
 
-
 	void RobotInit()
 	{
 		chooser = new SendableChooser();
