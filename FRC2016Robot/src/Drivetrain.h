@@ -19,8 +19,8 @@ public:
 	~Drivetrain();
 	void Init();
 	void driveDistance(double distance);
-	void rampLeftPower(double desiredPow, double rampSpeed);
-	void rampRightPower(double desiredPow, double rampSpeed);
+	double rampInput(double previousPow, double desiredPow, double rampSpeedMin, double rampSpeedMax);
+	//void rampRightPower(double desiredPow, double rampSpeedMin, double rampSpeedMax);
 	//void resetEncoders();
 	double fix(double v, double &invMaxValueXPlusY);
 	double LeftMotor(double &invMaxValueXPlusY);
@@ -66,8 +66,8 @@ protected:
 	double leftSpeed;
 	double rightSpeed;
 	bool previousTriggerPressed; //what the trigger value was before the current press, allows for trigger to stay pressed w/o flipping
-	double previousLeftPow;
-	double previousRightPow;
+	double previousX;
+	double previousY;
 	double leftPosition;
 	double rightPosition;
 	double coasting;

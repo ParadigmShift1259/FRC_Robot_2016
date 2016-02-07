@@ -31,7 +31,7 @@ protected:
 	OperatorInputs* xBox;
 	SpeedController* pickerMotor;
 	Solenoid* pickerDeploy;
-	Solenoid* pickerVent;
+	//Solenoid* pickerDeploy2;
 	bool deployed;
 	int deployedcounter;
 	bool previousA;

@@ -35,8 +35,8 @@ Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 	rightPosition = 0;
 	
 	previousTriggerPressed = false; //what the trigger value was before the current press, allows for trigger to stay pressed w/o flipping
-	previousLeftPow = 0;
-	previousRightPow = 0;
+	previousX = 0;
+	previousY = 0;
 	coasting = 1;
 
 	leftTalons = new CANTalon(LEFT_PORT);
@@ -110,8 +110,8 @@ void Drivetrain::Init()
 	leftPosition = 0;
 	rightPosition = 0;
 	previousTriggerPressed = false;
-	previousLeftPow = 0;
-	previousRightPow = 0;
+	previousX = 0;
+	previousY = 0;
 	coasting = 1;
 	angle = 0;
 	leftTalons->SetPosition(0);
@@ -163,20 +163,23 @@ void Drivetrain::setAngle(double angle1)
 void Drivetrain::driveDistance(double distance)
 {
 	double invBatteryVoltage = 1 / driverstation->GetInstance().GetBatteryVoltage();
-	double batteryRamping = RAMPING_RATE*invBatteryVoltage;
-	if(timer1->Get() <= distance)
+	double batteryRamping = RAMPING_RATE_MIN*invBatteryVoltage;
+	if(timer1->Get() < distance)
 	{
 		isDoneDriving = false;
 		timer1->Start();
 
-		rampLeftPower(0.5,batteryRamping);
-		rampRightPower(0.5,batteryRamping);
-	}
-	if(timer1->Get() >= distance)
+		previousX = rampInput(previousX,0.5,batteryRamping,batteryRamping);
+		//previousY = rampInput(previousY,0.5,batteryRamping,batteryRamping);
+		leftTalons->Set(INVERT_LEFT * previousX* MOTOR_SCALING);
+		rightTalons->Set(INVERT_RIGHT * previousX* MOTOR_SCALING);
+	} else if(timer1->Get() >= distance)
 	{
-		rampLeftPower(0,batteryRamping);
-		rampRightPower(0,batteryRamping);
-		isDoneDriving = true;
+		previousX = rampInput(previousX,0,batteryRamping,RAMPING_RATE_MAX*invBatteryVoltage);
+		//previousY = rampInput(previousY,0,batteryRamping,batteryRamping);
+		leftTalons->Set(INVERT_LEFT * previousX* MOTOR_SCALING);
+		rightTalons->Set(INVERT_RIGHT * previousX* MOTOR_SCALING);
+		if(previousX == 0) isDoneDriving = true;
 	}
 }
 
@@ -199,7 +202,7 @@ void Drivetrain::childProofShift()
 			//SmartDashboard::PutNumber("isDownShifting", isDownShifting);
 		}
 	}
-	if (isDownShifting && abs(previousLeftPow) < ENCODER_TOP_SPEED && abs(previousRightPow) < ENCODER_TOP_SPEED)
+	if (isDownShifting && abs(previousX) < ENCODER_TOP_SPEED && abs(previousY) < ENCODER_TOP_SPEED)
 	{
 		shift();
 		isDownShifting = false;
@@ -261,23 +264,25 @@ void Drivetrain::setPower()
 			invMaxValueXPlusY = 1 / invMaxValueXPlusY;
 		}
 	}
-	leftPow = -joyStickY + joyStickX/2;
-	rightPow = -joyStickY - joyStickX/2;
+	double invBatteryVoltage = 1 / driverstation->GetInstance().GetBatteryVoltage();
+	double BatteryRampingMin = RAMPING_RATE_MIN*invBatteryVoltage;
+	double BatteryRampingMax = RAMPING_RATE_MAX*invBatteryVoltage;
+	previousX = joyStickX;//rampInput(previousX, joyStickX, BatteryRampingMin, BatteryRampingMax); //Left Motors are forward=negative
+	previousY = rampInput(previousY, joyStickY, BatteryRampingMin, BatteryRampingMax); //Right Motors are forward=positive
+	leftPow = previousY * Y_SCALING - previousX * X_SCALING;
+	rightPow = previousY * Y_SCALING + previousX * X_SCALING;
 	leftSpeed = leftTalons->GetSpeed();
 	rightSpeed = rightTalons->GetSpeed();
 	leftPosition = leftTalons->GetPosition();
 	rightPosition = rightTalons->GetPosition();
 
-	double invBatteryVoltage = 1 / driverstation->GetInstance().GetBatteryVoltage();
-	double batteryRamping = RAMPING_RATE*invBatteryVoltage;
 
-	rampLeftPower(coasting * LeftMotor(invMaxValueXPlusY), batteryRamping); //Left Motors are forward=negative
-	rampRightPower(coasting * RightMotor(invMaxValueXPlusY), batteryRamping); //Right Motors are forward=positive
-
-	SmartDashboard::PutNumber("LeftPowPrev", -previousLeftPow); //Left Motors are forward=negative
-	SmartDashboard::PutNumber("LeftPow", -leftPow); //Left Motors are forward=negative
-	SmartDashboard::PutNumber("RightPowPrev", previousRightPow); //Right Motors are forward=positive
-	SmartDashboard::PutNumber("RightPow", rightPow); //Right Motors are forward=positive
+	leftTalons->Set(INVERT_LEFT * coasting * LeftMotor(invMaxValueXPlusY) * MOTOR_SCALING);
+	rightTalons->Set(INVERT_RIGHT * coasting * RightMotor(invMaxValueXPlusY) * MOTOR_SCALING);
+	SmartDashboard::PutNumber("TurningRamp", previousX); //Left Motors are forward=negative
+	SmartDashboard::PutNumber("LeftPow", INVERT_LEFT*leftPow); //Left Motors are forward=negative
+	SmartDashboard::PutNumber("DrivingRamp", previousY); //Right Motors are forward=positive
+	SmartDashboard::PutNumber("RightPow", INVERT_RIGHT*rightPow); //Right Motors are forward=positive
 	SmartDashboard::PutString("Gear", isHighGear ? "High" : "Low");
 
 	SmartDashboard::PutNumber("leftSpeed", leftSpeed);
@@ -287,48 +292,50 @@ void Drivetrain::setPower()
 }
 
 
-void Drivetrain::rampLeftPower(double desiredPow, double rampSpeed)
+double Drivetrain::rampInput(double previousPow, double desiredPow, double rampSpeedMin, double rampSpeedMax)
 {
+	double newPow = previousPow;
+	double deltaPow = abs(desiredPow - previousPow);
 	//Makes it so that robot can't go stop to full
-	if (abs(desiredPow - previousLeftPow) < rampSpeed)
+	if (deltaPow < rampSpeedMin)
 	{
-		previousLeftPow = desiredPow;
+		newPow = desiredPow;
 	}
 	else
-	if (previousLeftPow < desiredPow)
+	if (previousPow < desiredPow)
 	{
-		previousLeftPow += rampSpeed;
+		newPow += deltaPow*(rampSpeedMax-rampSpeedMin) + rampSpeedMin;
 	}
 	else
-	if (previousLeftPow > desiredPow)
+	if (previousPow > desiredPow)
 	{
-		previousLeftPow -= rampSpeed;
+		newPow -= deltaPow*(rampSpeedMax-rampSpeedMin) + rampSpeedMin;
 	}
-	leftTalons->Set(-previousLeftPow*.975);
 	//leftTalons1->Set(-previousLeftPow);
+	return newPow;
 }
 
 
-void Drivetrain::rampRightPower(double desiredPow, double rampSpeed)
+/*void Drivetrain::rampRightPower(double desiredPow, double rampSpeedMin, double rampSpeedMax)
 {
 	//Makes it so that robot can't go stop to full
-	if (abs(desiredPow - previousRightPow) < rampSpeed)
+	if (abs(desiredPow - previousRightPow) < rampSpeedMin)
 	{
 		previousRightPow = desiredPow;
 	}
 	else
 	if (previousRightPow < desiredPow)
 	{
-		previousRightPow += rampSpeed;
+		previousRightPow += rampSpeedMin;
 	}
 	else
 	if (previousRightPow > desiredPow)
 	{
-		previousRightPow -= rampSpeed;
+		previousRightPow -= rampSpeedMin;
 	}
 	rightTalons->Set(previousRightPow);
 	//rightTalons1->Set(previousRightPow);
-}
+}*/
 
 
 double Drivetrain::LeftMotor(double &invMaxValueXPlusY)

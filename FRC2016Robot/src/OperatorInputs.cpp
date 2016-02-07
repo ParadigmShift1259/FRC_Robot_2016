@@ -139,26 +139,26 @@ double OperatorInputs::xboxRightY()
 
 double OperatorInputs::xboxLeftX()
 {
-	return deadzoneFilterX(xBox->GetX(GenericHID::JoystickHand::kLeftHand));
+	return deadzoneFilterX(INVERT_X_AXIS*xBox->GetX(GenericHID::JoystickHand::kLeftHand));
 }
 
 
 double OperatorInputs::xboxLeftY()
 {
-	return deadzoneFilterY(xBox->GetY(GenericHID::JoystickHand::kLeftHand));
+	return deadzoneFilterY(INVERT_Y_AXIS*xBox->GetY(GenericHID::JoystickHand::kLeftHand));
 }
 
 
 double OperatorInputs::joystickX()
 {
-	return deadzoneFilterX(joystick->GetX());
+	return deadzoneFilterX(INVERT_X_AXIS*joystick->GetX());
 	//return joystick->GetX();
 }
 
 
 double OperatorInputs::joystickY()
 {
-	return deadzoneFilterY(joystick->GetY());
+	return deadzoneFilterY(INVERT_Y_AXIS*joystick->GetY());
 	//return joystick->GetY();
 }
 
