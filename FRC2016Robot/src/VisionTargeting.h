@@ -24,6 +24,7 @@ public:
 	OperatorInputs *inputs;
 
 
+
 protected:
 
 private:
