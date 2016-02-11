@@ -28,10 +28,10 @@ private:
 	void pickerDown();
 
 protected:
-	OperatorInputs* xBox;
-	SpeedController* pickerMotor;
-	Solenoid* pickerDeploy;
-	//Solenoid* pickerDeploy2;
+	OperatorInputs *xBox;
+	SpeedController *pickerMotor;
+	Solenoid *pickerDeploy;
+	//Solenoid *pickerDeploy2;
 	bool deployed;
 	int deployedcounter;
 	bool previousA;

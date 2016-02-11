@@ -10,7 +10,7 @@ Shooter::Shooter(OperatorInputs* operinputs)
 {
 	inputs = operinputs;
 	arm = new Solenoid(ACTUATOR_SOLENOID);
-	wheelMotor = new Spark(SPARK_SHOOTER);
+	wheelMotor = new Spark(PWM_SHOOTER);
 }
 
 

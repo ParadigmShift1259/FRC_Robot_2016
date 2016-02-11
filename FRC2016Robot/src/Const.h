@@ -65,22 +65,23 @@
 #define PICKER_DEPLOY 1
 #define PICKER_VENT 2
 #define PICKER_VENT_DELAY 50
-#define INGEST_MOTOR 0
-
-
-//Opener
-#define SPARK_OPENER 1
-#define OPENER_TIMEOUT 250			// 250 = ~5 seconds
+#define PWM_INGEST_MOTOR 0
 
 
 //Shooter
 #define ACTUATOR_SOLENOID 2
-#define SPARK_SHOOTER 2
+#define PWM_SHOOTER 1
 
 
 //Climber
 #define PISTON 3
-#define SPARK_WINCH 3
+#define PWM_WINCH 2
+
+
+//Portcullis
+#define PWM_MOTOR 3
+#define DIO_LIMIT_IN 0
+#define DIO_LIMIT_OUT 1
 
 
 #endif /* SRC_CONST_H_ */

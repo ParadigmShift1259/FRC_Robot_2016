@@ -9,7 +9,7 @@
 Picker::Picker(OperatorInputs* operinputs)
 {
 	xBox = operinputs;
-	pickerMotor = new Spark(INGEST_MOTOR);
+	pickerMotor = new Spark(PWM_INGEST_MOTOR);
 	pickerDeploy = new Solenoid(PICKER_DEPLOY);
 	//pickerDeploy2 = new Solenoid(PICKER_VENT);
 	//pickerDeploy2->Set(false);
@@ -84,7 +84,7 @@ void Picker::Loop()
 	{
 		pickerMotor->Set(-1);
 	}
-	else if(!deployed)
+	else if (!deployed)
 	{
 		pickerMotor->Set(1);
 	}

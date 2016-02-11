@@ -6,34 +6,36 @@
 #include "drivetrain.h"
 #include "compressor.h"
 #include "Climber.h"
-#include "Opener.h"
 #include "Picker.h"
 #include "Shooter.h"
 #include "relay.h"
+#include "Portcullis.h"
 
 
 class Robot: public IterativeRobot
 {
 private:
-bool prevPress;
-int hasCalibrated = false;
-IMAQdxSession session;
-Image *frame;
-IMAQdxError imaqError;
-LiveWindow *lw = LiveWindow::GetInstance();
-SendableChooser *chooser;
-const std::string autoNameDefault = "Default";
-const std::string autoNameCustom = "My Auto";
-std::string autoSelected;
-Drivetrain *drivetrain;
-OperatorInputs *inputs;
-Compressor *compressor;
-Climber *climber;
-Opener *opener;
-Picker *picker;
-Shooter *shooter;
-Relay *relay;
-int counter = 0;
+	bool prevPress;
+	int hasCalibrated = false;
+	IMAQdxSession session;
+	Image *frame;
+	IMAQdxError imaqError;
+	LiveWindow *lw = LiveWindow::GetInstance();
+	SendableChooser *chooser;
+	const std::string autoNameDefault = "Default";
+	const std::string autoNameCustom = "My Auto";
+	std::string autoSelected;
+	Drivetrain *drivetrain;
+	OperatorInputs *inputs;
+	Compressor *compressor;
+	Climber *climber;
+	Picker *picker;
+	Shooter *shooter;
+	Relay *relay;
+	Portcullis *portcullis;
+	int counter = 0;
+
+
 void RobotInit()
 {
 	chooser = new SendableChooser();
@@ -45,9 +47,9 @@ void RobotInit()
 	compressor = new Compressor(0);
 	picker = new Picker(inputs);
 	climber = new Climber(inputs);
-	opener = new Opener(inputs);
 	shooter = new Shooter(inputs);
 	relay = new Relay(0);
+	portcullis = new Portcullis(inputs);
 	/*
 	// create an image
 	frame = imaqCreateImage(IMAQ_IMAGE_RGB, 0);
@@ -81,7 +83,7 @@ void AutonomousInit()
 	//std::string autoSelected = SmartDashboard::GetString("Auto Selector", autoNameDefault);
 	std::cout << "Auto selected: " << autoSelected << std::endl;
 
-	if(autoSelected == autoNameCustom){
+	if (autoSelected == autoNameCustom){
 		//Custom Auto goes here
 	} else {
 		//Default Auto goes here
@@ -91,21 +93,21 @@ void AutonomousInit()
 
 void AutonomousPeriodic()
 {
-	if(counter<4)
+	if (counter<4)
 	{
-		if(drivetrain->getIsDoneDriving() == false)
+		if (drivetrain->getIsDoneDriving() == false)
 		{
 			drivetrain->driveDistance(2.0);
 		}
-		if(drivetrain->getIsDoneDriving() == true)
+		if (drivetrain->getIsDoneDriving() == true)
 		{
 			drivetrain->setAngle(90);
 		}
-		if(drivetrain->getIsTurning() == true && drivetrain->getIsDoneDriving() == true)
+		if (drivetrain->getIsTurning() == true && drivetrain->getIsDoneDriving() == true)
 		{
 			//drivetrain->turnAngle();
 		}
-		if(drivetrain->getIsTurning() == false && drivetrain->getIsDoneDriving() == true)
+		if (drivetrain->getIsTurning() == false && drivetrain->getIsDoneDriving() == true)
 		{
 			counter++;
 			drivetrain->driveDistance(2);
@@ -137,8 +139,8 @@ void TeleopPeriodic()
 {
 	drivetrain->setPower();
 	drivetrain->childProofShift();
-	opener->Loop();
 	picker->Loop();
+	portcullis->Loop();
 	/**IMAQdxGrab(session, frame, true, NULL);
 	if(imaqError != IMAQdxErrorSuccess) {
 		DriverStation::ReportError("IMAQdxGrab error: " + std::to_string((long)imaqError) + "\n");
@@ -172,9 +174,9 @@ void DisabledInit()
 
 void LEDToggle()
 {
-	if(inputs->button7() == true && prevPress == false)
+	if (inputs->button7() == true && prevPress == false)
 	{
-		if(relay->Get() == Relay::Value::kOff)
+		if (relay->Get() == Relay::Value::kOff)
 		{
 			relay->Set(Relay::Value::kForward);
 		}
@@ -184,7 +186,7 @@ void LEDToggle()
 		}
 			prevPress = true;
 	}
-		if(inputs->button7() == false)
+		if (inputs->button7() == false)
 		{
 			prevPress = false;
 		}
