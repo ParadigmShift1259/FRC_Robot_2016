@@ -1,15 +1,13 @@
-/*
- * VisionTargeting.h
- *
- *  Created on: Feb 8, 2016
- *      Author: Developer
- */
+// visiontargeting.h
+
 
 #ifndef SRC_VISIONTARGETING_H_
 #define SRC_VISIONTARGETING_H_
 
+
 #include "Drivetrain.h"
 #include "OperatorInputs.h"
+
 
 class VisionTargeting
 {
@@ -20,17 +18,10 @@ public:
 	void DetectDirectionNeeded();
 	void Movement();
 
+protected:
 	Drivetrain *drive;
 	OperatorInputs *inputs;
-
-
-
-protected:
-
-private:
-
 };
-
 
 
 #endif /* SRC_VISIONTARGETING_H_ */

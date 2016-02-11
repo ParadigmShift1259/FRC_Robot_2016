@@ -8,7 +8,7 @@
 
 Climber::Climber(OperatorInputs *inputs)
 {
-	Spark1 = new Spark(SPARK_WINCH);
+	Spark1 = new Spark(PWM_WINCH);
 	PistonActivator = new Solenoid(PISTON);
 	Input = inputs;
 }
