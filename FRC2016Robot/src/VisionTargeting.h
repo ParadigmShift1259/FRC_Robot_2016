@@ -17,6 +17,7 @@ public:
 	VisionTargeting(Drivetrain *drivetrain, OperatorInputs *operatorinputs);
 	~VisionTargeting();
 	double PickBestContour(double width1, double width2, double width3);
+	void FindCorners(double x1,double y1,double height,double width);
 	void DetectDirectionNeeded();
 	void Movement();
 
