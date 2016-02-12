@@ -84,11 +84,11 @@ void Picker::Loop()
 	{
 		pickerMotor->Set(-1);
 	}
-	else if (!deployed)
+	else if (deployed)
 	{
 		pickerMotor->Set(1);
 	}
-	else
+	else if (!deployed && !bumper)
 	{
 		pickerMotor->Set(0);
 	}
