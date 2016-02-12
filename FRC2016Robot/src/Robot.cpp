@@ -191,6 +191,19 @@ void LEDToggle()
 			prevPress = false;
 		}
 }
+
+void ChangeDirection()
+{
+	if (inputs->xBoxR3() == true && prevPress == false)
+		{
+			drivetrain->ChangeDirection();
+				prevPress = true;
+		}
+			if (inputs->xBoxR3() == false)
+			{
+				prevPress = false;
+			}
+}
 };
 
 

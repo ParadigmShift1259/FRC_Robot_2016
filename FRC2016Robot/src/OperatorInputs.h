@@ -18,6 +18,7 @@ public:
 	bool xBoxDPadDown();
 	bool xBoxRightTrigger();
 	bool xBoxLeftTrigger();
+	bool xBoxR3();
 	bool isSetKickerPositionButtonPressed();
 	bool xBoxBackButton();
 	bool button7();

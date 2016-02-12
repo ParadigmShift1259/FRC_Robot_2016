@@ -81,6 +81,8 @@ Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 	//rightEncoder->SetDistancePerPulse(DISTANCE_PER_PULSE);
 
 	isDownShifting = false;
+	invertLeft = -1;
+	invertRight = 1;
 }
 
 
@@ -171,14 +173,14 @@ void Drivetrain::driveDistance(double distance)
 
 		previousX = rampInput(previousX,0.5,batteryRamping,batteryRamping);
 		//previousY = rampInput(previousY,0.5,batteryRamping,batteryRamping);
-		leftTalons->Set(INVERT_LEFT * previousX* MOTOR_SCALING);
-		rightTalons->Set(INVERT_RIGHT * previousX* MOTOR_SCALING);
+		leftTalons->Set(invertLeft * previousX* MOTOR_SCALING);
+		rightTalons->Set(invertRight * previousX* MOTOR_SCALING);
 	} else if(timer1->Get() >= distance)
 	{
 		previousX = rampInput(previousX,0,batteryRamping,RAMPING_RATE_MAX*invBatteryVoltage);
 		//previousY = rampInput(previousY,0,batteryRamping,batteryRamping);
-		leftTalons->Set(INVERT_LEFT * previousX* MOTOR_SCALING);
-		rightTalons->Set(INVERT_RIGHT * previousX* MOTOR_SCALING);
+		leftTalons->Set(invertLeft * previousX* MOTOR_SCALING);
+		rightTalons->Set(invertRight * previousX* MOTOR_SCALING);
 		if(previousX == 0) isDoneDriving = true;
 	}
 }
@@ -277,12 +279,12 @@ void Drivetrain::setPower()
 	rightPosition = rightTalons->GetPosition();
 
 
-	leftTalons->Set(INVERT_LEFT * coasting * LeftMotor(invMaxValueXPlusY) * MOTOR_SCALING);
-	rightTalons->Set(INVERT_RIGHT * coasting * RightMotor(invMaxValueXPlusY) * MOTOR_SCALING);
+	leftTalons->Set(invertLeft * coasting * LeftMotor(invMaxValueXPlusY) * MOTOR_SCALING);
+	rightTalons->Set(invertRight * coasting * RightMotor(invMaxValueXPlusY) * MOTOR_SCALING);
 	SmartDashboard::PutNumber("TurningRamp", previousX); //Left Motors are forward=negative
-	SmartDashboard::PutNumber("LeftPow", INVERT_LEFT*leftPow); //Left Motors are forward=negative
+	SmartDashboard::PutNumber("LeftPow", invertLeft*leftPow); //Left Motors are forward=negative
 	SmartDashboard::PutNumber("DrivingRamp", previousY); //Right Motors are forward=positive
-	SmartDashboard::PutNumber("RightPow", INVERT_RIGHT*rightPow); //Right Motors are forward=positive
+	SmartDashboard::PutNumber("RightPow", invertRight*rightPow); //Right Motors are forward=positive
 	SmartDashboard::PutString("Gear", isHighGear ? "High" : "Low");
 
 	SmartDashboard::PutNumber("leftSpeed", leftSpeed);
@@ -461,4 +463,10 @@ void Drivetrain::TestLoop()
 	SmartDashboard::PutNumber("rightPow", rightPow);
 	SmartDashboard::PutNumber("rightSpeed", rightSpeed);
 	SmartDashboard::PutNumber("rightPosition", rightPosition);
+}
+
+void Drivetrain::ChangeDirection()
+{
+	invertRight = invertRight*(-1);
+	invertLeft = invertLeft*(-1);
 }

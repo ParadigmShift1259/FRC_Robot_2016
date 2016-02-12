@@ -36,10 +36,12 @@ double VisionTargeting::PickBestContour(double width1, double width2, double wid
 	return width1;
 }
 
-void VisionTargeting::FindCorners(double x1,double y1,double height,double width);
+/*void VisionTargeting::FindCorners(double x,double y,double height,double width);
 {
+	x1 = x-width;
+	y1 = y+height;
 
-}
+}*/
 
 void VisionTargeting::DetectDirectionNeeded()
 {

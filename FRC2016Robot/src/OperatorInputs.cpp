@@ -42,6 +42,11 @@ bool OperatorInputs::xBoxStartButton()
 	return xBox->GetRawButton(START_BUTTON);
 }
 
+bool OperatorInputs::xBoxR3()
+{
+	//Returns true if start button is pressed
+	return xBox->GetRawButton(10);
+}
 
 bool OperatorInputs::xBoxRightTrigger()
 {

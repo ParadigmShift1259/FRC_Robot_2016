@@ -37,8 +37,6 @@
 
 //  Drivetrain
 // Inverts
-#define INVERT_LEFT -1.0
-#define INVERT_RIGHT 1.0
 //	Talons
 #define MOTOR_SCALING 0.975
 #define LEFT_PORT 0

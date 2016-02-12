@@ -30,7 +30,7 @@ public:
 	void setPower();
 	void childProofShift();
 	bool getIsTurning();
-	
+	void ChangeDirection();
 	//double getRightEncoderPulses() {return rightEncoder->GetRaw();}
 	//double getLeftEncoderPulses() {return leftEncoder->GetRaw();}
 	//double getRightEncoderDistance() {return rightEncoder->GetDistance();}
@@ -73,6 +73,9 @@ protected:
 	double coasting;
 	bool isTurning;
 	double angle;
+
+	double invertLeft;
+	double invertRight;
 
 	OperatorInputs *operatorInputs;
 	DriverStation *driverstation;
