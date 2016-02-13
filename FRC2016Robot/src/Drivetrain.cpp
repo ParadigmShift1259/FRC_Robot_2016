@@ -81,8 +81,10 @@ Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 	//rightEncoder->SetDistancePerPulse(DISTANCE_PER_PULSE);
 
 	isDownShifting = false;
-	invertLeft = -1;
-	invertRight = 1;
+
+	invertLeft = INVERT_LEFT;
+	invertRight = INVERT_RIGHT;
+	direction = 1.0;
 }
 
 
@@ -243,6 +245,7 @@ void Drivetrain::setPower()
 	else
 	{
 		joyStickY = operatorInputs->joystickY()+operatorInputs->xboxLeftY();
+		joyStickY *= direction;
 	}
 	//set fixnum = the maxiumum value for this angle on the joystick
 	if (joyStickX == 0 || joyStickY == 0) 
@@ -441,6 +444,14 @@ void Drivetrain::setGearLow()
 }
 
 
+// change drivetrain direction and return true if going forward
+bool Drivetrain::ChangeDirection()
+{
+	direction *= -1.0;
+	return (direction == 1.0);
+}
+
+
 void Drivetrain::TestLoop()
 {
 	double joyStickX;
@@ -463,10 +474,4 @@ void Drivetrain::TestLoop()
 	SmartDashboard::PutNumber("rightPow", rightPow);
 	SmartDashboard::PutNumber("rightSpeed", rightSpeed);
 	SmartDashboard::PutNumber("rightPosition", rightPosition);
-}
-
-void Drivetrain::ChangeDirection()
-{
-	invertRight = invertRight*(-1);
-	invertLeft = invertLeft*(-1);
 }

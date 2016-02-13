@@ -5,6 +5,12 @@
 #define SRC_CONST_H_
 
 
+// Camera
+#define CAMERA_FRONT "cam4"
+#define CAMERA_REAR "cam2"
+#define RELAY_LED
+
+
 //OperatorInputs
 //	Controllers
 #define JOYSTICK_NUMBER 0
@@ -37,6 +43,8 @@
 
 //  Drivetrain
 // Inverts
+#define INVERT_LEFT -1.0
+#define INVERT_RIGHT 1.0
 //	Talons
 #define MOTOR_SCALING 0.975
 #define LEFT_PORT 0

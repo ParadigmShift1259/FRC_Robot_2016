@@ -22,6 +22,7 @@ public:
 	bool isSetKickerPositionButtonPressed();
 	bool xBoxBackButton();
 	bool button7();
+	bool button8();
 	bool isPickerLoadingPositionButtonPressed();
 	bool xBoxYButton();
 	bool xBoxAButton();

@@ -4,12 +4,12 @@
 #include "WPILib.h"
 #include "OperatorInputs.h"
 #include "drivetrain.h"
+#include "camera.h"
 #include "compressor.h"
-#include "Climber.h"
 #include "Picker.h"
 #include "Shooter.h"
-#include "relay.h"
 #include "Portcullis.h"
+#include "Climber.h"
 
 
 class Robot: public IterativeRobot
@@ -25,25 +25,12 @@ private:
 	// main class variables
 	OperatorInputs *inputs;
 	Drivetrain *drivetrain;
+	Camera *camera;
 	Compressor *compressor;
-	Climber *climber;
 	Picker *picker;
 	Shooter *shooter;
 	Portcullis *portcullis;
-
-	// camera variables
-	Image *imaqframe;
-	IMAQdxError imaqError;
-	IMAQdxSession imaqfront;
-	IMAQdxSession imaqrear;
-	IMAQdxSession imaqcurrent;
-
-	// led variables
-	bool prevLED;
-	Relay *relay_led;
-
-	// direction variables
-	bool prevdir;
+	Climber *climber;
 
 	// autonomous variables
 	int counter = 0;
@@ -60,59 +47,14 @@ void RobotInit()
 	// main class inits
 	inputs = new OperatorInputs();
 	drivetrain = new Drivetrain( inputs,&m_ds);
+	camera = new Camera(inputs, drivetrain);
 	compressor = new Compressor(0);
 	picker = new Picker(inputs);
-	climber = new Climber(inputs);
 	shooter = new Shooter(inputs);
 	portcullis = new Portcullis(inputs);
+	climber = new Climber(inputs);
 
-	// camera inits
-	// create an image
-	imaqframe = imaqCreateImage(IMAQ_IMAGE_RGB, 0);
-	imaqfront = 0;
-	imaqrear = 0;
-	// the camera name (ex "cam0") can be found through the roborio web interface
-	// front camera "cam4"
-	imaqError = IMAQdxOpenCamera("cam4", IMAQdxCameraControlModeController, &imaqfront);
-	if (imaqError != IMAQdxErrorSuccess)
-	{
-		DriverStation::ReportError("IMAQdxOpenCamera error: " + std::to_string((long)imaqError) + "\n");
-		imaqfront = 0;
-	}
-	else
-	{
-		imaqError = IMAQdxConfigureGrab(imaqfront);
-		if (imaqError != IMAQdxErrorSuccess)
-		{
-			DriverStation::ReportError("IMAQdxConfigureGrab error: " + std::to_string((long)imaqError) + "\n");
-			imaqfront = 0;
-		}
-	}
-	// rear camera "cam2"
-	imaqError = IMAQdxOpenCamera("cam2", IMAQdxCameraControlModeController, &imaqrear);
-	if (imaqError != IMAQdxErrorSuccess)
-	{
-		DriverStation::ReportError("IMAQdxOpenCamera error: " + std::to_string((long)imaqError) + "\n");
-		imaqrear = 0;
-	}
-	else
-	{
-		imaqError = IMAQdxConfigureGrab(imaqrear);
-		if (imaqError != IMAQdxErrorSuccess)
-		{
-			DriverStation::ReportError("IMAQdxConfigureGrab error: " + std::to_string((long)imaqError) + "\n");
-			imaqrear = 0;
-		}
-	}
-	// assign initial session
-	imaqcurrent = imaqfront;
-
-	// led inits
-	prevLED = false;
-	relay_led = new Relay(0);
-
-	// direction inits
-	prevdir = false;
+	camera->Init();
 }
 
 
@@ -183,90 +125,39 @@ void TeleopInit()
 {
 	compressor->Start();
 	drivetrain->Init();
-
-	// acquire images
-	if (imaqcurrent)
-		IMAQdxStartAcquisition(imaqcurrent);
+	camera->Start();
 }
+
 
 void TeleopPeriodic()
 {
 	drivetrain->setPower();
 	drivetrain->childProofShift();
+	camera->Loop();
 	picker->Loop();
 	portcullis->Loop();
-	LEDToggle();
-
-	// process camera frame
-	if (imaqcurrent)
-	{
-		imaqError = IMAQdxGrab(imaqcurrent, imaqframe, true, NULL);
-		if (imaqError != IMAQdxErrorSuccess)
-		{
-			DriverStation::ReportError("IMAQdxGrab error: " + std::to_string((long)imaqError) + "\n");
-		}
-		else
-		{
-			//imaqDrawShapeOnImage(frame, frame, { 10, 10, 100, 100 }, DrawMode::IMAQ_DRAW_VALUE, ShapeMode::IMAQ_SHAPE_OVAL, 0.0f);
-			CameraServer::GetInstance()->SetImage(imaqframe);
-		}
-	}
 }
 
 
 void TestInit()
 {
 	drivetrain->Init();
+	camera->Start();
 }
 
 
 void TestPeriodic()
 {
 	drivetrain->TestLoop();
+	camera->Loop();
 }
 
 
 void DisabledInit()
 {
-	compressor->Stop();
 	drivetrain->setGearLow();
-	if (imaqcurrent)
-		IMAQdxStopAcquisition(imaqcurrent);
-}
-
-
-void LEDToggle()
-{
-	if (inputs->button7() && !prevLED)
-	{
-		if (relay_led->Get() == Relay::Value::kOff)
-		{
-			relay_led->Set(Relay::Value::kForward);
-		}
-		else
-		{
-			relay_led->Set(Relay::Value::kOff);
-		}
-		prevLED = true;
-	}
-	if (!inputs->button7())
-	{
-		prevLED = false;
-	}
-}
-
-
-void ChangeDirection()
-{
-	if (inputs->xBoxR3() && !prevdir)
-	{
-		drivetrain->ChangeDirection();
-		prevdir = true;
-	}
-	if (!inputs->xBoxR3())
-	{
-		prevdir = false;
-	}
+	camera->Stop();
+	compressor->Stop();
 }
 
 

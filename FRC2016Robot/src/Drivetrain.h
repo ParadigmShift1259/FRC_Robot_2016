@@ -11,6 +11,8 @@
 #include <driverstation.h>
 #include <timer.h>
 #include <ADXRS450_Gyro.h>
+
+
 class Drivetrain
 {
 public:
@@ -30,7 +32,8 @@ public:
 	void setPower();
 	void childProofShift();
 	bool getIsTurning();
-	void ChangeDirection();
+	// change drivetrain direction and return true if going forward
+	bool ChangeDirection();
 	//double getRightEncoderPulses() {return rightEncoder->GetRaw();}
 	//double getLeftEncoderPulses() {return leftEncoder->GetRaw();}
 	//double getRightEncoderDistance() {return rightEncoder->GetDistance();}
@@ -76,6 +79,7 @@ protected:
 
 	double invertLeft;
 	double invertRight;
+	double direction;
 
 	OperatorInputs *operatorInputs;
 	DriverStation *driverstation;

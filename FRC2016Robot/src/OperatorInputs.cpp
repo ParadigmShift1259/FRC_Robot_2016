@@ -82,6 +82,12 @@ bool OperatorInputs::button7()
 }
 
 
+bool OperatorInputs::button8()
+{
+	return joystick->GetRawButton(8);
+}
+
+
 bool OperatorInputs::isPickerLoadingPositionButtonPressed()
 {
 	return xBox->GetRawButton(A_BUTTON);
