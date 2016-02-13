@@ -13,7 +13,6 @@ OperatorInputs::OperatorInputs()
 {
 	m_joystick = new Joystick(0);
 	m_xbox = new Joystick(1);
-	m_triggerpressed = 0;
 }
 
 
@@ -48,85 +47,159 @@ double OperatorInputs::xBoxRightY()
 }
 
 
-bool OperatorInputs::xBoxAButton()
+bool OperatorInputs::xBoxAButton(ToggleChoice choice)
 {
-	return m_xbox->GetRawButton(A_BUTTON);
+	bool button = m_xbox->GetRawButton(A_BUTTON);
+
+	if (choice == kToggle)
+		return toggle("xBoxAButton", button);
+	if (choice == kHold)
+		return button;
+	return false;
 }
 
 
-bool OperatorInputs::xBoxBButton()
+bool OperatorInputs::xBoxBButton(ToggleChoice choice)
 {
-	return m_xbox->GetRawButton(B_BUTTON);
+	bool button = m_xbox->GetRawButton(B_BUTTON);
+
+	if (choice == kToggle)
+		return toggle("xBoxBButton", button);
+	if (choice == kHold)
+		return button;
+	return false;
 }
 
 
-bool OperatorInputs::xBoxXButton()
+bool OperatorInputs::xBoxXButton(ToggleChoice choice)
 {
-	return m_xbox->GetRawButton(X_BUTTON);
+	bool button = m_xbox->GetRawButton(X_BUTTON);
+
+	if (choice == kToggle)
+		return toggle("xBoxXButton", button);
+	if (choice == kHold)
+		return button;
+	return false;
 }
 
 
-bool OperatorInputs::xBoxYButton()
+bool OperatorInputs::xBoxYButton(ToggleChoice choice)
 {
-	return m_xbox->GetRawButton(Y_BUTTON);
+	bool button = m_xbox->GetRawButton(Y_BUTTON);
+
+	if (choice == kToggle)
+		return toggle("xBoxYButton", button);
+	if (choice == kHold)
+		return button;
+	return false;
 }
 
 
-bool OperatorInputs::xBoxLeftBumper()
+bool OperatorInputs::xBoxLeftBumper(ToggleChoice choice)
 {
-	return m_xbox->GetRawButton(LEFT_BUMPER);
+	bool button = m_xbox->GetRawButton(LEFT_BUMPER);
+
+	if (choice == kToggle)
+		return toggle("xBoxLeftBumper", button);
+	if (choice == kHold)
+		return button;
+	return false;
 }
 
 
-bool OperatorInputs::xBoxRightBumper()
+bool OperatorInputs::xBoxRightBumper(ToggleChoice choice)
 {
-	return m_xbox->GetRawButton(RIGHT_BUMPER);
+	bool button = m_xbox->GetRawButton(RIGHT_BUMPER);
+
+	if (choice == kToggle)
+		return toggle("xBoxRightBumper", button);
+	if (choice == kHold)
+		return button;
+	return false;
 }
 
 
-bool OperatorInputs::xBoxLeftTrigger()
+bool OperatorInputs::xBoxLeftTrigger(ToggleChoice choice)
 {
-	m_triggerpressed = m_xbox->GetRawAxis(XBOX_LEFT_TRIGGER_AXIS);
-	return (LEFT_TRIGGER_MIN <= m_triggerpressed && m_triggerpressed <= LEFT_TRIGGER_MAX);
+	double axis = m_xbox->GetRawAxis(XBOX_LEFT_TRIGGER_AXIS);
 
+	if (choice == kToggle)
+		return toggle("xBoxLeftTrigger", (LEFT_TRIGGER_MIN <= axis) && (axis <= LEFT_TRIGGER_MAX));
+	if (choice == kHold)
+		return ((LEFT_TRIGGER_MIN <= axis) && (axis <= LEFT_TRIGGER_MAX));
+	return false;
 }
 
 
-bool OperatorInputs::xBoxRightTrigger()
+bool OperatorInputs::xBoxRightTrigger(ToggleChoice choice)
 {
-	m_triggerpressed = m_xbox->GetRawAxis(XBOX_RIGHT_TRIGGER_AXIS);
-	return (RIGHT_TRIGGER_MIN <= m_triggerpressed && m_triggerpressed <= RIGHT_TRIGGER_MAX);
+	double axis = m_xbox->GetRawAxis(XBOX_RIGHT_TRIGGER_AXIS);
+
+	if (choice == kToggle)
+		return toggle("xBoxRightTrigger", (RIGHT_TRIGGER_MIN <= axis && axis <= RIGHT_TRIGGER_MAX));
+	if (choice == kHold)
+		return (RIGHT_TRIGGER_MIN <= axis && axis <= RIGHT_TRIGGER_MAX);
+	return false;
 }
 
 
-bool OperatorInputs::xBoxStartButton()
+bool OperatorInputs::xBoxStartButton(ToggleChoice choice)
 {
-	//Returns true if start button is pressed
-	return m_xbox->GetRawButton(START_BUTTON);
+	bool button = m_xbox->GetRawButton(START_BUTTON);
+
+	if (choice == kToggle)
+		return toggle("xBoxStartButton", button);
+	if (choice == kHold)
+		return button;
+	return false;
 }
 
 
-bool OperatorInputs::xBoxBackButton()
+bool OperatorInputs::xBoxBackButton(ToggleChoice choice)
 {
-	return m_xbox->GetRawButton(BACK_BUTTON);
+	bool button = m_xbox->GetRawButton(BACK_BUTTON);
+
+	if (choice == kToggle)
+		return toggle("xBoxBackButton", button);
+	if (choice == kHold)
+		return button;
+	return false;
 }
 
 
-bool OperatorInputs::xBoxDPadUp()
+bool OperatorInputs::xBoxDPadUp(ToggleChoice choice)
 {
-	return (m_xbox->GetPOV() == 0);
+	bool button = (m_xbox->GetPOV() == 0);
+
+	if (choice == kToggle)
+		return toggle("xBoxDPadUp", button);
+	if (choice == kHold)
+		return button;
+	return false;
 }
 
 
-bool OperatorInputs::xBoxDPadDown()
+bool OperatorInputs::xBoxDPadDown(ToggleChoice choice)
 {
-	return (m_xbox->GetPOV() == 180);
+	bool button = (m_xbox->GetPOV() == 180);
+
+	if (choice == kToggle)
+		return toggle("xBoxDPadDown", button);
+	if (choice == kHold)
+		return button;
+	return false;
 }
 
 
-bool OperatorInputs::xBoxR3()
+bool OperatorInputs::xBoxR3(ToggleChoice choice)
 {
-	return m_xbox->GetRawButton(10);
+	bool button = m_xbox->GetRawButton(10);
+
+	if (choice == kToggle)
+		return toggle("xBoxR3", button);
+	if (choice == kHold)
+		return button;
+	return false;
 }
 
 
@@ -148,31 +221,50 @@ double OperatorInputs::joystickZ()
 }
 
 
-bool OperatorInputs::joystickTrigger()
+bool OperatorInputs::joystickTrigger(ToggleChoice choice)
 {
-	return m_joystick->GetTrigger();
+	bool button = m_joystick->GetTrigger();
+
+	if (choice == kToggle)
+		return toggle("joystickTrigger", button);
+	if (choice == kHold)
+		return button;
+	return false;
 }
 
 
-bool OperatorInputs::button7()
+bool OperatorInputs::button7(ToggleChoice choice)
 {
-	return m_joystick->GetRawButton(7);
+	bool button = m_joystick->GetRawButton(7);
+
+	if (choice == kToggle)
+		return toggle("joystickbutton7", button);
+	if (choice == kHold)
+		return button;
+	return false;
 }
 
 
-bool OperatorInputs::button8()
+bool OperatorInputs::button8(ToggleChoice choice)
 {
-	return m_joystick->GetRawButton(8);
+	bool button = m_joystick->GetRawButton(8);
+
+	if (choice == kToggle)
+		return toggle("joystickbutton8", button);
+	if (choice == kHold)
+		return button;
+	return false;
 }
 
 
-/**
- * returns a value 0 if the joystick value is within the dead zone (if the
- * joystick is outside of the dead zone it returns the joystick value)
- *
- * @param joyStickValue
- * @return
- */
+bool OperatorInputs::toggle(string buttonname, bool buttonval)
+{
+	bool toggleval = !m_togglebuttons[buttonname] && buttonval;
+	m_togglebuttons[buttonname] = buttonval;
+	return toggleval;
+}
+
+
 double OperatorInputs::deadzoneFilterX(double joyStickValue)
 {
 	if (abs(joyStickValue) <= DEADZONE_X)

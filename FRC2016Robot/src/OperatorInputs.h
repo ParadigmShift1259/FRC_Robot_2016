@@ -1,16 +1,21 @@
 // operatorinputs.h
 
+#include <Joystick.h>
+#include <map>
+
+
+using namespace std;
+
 
 #ifndef SRC_OPERATORINPUTS_H_
 #define SRC_OPERATORINPUTS_H_
 
 
-#include <Joystick.h>
-
-
 class OperatorInputs
 {
 public:
+	enum ToggleChoice { kToggle = 0, kHold = 1 };
+
 	OperatorInputs();
 	~OperatorInputs();
 	// xbox
@@ -18,28 +23,29 @@ public:
     double xBoxRightX();
     double xBoxLeftY();
     double xBoxRightY();
-	bool xBoxAButton();
-    bool xBoxBButton();
-    bool xBoxXButton();
-	bool xBoxYButton();
-    bool xBoxLeftBumper();
-	bool xBoxRightBumper();
-	bool xBoxLeftTrigger();
-	bool xBoxRightTrigger();
-	bool xBoxStartButton();
-	bool xBoxBackButton();
-	bool xBoxDPadUp();
-	bool xBoxDPadDown();
-	bool xBoxR3();
+	bool xBoxAButton(ToggleChoice choice = kToggle);
+    bool xBoxBButton(ToggleChoice choice = kToggle);
+    bool xBoxXButton(ToggleChoice choice = kToggle);
+	bool xBoxYButton(ToggleChoice choice = kToggle);
+    bool xBoxLeftBumper(ToggleChoice choice = kToggle);
+	bool xBoxRightBumper(ToggleChoice choice = kToggle);
+	bool xBoxLeftTrigger(ToggleChoice choice = kToggle);
+	bool xBoxRightTrigger(ToggleChoice choice = kToggle);
+	bool xBoxStartButton(ToggleChoice choice = kToggle);
+	bool xBoxBackButton(ToggleChoice choice = kToggle);
+	bool xBoxDPadUp(ToggleChoice choice = kToggle);
+	bool xBoxDPadDown(ToggleChoice choice = kToggle);
+	bool xBoxR3(ToggleChoice choice = kToggle);
 	// joystick
     double joystickX();
     double joystickY();
     double joystickZ();
-    bool joystickTrigger();
-	bool button7();
-	bool button8();
+    bool joystickTrigger(ToggleChoice choice = kToggle);
+	bool button7(ToggleChoice choice = kToggle);
+	bool button8(ToggleChoice choice = kToggle);
 
 private:
+    bool toggle(string buttonName, bool buttonValue);
     double deadzoneFilterY(double joyStickValue);
     double deadzoneFilterX(double joyStickValue);
     double deadzoneFilterZ(double joyStickValue);
@@ -47,7 +53,7 @@ private:
 protected:
 	 Joystick *m_joystick;
 	 Joystick *m_xbox;
-	 double m_triggerpressed;
+	 map<string, bool> m_togglebuttons;
 };
 
 

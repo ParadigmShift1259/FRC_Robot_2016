@@ -23,12 +23,14 @@ Shooter::~Shooter()
 
 void Shooter::Loop()
 {
-	if (m_inputs->xBoxRightTrigger())
+	bool shootbutton = m_inputs->xBoxRightTrigger();
+
+	if (shootbutton)
 	{
-		m_motor->Set(true);
+		m_solenoid->Set(true);
 	}
 	else
 	{
-		m_motor->Set(false);
+		m_solenoid->Set(false);
 	}
 }

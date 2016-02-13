@@ -12,8 +12,6 @@ Picker::Picker(OperatorInputs* inputs)
 	m_motor = new Spark(PWM_PICKER_MOTOR);
 	m_solenoid = new Solenoid(PCM_PICKER_SOLENOID);
 	m_down = false;
-	m_prevdown = false;
-	m_prevup = false;
 }
 
 
@@ -39,14 +37,12 @@ void Picker::Loop()
 
 	if (!(downbutton && upbutton))
 	{
-		if (downbutton && !m_prevdown)
+		if (downbutton)
 			m_down = true;
-		if (upbutton && !m_prevup)
+		if (upbutton)
 			m_down = false;
 		m_solenoid->Set(m_down);
 	}
-	m_prevdown = downbutton;
-	m_prevup = upbutton;
 
 	if (motorbutton)
 	{

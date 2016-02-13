@@ -25,12 +25,15 @@ Portcullis::~Portcullis()
 
 void Portcullis::Loop()
 {
-	if (m_inputs->xBoxXButton())
+	bool downbutton = m_inputs->xBoxXButton();
+	bool upbutton = m_inputs->xBoxYButton();
+
+	if (downbutton)
 	{
 		m_motor->Set(1);
 	}
-	else
-	if (m_inputs->xBoxYButton())
+
+	if (upbutton)
 	{
 		m_motor->Set(-1);
 	}
@@ -39,6 +42,7 @@ void Portcullis::Loop()
 	{
 		m_motor->Set(0);
 	}
+
 	if (!m_limitup->Get())
 	{
 		m_motor->Set(0);

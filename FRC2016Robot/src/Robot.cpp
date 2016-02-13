@@ -3,6 +3,7 @@
 
 #include "WPILib.h"
 #include "OperatorInputs.h"
+#include "const.h"
 #include "drivetrain.h"
 #include "camera.h"
 #include "compressor.h"
@@ -59,7 +60,7 @@ void RobotInit()
 	autonomous = new Autonomous(inputs, drivetrain);
 
 	// variable inits
-	compressor = new Compressor(0);
+	compressor = new Compressor(PCM_COMPRESSOR_SOLENOID);
 	camera->Init();
 }
 
@@ -100,6 +101,7 @@ void AutonomousInit()
 void AutonomousPeriodic()
 {
 	autonomous->Loop();
+	camera->Loop();
 /*
 	if (autoSelected == autoNameCustom)
 	{
@@ -127,6 +129,7 @@ void TeleopPeriodic()
 	drivetrain->childProofShift();
 	camera->Loop();
 	picker->Loop();
+	shooter->Loop();
 	portcullis->Loop();
 	climber->Loop();
 }
@@ -136,14 +139,17 @@ void TestInit()
 {
 	drivetrain->Init();
 	camera->Start();
+	compressor->Start();
 }
 
 
 void TestPeriodic()
 {
-	drivetrain->TestLoop();
+	drivetrain->setPower();
+	drivetrain->childProofShift();
 	camera->Loop();
 	picker->Loop();
+	shooter->Loop();
 	portcullis->Loop();
 	climber->Loop();
 }

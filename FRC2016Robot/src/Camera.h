@@ -30,12 +30,8 @@ protected:
 	IMAQdxSession m_rear;
 	IMAQdxSession m_current;
 
-	// direction variables
-	bool m_prevdir;
-
 	// led variables
 	Relay *m_led;
-	bool m_prevled;
 };
 
 

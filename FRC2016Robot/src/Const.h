@@ -61,6 +61,10 @@
 #define DISTANCE_PER_PULSE 0.0006708
 
 
+// Compressor
+#define PCM_COMPRESSOR_SOLENOID 0
+
+
 // Camera
 #define USB_CAMERA_FRONT "cam2"
 #define USB_CAMERA_REAR "cam4"

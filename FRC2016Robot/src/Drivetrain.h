@@ -6,9 +6,9 @@
 
 
 #include "WPILib.h"
-#include <SpeedController.h>
 #include "OperatorInputs.h"
 #include <driverstation.h>
+#include <SpeedController.h>
 #include <timer.h>
 #include <ADXRS450_Gyro.h>
 
@@ -16,11 +16,14 @@
 class Drivetrain
 {
 public:
-
 	Drivetrain(OperatorInputs *inputs, DriverStation *ds);
 	~Drivetrain();
 	void Init();
-	void driveDistance(double distance);
+	void setPower();
+	void childProofShift();
+	// change drivetrain direction and return true if going forward
+	bool ChangeDirection();
+
 	double rampInput(double previousPow, double desiredPow, double rampSpeedMin, double rampSpeedMax);
 	//void rampRightPower(double desiredPow, double rampSpeedMin, double rampSpeedMax);
 	//void resetEncoders();
@@ -29,15 +32,15 @@ public:
 	double RightMotor(double &invMaxValueXPlusY);
 	void compareEncoders();
 	void breakTime();
-	void setPower();
-	void childProofShift();
+
+	bool getIsDoneDriving();
 	bool getIsTurning();
-	// change drivetrain direction and return true if going forward
-	bool ChangeDirection();
-	//double getRightEncoderPulses() {return rightEncoder->GetRaw();}
-	//double getLeftEncoderPulses() {return leftEncoder->GetRaw();}
-	//double getRightEncoderDistance() {return rightEncoder->GetDistance();}
-	//double getLeftEncoderDistance() {return leftEncoder->GetDistance();}
+	void turnAngle();
+	void setSpeedPositive();
+	void setGearLow();
+	void setAngle(double angle);
+	void driveDistance(double distance);
+
 	void setCoasting(double newCoasting) {coasting = newCoasting;}
 	double getLeftPow() {return leftPow;}
 	double getRightPow() {return rightPow;}
@@ -46,29 +49,26 @@ public:
 	bool getIsLeftFaster() {return isLeftFaster;}
 	double getLeftSpeed() {return leftSpeed;}
 	double getRightSpeed() {return rightSpeed;}
-	bool getIsDoneDriving();
-	void turnAngle();
-	void setSpeedPositive();
-	void setGearLow();
-	void setAngle(double angle);
-	void TestLoop();
+	//double getRightEncoderPulses() {return rightEncoder->GetRaw();}
+	//double getLeftEncoderPulses() {return leftEncoder->GetRaw();}
+	//double getRightEncoderDistance() {return rightEncoder->GetDistance();}
+	//double getLeftEncoderDistance() {return leftEncoder->GetDistance();}
+
+private:
+	void shift(); //moved to protected to prevent people from accidentally calling it in Robot.cpp
 
 protected:
-	bool isDoneDriving;
-	void shift(); //moved to protected to prevent people from accidentally calling it in Robot.cpp
-	bool isDownShifting;
 	double leftPow;
 	double rightPow;
 	double maxLeftEncoderRate;
 	double maxRightEncoderRate;
 	double ratio;
-	//double rightEncoderFix;
-	//double leftEncoderFix;
+	double rightEncoderFix;
+	double leftEncoderFix;
 	bool isHighGear; //Robot starts in low gear
 	bool isLeftFaster;
 	double leftSpeed;
 	double rightSpeed;
-	bool previousTriggerPressed; //what the trigger value was before the current press, allows for trigger to stay pressed w/o flipping
 	double previousX;
 	double previousY;
 	double leftPosition;
@@ -76,6 +76,8 @@ protected:
 	double coasting;
 	bool isTurning;
 	double angle;
+	bool isDoneDriving;
+	bool isDownShifting;
 
 	double invertLeft;
 	double invertRight;
@@ -84,16 +86,17 @@ protected:
 	OperatorInputs *operatorInputs;
 	DriverStation *driverstation;
 	CANTalon *leftTalons;
-	CANTalon *rightTalons;
 	CANTalon *leftTalons1;
+	CANTalon *rightTalons;
 	CANTalon *rightTalons1;
 	Solenoid *gearShift;
 	//Encoder *leftEncoder;
 	//Encoder *rightEncoder;
+
+	//ADXRS450_Gyro *gyro;
+	double prevGyro;
 	Timer *timer;
 	Timer *timer1;
-//	ADXRS450_Gyro *gyro;
-	double prevGyro;
 };
 
 

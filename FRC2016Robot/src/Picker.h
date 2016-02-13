@@ -23,8 +23,6 @@ protected:
 	SpeedController *m_motor;
 	Solenoid *m_solenoid;
 	bool m_down;
-	bool m_prevdown;
-	bool m_prevup;
 };
 
 

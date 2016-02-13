@@ -15,10 +15,7 @@ Camera::Camera(OperatorInputs *operatorinputs, Drivetrain *drivetrain)
 	m_rear = 0;
 	m_current = 0;
 
-	m_prevdir = false;
-
 	m_led = new Relay(RLY_CAMERA_LED);
-	m_prevled = false;
 }
 
 
@@ -86,7 +83,7 @@ void Camera::Loop()
 	bool dirbutton = m_inputs->xBoxR3();
 	bool ledbutton = m_inputs->button7();
 
-	if (dirbutton && !m_prevdir)
+	if (dirbutton)
 	{
 		bool forward = m_drivetrain->ChangeDirection();
 
@@ -113,10 +110,9 @@ void Camera::Loop()
 			}
 		}
 	}
-	m_prevdir = dirbutton;
 
 	// incorporate this code into the camera swap in the future
-	if (ledbutton && !m_prevled)
+	if (ledbutton)
 	{
 		if (m_led->Get() == Relay::Value::kOff)
 		{
@@ -129,7 +125,6 @@ void Camera::Loop()
 			m_led->Set(Relay::Value::kOff);
 		}
 	}
-	m_prevled = ledbutton;
 
 	// process camera frame
 	if (m_current)
