@@ -1,19 +1,19 @@
 // camera.h
 
 
+#ifndef CAMERA_H_
+#define CAMERA_H_
+
+
 #include "OperatorInputs.h"
 #include "Drivetrain.h"
 #include "Relay.h"
 
 
-#ifndef CAMERA_H_
-#define CAMERA_H_
-
-
 class Camera
 {
 public:
-	Camera(OperatorInputs *operinputs, Drivetrain *drtrain);
+	Camera(OperatorInputs *operatorinputs, Drivetrain *drivetrain);
 	~Camera();
 	void Init();
 	void Start();
@@ -21,22 +21,21 @@ public:
 	void Loop();
 
 protected:
-	OperatorInputs *inputs;
-	Drivetrain *drivetrain;
+	OperatorInputs *m_inputs;
+	Drivetrain *m_drivetrain;
 
 	// usb camera variables
-	Image *imaqframe;
-	IMAQdxError imaqerror;
-	IMAQdxSession imaqfront;
-	IMAQdxSession imaqrear;
-	IMAQdxSession imaqcurrent;
+	Image *m_frame;
+	IMAQdxSession m_front;
+	IMAQdxSession m_rear;
+	IMAQdxSession m_current;
 
 	// direction variables
-	bool prevdir;
+	bool m_prevdir;
 
 	// led variables
-	Relay *relay_led;
-	bool prevLED;
+	Relay *m_led;
+	bool m_prevled;
 };
 
 

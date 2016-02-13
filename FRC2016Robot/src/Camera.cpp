@@ -5,59 +5,60 @@
 #include "const.h"
 
 
-Camera::Camera(OperatorInputs *operinputs, Drivetrain *drtrain)
+Camera::Camera(OperatorInputs *operatorinputs, Drivetrain *drivetrain)
 {
-	inputs = operinputs;
-	drivetrain = drtrain;
+	m_inputs = operatorinputs;
+	m_drivetrain = drivetrain;
 
-	imaqframe = imaqCreateImage(IMAQ_IMAGE_RGB, 0);
-	imaqerror = IMAQdxError::IMAQdxErrorSuccess;
-	imaqfront = 0;
-	imaqrear = 0;
-	imaqcurrent = 0;
+	m_frame = imaqCreateImage(IMAQ_IMAGE_RGB, 0);
+	m_front = 0;
+	m_rear = 0;
+	m_current = 0;
 
-	prevdir = false;
+	m_prevdir = false;
 
-	relay_led = new Relay(0);
-	prevLED = false;
+	m_led = new Relay(RLY_CAMERA_LED);
+	m_prevled = false;
 }
 
 
 Camera::~Camera()
 {
-	delete relay_led;
+	delete m_led;
 }
 
 
 void Camera::Init()
 {
+	IMAQdxError imaqerror;
+
 	// camera inits
 	// create an image
-	imaqfront = 0;
-	imaqrear = 0;
+	m_front = 0;
+	m_rear = 0;
 	// the camera name (ex "cam0") can be found through the roborio web interface
 	// front camera "cam4"
-	imaqerror = IMAQdxOpenCamera(CAMERA_FRONT, IMAQdxCameraControlModeController, &imaqfront);
+	imaqerror = IMAQdxOpenCamera(USB_CAMERA_FRONT, IMAQdxCameraControlModeController, &m_front);
 	if (imaqerror != IMAQdxErrorSuccess)
 	{
 		DriverStation::ReportError("Front IMAQdxOpenCamera error: " + std::to_string((long)imaqerror) + "\n");
-		imaqfront = 0;
+		m_front = 0;
 	}
 	// rear camera "cam2"
-	imaqerror = IMAQdxOpenCamera(CAMERA_REAR, IMAQdxCameraControlModeController, &imaqrear);
+	imaqerror = IMAQdxOpenCamera(USB_CAMERA_REAR, IMAQdxCameraControlModeController, &m_rear);
 	if (imaqerror != IMAQdxErrorSuccess)
 	{
 		DriverStation::ReportError("Rear IMAQdxOpenCamera error: " + std::to_string((long)imaqerror) + "\n");
-		imaqrear = 0;
+		m_rear = 0;
 	}
 	// assign initial session
-	if (imaqfront)
+	if (m_front)
 	{
-		imaqerror = IMAQdxConfigureGrab(imaqfront);
+		imaqerror = IMAQdxConfigureGrab(m_front);
 		if (imaqerror != IMAQdxErrorSuccess)
 			DriverStation::ReportError("Front IMAQdxConfigureGrab error: " + std::to_string((long)imaqerror) + "\n");
 		else
-			imaqcurrent = imaqfront;
+			m_current = m_front;
 	}
 }
 
@@ -65,73 +66,75 @@ void Camera::Init()
 void Camera::Start()
 {
 	// acquire images
-	if (imaqcurrent)
-		IMAQdxStartAcquisition(imaqcurrent);
+	if (m_current)
+		IMAQdxStartAcquisition(m_current);
 }
 
 
 void Camera::Stop()
 {
 	// stop acquire images
-	if (imaqcurrent)
-		IMAQdxStopAcquisition(imaqcurrent);
+	if (m_current)
+		IMAQdxStopAcquisition(m_current);
 }
 
 
 void Camera::Loop()
 {
-	bool dirbutton = inputs->xBoxR3();
-	bool ledbutton = inputs->button7();
+	IMAQdxError imaqerror;
 
-	if (dirbutton && !prevdir)
+	bool dirbutton = m_inputs->xBoxR3();
+	bool ledbutton = m_inputs->button7();
+
+	if (dirbutton && !m_prevdir)
 	{
-		bool forward = drivetrain->ChangeDirection();
+		bool forward = m_drivetrain->ChangeDirection();
 
-		IMAQdxStopAcquisition(imaqcurrent);
-		imaqcurrent = 0;
+		IMAQdxStopAcquisition(m_current);
+		m_current = 0;
 		if (forward)
 		{
-			imaqerror = IMAQdxConfigureGrab(imaqfront);
+			imaqerror = IMAQdxConfigureGrab(m_front);
 			if (imaqerror != IMAQdxErrorSuccess)
 				DriverStation::ReportError("Front IMAQdxConfigureGrab error: " + std::to_string((long)imaqerror) + "\n");
 			else
-				imaqcurrent = imaqfront;
-			relay_led->Set(Relay::Value::kOff);
+				m_current = m_front;
+			m_led->Set(Relay::Value::kOff);
 		}
 		else
 		{
-			imaqerror = IMAQdxConfigureGrab(imaqrear);
+			imaqerror = IMAQdxConfigureGrab(m_rear);
 			if (imaqerror != IMAQdxErrorSuccess)
 				DriverStation::ReportError("Rear IMAQdxConfigureGrab error: " + std::to_string((long)imaqerror) + "\n");
 			else
 			{
-				imaqcurrent = imaqrear;
-				relay_led->Set(Relay::Value::kForward);
+				m_current = m_rear;
+				m_led->Set(Relay::Value::kForward);
 			}
 		}
 	}
-	prevdir = dirbutton;
+	m_prevdir = dirbutton;
 
 	// incorporate this code into the camera swap in the future
-	if (ledbutton && !prevLED)
+	if (ledbutton && !m_prevled)
 	{
-		if (relay_led->Get() == Relay::Value::kOff)
+		if (m_led->Get() == Relay::Value::kOff)
 		{
 			// led on when moving reverse
-			relay_led->Set(Relay::Value::kForward);
+			m_led->Set(Relay::Value::kForward);
 		}
 		else
 		{
 			// led off when moving forward
-			relay_led->Set(Relay::Value::kOff);
+			m_led->Set(Relay::Value::kOff);
 		}
 	}
-	prevLED = ledbutton;
+	m_prevled = ledbutton;
 
 	// process camera frame
-	if (imaqcurrent)
+	if (m_current)
 	{
-		imaqerror = IMAQdxGrab(imaqcurrent, imaqframe, true, NULL);
+		imaqerror = IMAQdxGrab(m_current, m_frame, true, NULL);
 		if (imaqerror != IMAQdxErrorSuccess)
 		{
 			DriverStation::ReportError("IMAQdxGrab error: " + std::to_string((long)imaqerror) + "\n");
@@ -139,7 +142,7 @@ void Camera::Loop()
 		else
 		{
 			//imaqDrawShapeOnImage(frame, frame, { 10, 10, 100, 100 }, DrawMode::IMAQ_DRAW_VALUE, ShapeMode::IMAQ_SHAPE_OVAL, 0.0f);
-			CameraServer::GetInstance()->SetImage(imaqframe);
+			CameraServer::GetInstance()->SetImage(m_frame);
 		}
 	}
 }

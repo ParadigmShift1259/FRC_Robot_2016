@@ -5,12 +5,6 @@
 #define SRC_CONST_H_
 
 
-// Camera
-#define CAMERA_FRONT "cam4"
-#define CAMERA_REAR "cam2"
-#define RELAY_LED
-
-
 //OperatorInputs
 //	Controllers
 #define JOYSTICK_NUMBER 0
@@ -41,53 +35,57 @@
 #define DEADZONE_Z  0.17
 
 
-//  Drivetrain
+// Drivetrain
 // Inverts
 #define INVERT_LEFT -1.0
 #define INVERT_RIGHT 1.0
-//	Talons
+// Talons
 #define MOTOR_SCALING 0.975
 #define LEFT_PORT 0
 #define SECOND_LEFT_PORT 2
 #define RIGHT_PORT 1
 #define SECOND_RIGHT_PORT 3
-//	Shifter
+// Shifter
 #define SHIFT_PORT_LOW 0
 #define SHIFT_MODULE 0
 #define CHILD_PROOF_SPEED 0.75
 #define FLIP_HIGH_GEAR true
-//	Ramping
+// Ramping
 #define RAMPING_RATE_MIN 0.1
 #define RAMPING_RATE_MAX 0.3
 #define X_SCALING 0.5
 #define Y_SCALING 1.0
-//	Encoders
+// Encoders
 #define ENCODER_TOP_SPEED 0.6
 #define ENCODER_WAIT_TIME 168
 #define DISTANCE_PER_PULSE 0.0006708
 
 
-//Pickup
-#define PICKER_DEPLOY 1
-#define PICKER_VENT 2
-#define PICKER_VENT_DELAY 50
-#define PWM_INGEST_MOTOR 0
+// Camera
+#define USB_CAMERA_FRONT "cam2"
+#define USB_CAMERA_REAR "cam4"
+#define RLY_CAMERA_LED 0
 
 
-//Shooter
-#define ACTUATOR_SOLENOID 2
-#define PWM_SHOOTER 1
+// Picker
+#define PCM_PICKER_SOLENOID 1
+#define PWM_PICKER_MOTOR 0
 
 
-//Climber
-#define PISTON 3
-#define PWM_WINCH 2
+// Shooter
+#define PCM_SHOOTER_SOLENOID 2
+#define PWM_SHOOTER_MOTOR 1
 
 
-//Portcullis
-#define PWM_MOTOR 3
-#define DIO_LIMIT_IN 0
-#define DIO_LIMIT_OUT 1
+// Climber
+#define PCM_CLIMBER_SOLENOID 3
+#define PWM_CLIMBER_MOTOR 2
+
+
+// Portcullis
+#define PWM_PORTCULLIS_MOTOR 3
+#define DIO_PORTCULLIS_LIMIT_DOWN 0
+#define DIO_PORTCULLIS_LIMIT_UP 1
 
 
 #endif /* SRC_CONST_H_ */

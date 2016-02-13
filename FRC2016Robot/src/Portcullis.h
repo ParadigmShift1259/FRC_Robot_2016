@@ -5,24 +5,23 @@
 #define SRC_PORTCULLIS_H_
 
 
-#include "SpeedController.h"
-#include "Solenoid.h"
 #include "OperatorInputs.h"
+#include "SpeedController.h"
 #include "DigitalInput.h"
 
 
 class Portcullis
 {
 public:
-	Portcullis(OperatorInputs *operinputs);
+	Portcullis(OperatorInputs *inputs);
 	~Portcullis();
 	void Loop();
 
 protected:
-	OperatorInputs *inputs;
-	SpeedController *motor;
-	DigitalInput *limitin;
-	DigitalInput *limitout;
+	OperatorInputs *m_inputs;
+	SpeedController *m_motor;
+	DigitalInput *m_limitdown;
+	DigitalInput *m_limitup;
 };
 
 

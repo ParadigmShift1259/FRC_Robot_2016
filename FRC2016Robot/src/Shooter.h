@@ -5,22 +5,22 @@
 #define SRC_SHOOTER_H_
 
 
-#include <SpeedController.h>
-#include <Solenoid.h>
 #include "OperatorInputs.h"
+#include <Solenoid.h>
+#include <SpeedController.h>
 
 
 class Shooter
 {
 public:
-	Shooter(OperatorInputs* operinputs);
+	Shooter(OperatorInputs* inputs);
 	~Shooter();
 	void Loop();
 
 protected:
-	OperatorInputs *inputs;
-	Solenoid *arm;
-	SpeedController *wheelMotor;
+	OperatorInputs *m_inputs;
+	Solenoid *m_solenoid;
+	SpeedController *m_motor;
 };
 
 

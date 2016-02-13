@@ -13,15 +13,15 @@
 class Climber
 {
 public:
-	Climber(OperatorInputs *inputs);
+	Climber(OperatorInputs *operatorinputs);
 	~Climber();
-	void WinchStuff();
+	void Loop();
 
 protected:
-	SpeedController *Spark1;
-	Solenoid *PistonActivator;
-	OperatorInputs *Input;
-
+	OperatorInputs *m_inputs;
+	SpeedController *m_motor;
+	Solenoid *m_solenoid;
+	bool m_deploytoggle;
 };
 
 

@@ -6,29 +6,29 @@
 #include "Const.h"
 
 
-Shooter::Shooter(OperatorInputs* operinputs)
+Shooter::Shooter(OperatorInputs* inputs)
 {
-	inputs = operinputs;
-	arm = new Solenoid(ACTUATOR_SOLENOID);
-	wheelMotor = new Spark(PWM_SHOOTER);
+	m_inputs = inputs;
+	m_solenoid = new Solenoid(PCM_SHOOTER_SOLENOID);
+	m_motor = new Spark(PWM_SHOOTER_MOTOR);
 }
 
 
 Shooter::~Shooter()
 {
-	delete arm;
-	delete wheelMotor;
+	delete m_solenoid;
+	delete m_motor;
 }
 
 
 void Shooter::Loop()
 {
-	if (inputs->xBoxRightTrigger())
+	if (m_inputs->xBoxRightTrigger())
 	{
-		arm->Set(true);
+		m_motor->Set(true);
 	}
 	else
 	{
-		arm->Set(false);
+		m_motor->Set(false);
 	}
 }

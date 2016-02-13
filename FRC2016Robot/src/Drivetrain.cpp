@@ -191,7 +191,7 @@ void Drivetrain::childProofShift()
 {
 	//current setting is start in low gear
 
-	bool triggerPressed = operatorInputs->joystickTriggerPressed()||operatorInputs->xBoxLeftTrigger();
+	bool triggerPressed = operatorInputs->joystickTrigger()||operatorInputs->xBoxLeftTrigger();
 	if (triggerPressed && !previousTriggerPressed)
 	{
 		if(isHighGear)
@@ -237,14 +237,14 @@ void Drivetrain::setPower()
 	double joyStickX;
 	double joyStickY;
 	double invMaxValueXPlusY;
-	joyStickX = operatorInputs->joystickX()+operatorInputs->xboxLeftX();
+	joyStickX = operatorInputs->joystickX()+operatorInputs->xBoxLeftX();
 	if (isDownShifting)
 	{
 		joyStickY=0;
 	}
 	else
 	{
-		joyStickY = operatorInputs->joystickY()+operatorInputs->xboxLeftY();
+		joyStickY = operatorInputs->joystickY()+operatorInputs->xBoxLeftY();
 		joyStickY *= direction;
 	}
 	//set fixnum = the maxiumum value for this angle on the joystick
@@ -456,8 +456,8 @@ void Drivetrain::TestLoop()
 {
 	double joyStickX;
 	double joyStickY;
-	joyStickX = operatorInputs->joystickX()+operatorInputs->xboxLeftX();
-	joyStickY = operatorInputs->joystickY()+operatorInputs->xboxLeftY();
+	joyStickX = operatorInputs->joystickX()+operatorInputs->xBoxLeftX();
+	joyStickY = operatorInputs->joystickY()+operatorInputs->xBoxLeftY();
 	leftPow = (-joyStickY + joyStickX+leftPow)*0.5;
 	rightPow = (-joyStickY - joyStickX+rightPow)*0.5;
 	leftPow = leftPow >1 ? 1 : (leftPow < -1 ? -1 : leftPow);

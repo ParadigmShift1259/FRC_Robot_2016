@@ -6,40 +6,41 @@
 #include "Const.h"
 
 
-Portcullis::Portcullis(OperatorInputs *operinputs)
+Portcullis::Portcullis(OperatorInputs *inputs)
 {
-	inputs = operinputs;
-	motor = new Spark(PWM_MOTOR);
-	limitin = new DigitalInput(DIO_LIMIT_IN);
-	limitout = new DigitalInput(DIO_LIMIT_OUT);
+	m_inputs = inputs;
+	m_motor = new Spark(PWM_PORTCULLIS_MOTOR);
+	m_limitdown = new DigitalInput(DIO_PORTCULLIS_LIMIT_DOWN);
+	m_limitup = new DigitalInput(DIO_PORTCULLIS_LIMIT_UP);
 }
 
 
 Portcullis::~Portcullis()
 {
-	delete limitin;
-	delete limitout;
+	delete m_motor;
+	delete m_limitdown;
+	delete m_limitup;
 }
 
 
 void Portcullis::Loop()
 {
-	if (inputs->xBoxXButton())
+	if (m_inputs->xBoxXButton())
 	{
-		motor->Set(1);
+		m_motor->Set(1);
 	}
 	else
-	if (inputs->xBoxYButton())
+	if (m_inputs->xBoxYButton())
 	{
-		motor->Set(-1);
+		m_motor->Set(-1);
 	}
 
-	if (!limitin->Get())
+	if (!m_limitdown->Get())
 	{
-		motor->Set(0);
+		m_motor->Set(0);
 	}
-	if (!limitout->Get())
+	if (!m_limitup->Get())
 	{
-		motor->Set(0);
+		m_motor->Set(0);
 	}
 }

@@ -2,96 +2,64 @@
 
 
 #include <Picker.h>
-#include <Spark.h>
 #include <Const.h>
+#include <Spark.h>
 
 
-Picker::Picker(OperatorInputs* operinputs)
+Picker::Picker(OperatorInputs* inputs)
 {
-	xBox = operinputs;
-	pickerMotor = new Spark(PWM_INGEST_MOTOR);
-	pickerDeploy = new Solenoid(PICKER_DEPLOY);
-	//pickerDeploy2 = new Solenoid(PICKER_VENT);
-	//pickerDeploy2->Set(false);
-	deployed = false;
-	pickerDeploy->Set(deployed);
-	deployedcounter = 0;
-	previousA = false;
-	previousB = false;
+	m_inputs = inputs;
+	m_motor = new Spark(PWM_PICKER_MOTOR);
+	m_solenoid = new Solenoid(PCM_PICKER_SOLENOID);
+	m_down = false;
+	m_prevdown = false;
+	m_prevup = false;
 }
 
 
 Picker::~Picker()
 {
-	delete pickerDeploy;
-	//delete pickerDeploy2;
+	delete m_motor;
+	delete m_solenoid;
 }
 
 
-void Picker::StartMotor()
+void Picker::Init()
 {
-	pickerMotor->Set(1);
-}
-
-
-void Picker::setDeployAction(bool deployaction)
-{
-	deployed = deployaction;
-}
-
-
-bool Picker::motorDirection()
-{
-	return true;
-}
-
-
-double Picker::motorSpeed()
-{
-	return pickerMotor->Get();
+	m_motor->Set(1);
+	m_solenoid->Set(m_down);
 }
 
 
 void Picker::Loop()
 {
-	//StartMotor();
-	bool aButton = xBox->xBoxAButton();
-	bool bButton = xBox->xBoxBButton();
-	bool bumper = xBox->xBoxRightBumper();
+	bool downbutton = m_inputs->xBoxAButton();
+	bool upbutton = m_inputs->xBoxBButton();
+	bool motorbutton = m_inputs->xBoxRightBumper();
 
-	if (!(aButton && bButton))
+	if (!(downbutton && upbutton))
 	{
-		if (aButton && !previousA)
-		{
-			setDeployAction(true);
-		}
-		if (bButton && !previousB)
-			setDeployAction(false);
-		pickerDeploy->Set(deployed);
-		//pickerDeploy2->Set(!deployed);
-		deployedcounter = 0;
+		if (downbutton && !m_prevdown)
+			m_down = true;
+		if (upbutton && !m_prevup)
+			m_down = false;
+		m_solenoid->Set(m_down);
 	}
-/*
-	if (deployed)
-	{
-		if (deployedcounter < PICKER_VENT_DELAY)
-			deployedcounter++;
-		else
-			pickerDeploy2->Set(true);
-	}*/
+	m_prevdown = downbutton;
+	m_prevup = upbutton;
 
-	if (bumper)
+	if (motorbutton)
 	{
-		pickerMotor->Set(-1);
+		m_motor->Set(-1);
 	}
-	else if (deployed)
+	else
+	if (m_down)
 	{
-		pickerMotor->Set(1);
+		m_motor->Set(1);
 	}
-	else if (!deployed && !bumper)
+	else
+	if (!m_down && !motorbutton)
 	{
-		pickerMotor->Set(0);
+		m_motor->Set(0);
 	}
-	previousA = aButton;
-	previousB = bButton;
 }

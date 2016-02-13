@@ -2,8 +2,8 @@
 
 
 #include <OperatorInputs.h>
-#include <cmath>
 #include "Const.h"
+#include <cmath>
 
 
 using namespace std;
@@ -11,172 +11,158 @@ using namespace std;
 
 OperatorInputs::OperatorInputs()
 {
-	triggerPressed = 0;
-	joystick = new Joystick(0);
-	xBox = new Joystick(1);
+	m_joystick = new Joystick(0);
+	m_xbox = new Joystick(1);
+	m_triggerpressed = 0;
 }
 
 
 OperatorInputs::~OperatorInputs()
 {
-	delete joystick;
-	delete xBox;
+	delete m_joystick;
+	delete m_xbox;
 }
 
 
-bool OperatorInputs::xBoxDPadUp()
+double OperatorInputs::xBoxLeftX()
 {
-	return (xBox->GetPOV() == 0);
+	return deadzoneFilterX(INVERT_X_AXIS * m_xbox->GetX(GenericHID::JoystickHand::kLeftHand));
 }
 
 
-bool OperatorInputs::xBoxDPadDown()
+double OperatorInputs::xBoxRightX()
 {
-	return (xBox->GetPOV() == 180);
+	return deadzoneFilterX(m_xbox->GetX(GenericHID::JoystickHand::kRightHand));
+}
+
+
+double OperatorInputs::xBoxLeftY()
+{
+	return deadzoneFilterY(INVERT_Y_AXIS * m_xbox->GetY(GenericHID::JoystickHand::kLeftHand));
+}
+
+
+double OperatorInputs::xBoxRightY()
+{
+	return deadzoneFilterY(m_xbox->GetY(GenericHID::JoystickHand::kRightHand));
+}
+
+
+bool OperatorInputs::xBoxAButton()
+{
+	return m_xbox->GetRawButton(A_BUTTON);
+}
+
+
+bool OperatorInputs::xBoxBButton()
+{
+	return m_xbox->GetRawButton(B_BUTTON);
+}
+
+
+bool OperatorInputs::xBoxXButton()
+{
+	return m_xbox->GetRawButton(X_BUTTON);
+}
+
+
+bool OperatorInputs::xBoxYButton()
+{
+	return m_xbox->GetRawButton(Y_BUTTON);
+}
+
+
+bool OperatorInputs::xBoxLeftBumper()
+{
+	return m_xbox->GetRawButton(LEFT_BUMPER);
+}
+
+
+bool OperatorInputs::xBoxRightBumper()
+{
+	return m_xbox->GetRawButton(RIGHT_BUMPER);
+}
+
+
+bool OperatorInputs::xBoxLeftTrigger()
+{
+	m_triggerpressed = m_xbox->GetRawAxis(XBOX_LEFT_TRIGGER_AXIS);
+	return (LEFT_TRIGGER_MIN <= m_triggerpressed && m_triggerpressed <= LEFT_TRIGGER_MAX);
+
+}
+
+
+bool OperatorInputs::xBoxRightTrigger()
+{
+	m_triggerpressed = m_xbox->GetRawAxis(XBOX_RIGHT_TRIGGER_AXIS);
+	return (RIGHT_TRIGGER_MIN <= m_triggerpressed && m_triggerpressed <= RIGHT_TRIGGER_MAX);
 }
 
 
 bool OperatorInputs::xBoxStartButton()
 {
 	//Returns true if start button is pressed
-	return xBox->GetRawButton(START_BUTTON);
-}
-
-bool OperatorInputs::xBoxR3()
-{
-	//Returns true if start button is pressed
-	return xBox->GetRawButton(10);
-}
-
-bool OperatorInputs::xBoxRightTrigger()
-{
-	triggerPressed = xBox->GetRawAxis(XBOX_RIGHT_TRIGGER_AXIS);
-	return (RIGHT_TRIGGER_MIN <= triggerPressed && triggerPressed <= RIGHT_TRIGGER_MAX);
-}
-
-
-bool OperatorInputs::xBoxLeftTrigger()
-{
-	triggerPressed = xBox->GetRawAxis(XBOX_LEFT_TRIGGER_AXIS);
-	return (LEFT_TRIGGER_MIN <= triggerPressed && triggerPressed <= LEFT_TRIGGER_MAX);
-
-}
-
-
-bool OperatorInputs::isSetKickerPositionButtonPressed()
-{
-	triggerPressed = xBox->GetRawAxis(XBOX_LEFT_TRIGGER_AXIS);
-	return (LEFT_TRIGGER_MIN <= triggerPressed && triggerPressed <= LEFT_TRIGGER_MAX);
+	return m_xbox->GetRawButton(START_BUTTON);
 }
 
 
 bool OperatorInputs::xBoxBackButton()
 {
-	return xBox->GetRawButton(BACK_BUTTON);
+	return m_xbox->GetRawButton(BACK_BUTTON);
 }
 
 
-bool OperatorInputs::button7()
+bool OperatorInputs::xBoxDPadUp()
 {
-	return joystick->GetRawButton(7);
+	return (m_xbox->GetPOV() == 0);
 }
 
 
-bool OperatorInputs::button8()
+bool OperatorInputs::xBoxDPadDown()
 {
-	return joystick->GetRawButton(8);
+	return (m_xbox->GetPOV() == 180);
 }
 
 
-bool OperatorInputs::isPickerLoadingPositionButtonPressed()
+bool OperatorInputs::xBoxR3()
 {
-	return xBox->GetRawButton(A_BUTTON);
-}
-
-
-bool OperatorInputs::xBoxYButton()
-{
-	return xBox->GetRawButton(Y_BUTTON);
-}
-
-
-bool OperatorInputs::xBoxAButton()
-{
-	return xBox->GetRawButton(A_BUTTON);
-}
-
-
-bool OperatorInputs::xBoxBButton()
-{
-	return xBox->GetRawButton(B_BUTTON);
-}
-
-
-bool OperatorInputs::xBoxXButton()
-{
-	return xBox->GetRawButton(X_BUTTON);
-}
-
-
-bool OperatorInputs::xBoxRightBumper()
-{
-	return xBox->GetRawButton(RIGHT_BUMPER);
-}
-
-
-bool OperatorInputs::xBoxLeftBumper()
-{
-	return xBox->GetRawButton(LEFT_BUMPER);
-}
-
-
-bool OperatorInputs::isShootButtonPressed()
-{
-	return xBox->GetRawButton(LEFT_BUMPER);
-}
-
-
-double OperatorInputs::xboxRightX()
-{
-	return deadzoneFilterX(xBox->GetX(GenericHID::JoystickHand::kRightHand));
-}
-
-
-double OperatorInputs::xboxRightY()
-{
-	return deadzoneFilterY(xBox->GetY(GenericHID::JoystickHand::kRightHand));
-}
-
-
-double OperatorInputs::xboxLeftX()
-{
-	return deadzoneFilterX(INVERT_X_AXIS*xBox->GetX(GenericHID::JoystickHand::kLeftHand));
-}
-
-
-double OperatorInputs::xboxLeftY()
-{
-	return deadzoneFilterY(INVERT_Y_AXIS*xBox->GetY(GenericHID::JoystickHand::kLeftHand));
+	return m_xbox->GetRawButton(10);
 }
 
 
 double OperatorInputs::joystickX()
 {
-	return deadzoneFilterX(INVERT_X_AXIS*joystick->GetX());
-	//return joystick->GetX();
+	return deadzoneFilterX(INVERT_X_AXIS * m_joystick->GetX());
 }
 
 
 double OperatorInputs::joystickY()
 {
-	return deadzoneFilterY(INVERT_Y_AXIS*joystick->GetY());
-	//return joystick->GetY();
+	return deadzoneFilterY(INVERT_Y_AXIS * m_joystick->GetY());
 }
 
 
 double OperatorInputs::joystickZ()
 {
-	return deadzoneFilterZ(joystick->GetZ());
+	return deadzoneFilterZ(m_joystick->GetZ());
+}
+
+
+bool OperatorInputs::joystickTrigger()
+{
+	return m_joystick->GetTrigger();
+}
+
+
+bool OperatorInputs::button7()
+{
+	return m_joystick->GetRawButton(7);
+}
+
+
+bool OperatorInputs::button8()
+{
+	return m_joystick->GetRawButton(8);
 }
 
 
@@ -187,25 +173,25 @@ double OperatorInputs::joystickZ()
  * @param joyStickValue
  * @return
  */
-double OperatorInputs::deadzoneFilterY(double joyStickValue)
-{
-	if (abs(joyStickValue) <= DEADZONE_Y)
-	{
-		return 0;
-	}
-	double sub = joyStickValue/abs(joyStickValue);
-	return (joyStickValue-sub*DEADZONE_Y)/(1.0-DEADZONE_Y);
-}
-
-
 double OperatorInputs::deadzoneFilterX(double joyStickValue)
 {
 	if (abs(joyStickValue) <= DEADZONE_X)
 	{
 		return 0;
 	}
-	double sub = joyStickValue/abs(joyStickValue);
-	return (joyStickValue-sub*DEADZONE_X)/(1.0-DEADZONE_X);
+	double sub = joyStickValue / abs(joyStickValue);
+	return (joyStickValue - (sub * DEADZONE_X)) / (1.0 - DEADZONE_X);
+}
+
+
+double OperatorInputs::deadzoneFilterY(double joyStickValue)
+{
+	if (abs(joyStickValue) <= DEADZONE_Y)
+	{
+		return 0;
+	}
+	double sub = joyStickValue / abs(joyStickValue);
+	return (joyStickValue - (sub * DEADZONE_Y)) / (1.0 - DEADZONE_Y);
 }
 
 
@@ -215,24 +201,6 @@ double OperatorInputs::deadzoneFilterZ(double joyStickValue)
 	{
 		return 0;
 	}
-	double sub = joyStickValue/abs(joyStickValue);
-	return (joyStickValue-sub*DEADZONE_Z)/(1.0-DEADZONE_Z);
-}
-
-
-bool OperatorInputs::shifter()
-{
-	return joystick->GetTrigger();
-}
-
-
-bool OperatorInputs::joystickTriggerPressed()
-{
-	return joystick->GetTrigger();
-}
-
-
-bool OperatorInputs::joystickTriggerPressedAgain()
-{
-	return joystick->GetTrigger();
+	double sub = joyStickValue / abs(joyStickValue);
+	return (joyStickValue - (sub * DEADZONE_Z)) / (1.0-DEADZONE_Z);
 }

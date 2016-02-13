@@ -5,37 +5,26 @@
 #define SRC_PICKER_H_
 
 
+#include "OperatorInputs.h"
 #include "SpeedController.h"
 #include "Solenoid.h"
-#include "OperatorInputs.h"
 
 
 class Picker
 {
 public:
-	Picker(OperatorInputs* operinputs);
+	Picker(OperatorInputs* inputs);
 	~Picker();
-	void setDeployAction(bool deployaction);
-	void StartMotor();
-	bool motorDirection();  	//True would be like clockwise, and False etc.
-	double motorSpeed();
+	void Init();
 	void Loop();
-	void pickUp();
-	void shoot();
-
-private:
-	void pickerUp();
-	void pickerDown();
 
 protected:
-	OperatorInputs *xBox;
-	SpeedController *pickerMotor;
-	Solenoid *pickerDeploy;
-	//Solenoid *pickerDeploy2;
-	bool deployed;
-	int deployedcounter;
-	bool previousA;
-	bool previousB;
+	OperatorInputs *m_inputs;
+	SpeedController *m_motor;
+	Solenoid *m_solenoid;
+	bool m_down;
+	bool m_prevdown;
+	bool m_prevup;
 };
 
 

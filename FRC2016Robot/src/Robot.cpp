@@ -10,6 +10,10 @@
 #include "Shooter.h"
 #include "Portcullis.h"
 #include "Climber.h"
+#include "Autonomous.h"
+
+
+using namespace std;
 
 
 class Robot: public IterativeRobot
@@ -18,22 +22,22 @@ private:
 	// live window variables
 	LiveWindow *lw = LiveWindow::GetInstance();
 	SendableChooser *chooser;
-	const std::string autoNameDefault = "Default";
-	const std::string autoNameCustom = "My Auto";
-	std::string autoSelected;
+	const string autoNameDefault = "Default";
+	const string autoNameCustom = "My Auto";
+	string autoSelected;
 
-	// main class variables
+	// class variables
 	OperatorInputs *inputs;
 	Drivetrain *drivetrain;
 	Camera *camera;
-	Compressor *compressor;
 	Picker *picker;
 	Shooter *shooter;
 	Portcullis *portcullis;
 	Climber *climber;
+	Autonomous *autonomous;
 
-	// autonomous variables
-	int counter = 0;
+	// variables
+	Compressor *compressor;
 
 
 void RobotInit()
@@ -44,21 +48,23 @@ void RobotInit()
 	chooser->AddObject(autoNameCustom, (void*)&autoNameCustom);
 	SmartDashboard::PutData("Auto Modes", chooser);
 
-	// main class inits
+	// class inits
 	inputs = new OperatorInputs();
-	drivetrain = new Drivetrain( inputs,&m_ds);
+	drivetrain = new Drivetrain(inputs, &m_ds);
 	camera = new Camera(inputs, drivetrain);
-	compressor = new Compressor(0);
 	picker = new Picker(inputs);
 	shooter = new Shooter(inputs);
 	portcullis = new Portcullis(inputs);
 	climber = new Climber(inputs);
+	autonomous = new Autonomous(inputs, drivetrain);
 
+	// variable inits
+	compressor = new Compressor(0);
 	camera->Init();
 }
 
 
-/**
+/*
  * This autonomous (along with the chooser code above) shows how to select between different autonomous modes
  * using the dashboard. The sendable chooser code works with the Java SmartDashboard. If you prefer the LabVIEW
  * Dashboard, remove all of the chooser code and uncomment the GetString line to get the auto name from the text box
@@ -69,10 +75,15 @@ void RobotInit()
  */
 void AutonomousInit()
 {
-	counter = 0;
-	autoSelected = *((std::string*)chooser->GetSelected());
-	//std::string autoSelected = SmartDashboard::GetString("Auto Selector", autoNameDefault);
-	std::cout << "Auto selected: " << autoSelected << std::endl;
+	drivetrain->Init();
+	camera->Start();
+	compressor->Start();
+	autonomous->Init();
+
+/*
+	autoSelected = *((string*)chooser->GetSelected());
+	//string autoSelected = SmartDashboard::GetString("Auto Selector", autoNameDefault);
+	cout << "Auto selected: " << autoSelected << endl;
 
 	if (autoSelected == autoNameCustom)
 	{
@@ -82,33 +93,14 @@ void AutonomousInit()
 	{
 		//Default Auto goes here
 	}
+*/
 }
 
 
 void AutonomousPeriodic()
 {
-	if (counter < 4)
-	{
-		if (drivetrain->getIsDoneDriving() == false)
-		{
-			drivetrain->driveDistance(2.0);
-		}
-		if (drivetrain->getIsDoneDriving() == true)
-		{
-			drivetrain->setAngle(90);
-		}
-		if (drivetrain->getIsTurning() == true && drivetrain->getIsDoneDriving() == true)
-		{
-			//drivetrain->turnAngle();
-		}
-		if (drivetrain->getIsTurning() == false && drivetrain->getIsDoneDriving() == true)
-		{
-			counter++;
-			drivetrain->driveDistance(2);
-		}
-	}
-
-	/*
+	autonomous->Loop();
+/*
 	if (autoSelected == autoNameCustom)
 	{
 		//Custom Auto goes here
@@ -117,15 +109,15 @@ void AutonomousPeriodic()
 	{
 		//Default Auto goes here
 	}
-	*/
+*/
 }
 
 
 void TeleopInit()
 {
-	compressor->Start();
 	drivetrain->Init();
 	camera->Start();
+	compressor->Start();
 }
 
 
@@ -136,6 +128,7 @@ void TeleopPeriodic()
 	camera->Loop();
 	picker->Loop();
 	portcullis->Loop();
+	climber->Loop();
 }
 
 
@@ -150,6 +143,9 @@ void TestPeriodic()
 {
 	drivetrain->TestLoop();
 	camera->Loop();
+	picker->Loop();
+	portcullis->Loop();
+	climber->Loop();
 }
 
 

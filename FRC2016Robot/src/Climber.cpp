@@ -6,34 +6,38 @@
 #include "Const.h"
 
 
-Climber::Climber(OperatorInputs *inputs)
+Climber::Climber(OperatorInputs *operatorinputs)
 {
-	Spark1 = new Spark(PWM_WINCH);
-	PistonActivator = new Solenoid(PISTON);
-	Input = inputs;
+	m_inputs = operatorinputs;
+	m_motor = new Spark(PWM_CLIMBER_MOTOR);
+	m_solenoid = new Solenoid(PCM_CLIMBER_SOLENOID);
+	m_deploytoggle = false;
 }
 
 
 Climber::~Climber()
 {
-	delete Spark1;
-	delete PistonActivator;
+	delete m_motor;
+	delete m_solenoid;
 }
 
 
-void Climber::WinchStuff()
+void Climber::Loop()
 {
-	if (Input->xBoxDPadUp())
+	bool deploybutton = m_inputs->xBoxDPadUp();
+
+	if (deploybutton && !m_deploytoggle)
 	{
-		PistonActivator->Set(true);
+		m_solenoid->Set(true);
+	}
+	m_deploytoggle = deploybutton;
+
+	if (m_inputs->xBoxDPadDown())
+	{
+		m_motor->Set(1);
 	}
 	else
-	if (Input->xBoxDPadDown())
 	{
-		Spark1->Set(1);
-	}
-	else
-	{
-		Spark1->Set(0);
+		m_motor->Set(0);
 	}
 }

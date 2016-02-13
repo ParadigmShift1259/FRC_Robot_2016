@@ -12,35 +12,32 @@ class OperatorInputs
 {
 public:
 	OperatorInputs();
-	virtual ~OperatorInputs();
-	bool xBoxStartButton();
-	bool xBoxDPadUp();
-	bool xBoxDPadDown();
-	bool xBoxRightTrigger();
-	bool xBoxLeftTrigger();
-	bool xBoxR3();
-	bool isSetKickerPositionButtonPressed();
-	bool xBoxBackButton();
-	bool button7();
-	bool button8();
-	bool isPickerLoadingPositionButtonPressed();
-	bool xBoxYButton();
+	~OperatorInputs();
+	// xbox
+	double xBoxLeftX();
+    double xBoxRightX();
+    double xBoxLeftY();
+    double xBoxRightY();
 	bool xBoxAButton();
     bool xBoxBButton();
     bool xBoxXButton();
-    bool xBoxRightBumper();
+	bool xBoxYButton();
     bool xBoxLeftBumper();
-    bool isShootButtonPressed();
-    double xboxRightX();
-    double xboxRightY();
-    double xboxLeftX();
-    double xboxLeftY();
+	bool xBoxRightBumper();
+	bool xBoxLeftTrigger();
+	bool xBoxRightTrigger();
+	bool xBoxStartButton();
+	bool xBoxBackButton();
+	bool xBoxDPadUp();
+	bool xBoxDPadDown();
+	bool xBoxR3();
+	// joystick
     double joystickX();
     double joystickY();
     double joystickZ();
-    bool shifter();
-    bool joystickTriggerPressed();
-    bool joystickTriggerPressedAgain();
+    bool joystickTrigger();
+	bool button7();
+	bool button8();
 
 private:
     double deadzoneFilterY(double joyStickValue);
@@ -48,9 +45,9 @@ private:
     double deadzoneFilterZ(double joyStickValue);
 
 protected:
-	 Joystick *joystick;
-	 Joystick *xBox;
-	 double triggerPressed;
+	 Joystick *m_joystick;
+	 Joystick *m_xbox;
+	 double m_triggerpressed;
 };
 
 
