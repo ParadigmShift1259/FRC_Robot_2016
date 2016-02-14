@@ -7,6 +7,7 @@
 
 #include "OperatorInputs.h"
 #include "Drivetrain.h"
+#include "NetworkTables/networktable.h"
 
 
 class VisionTargeting
@@ -14,25 +15,14 @@ class VisionTargeting
 public:
 	VisionTargeting(OperatorInputs *operatorinputs, Drivetrain *drivetrain);
 	~VisionTargeting();
-
-	double PickBestContour(double width1, double width2, double width3);
-	//void FindCorners(double x1,double y1,double height,double width);
-	//void DetectDirectionNeeded();
-	//void Movement();
+	void Loop();
+	bool Targeting() {return m_targeting;}
 
 protected:
 	OperatorInputs *m_inputs;
 	Drivetrain *m_drivetrain;
-
-private:
-/*	double x1;
-	double x2;
-	double x3;
-	double x4;
-	double y1;
-	double y2;
-	double y3;
-	double y4;*/
+	shared_ptr<NetworkTable> m_networktable;
+	bool m_targeting;
 };
 
 

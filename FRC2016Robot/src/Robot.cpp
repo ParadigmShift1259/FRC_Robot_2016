@@ -12,6 +12,7 @@
 #include "Portcullis.h"
 #include "Climber.h"
 #include "Autonomous.h"
+#include "VisionTargeting.h"
 
 
 using namespace std;
@@ -36,6 +37,7 @@ private:
 	Portcullis *portcullis;
 	Climber *climber;
 	Autonomous *autonomous;
+	VisionTargeting *vision;
 
 	// variables
 	Compressor *compressor;
@@ -58,6 +60,7 @@ void RobotInit()
 	portcullis = new Portcullis(inputs);
 	climber = new Climber(inputs);
 	autonomous = new Autonomous(inputs, drivetrain);
+	vision = new VisionTargeting(inputs, drivetrain);
 
 	// variable inits
 	compressor = new Compressor(PCM_COMPRESSOR_SOLENOID);
@@ -125,13 +128,17 @@ void TeleopInit()
 
 void TeleopPeriodic()
 {
-	drivetrain->setPower();
-	drivetrain->childProofShift();
-	camera->Loop();
-	picker->Loop();
-	shooter->Loop();
-	portcullis->Loop();
-	climber->Loop();
+	if (!vision->Targeting())
+	{
+		drivetrain->setPower();
+		drivetrain->childProofShift();
+		camera->Loop();
+		picker->Loop();
+		shooter->Loop();
+		portcullis->Loop();
+		climber->Loop();
+	}
+	vision->Loop();
 }
 
 
@@ -152,6 +159,7 @@ void TestPeriodic()
 	shooter->Loop();
 	portcullis->Loop();
 	climber->Loop();
+	vision->Loop();
 }
 
 
