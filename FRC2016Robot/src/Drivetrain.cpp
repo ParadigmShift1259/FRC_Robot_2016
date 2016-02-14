@@ -223,6 +223,9 @@ void Drivetrain::setPowerXY(double joyStickX, double joyStickY)
 
 	leftTalons->Set(invertLeft * coasting * LeftMotor(invMaxValueXPlusY) * MOTOR_SCALING);
 	rightTalons->Set(invertRight * coasting * RightMotor(invMaxValueXPlusY) * MOTOR_SCALING);
+
+	SmartDashboard::PutNumber("LeftPow", invertLeft*leftPow); //Left Motors are forward=negative
+	SmartDashboard::PutNumber("RightPow", invertRight*rightPow); //Right Motors are forward=positive
 }
 
 
