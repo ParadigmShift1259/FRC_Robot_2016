@@ -16,13 +16,14 @@ public:
 	VisionTargeting(OperatorInputs *operatorinputs, Drivetrain *drivetrain);
 	~VisionTargeting();
 	void Loop();
-	int Targeting() {return m_targeting;}
+	bool Targeting() {return (m_targeting > 0);}
 
 protected:
 	OperatorInputs *m_inputs;
 	Drivetrain *m_drivetrain;
 	shared_ptr<NetworkTable> m_networktable;
 	int m_targeting;
+	bool m_fixy;
 };
 
 

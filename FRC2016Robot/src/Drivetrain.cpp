@@ -168,8 +168,8 @@ void Drivetrain::setPower()
 	leftPosition = leftTalons->GetPosition();
 	rightPosition = rightTalons->GetPosition();
 
-	leftTalons->Set(invertLeft * coasting * LeftMotor(invMaxValueXPlusY) * MOTOR_SCALING);
-	rightTalons->Set(invertRight * coasting * RightMotor(invMaxValueXPlusY) * MOTOR_SCALING);
+	leftTalons->Set(invertLeft * coasting * LeftMotor(invMaxValueXPlusY) * LEFT_MOTOR_SCALING);
+	rightTalons->Set(invertRight * coasting * RightMotor(invMaxValueXPlusY) * RIGHT_MOTOR_SCALING);
 	SmartDashboard::PutNumber("TurningRamp", previousX); //Left Motors are forward=negative
 	SmartDashboard::PutNumber("LeftPow", invertLeft*leftPow); //Left Motors are forward=negative
 	SmartDashboard::PutNumber("DrivingRamp", previousY); //Right Motors are forward=positive
@@ -209,20 +209,22 @@ void Drivetrain::setPowerXY(double joyStickX, double joyStickY)
 			invMaxValueXPlusY = 1 / invMaxValueXPlusY;
 		}
 	}
-	double invBatteryVoltage = 1 / driverstation->GetInstance().GetBatteryVoltage();
-	double BatteryRampingMin = RAMPING_RATE_MIN*invBatteryVoltage;
-	double BatteryRampingMax = RAMPING_RATE_MAX*invBatteryVoltage;
+	//double invBatteryVoltage = 1 / driverstation->GetInstance().GetBatteryVoltage();
+	//double BatteryRampingMin = RAMPING_RATE_MIN*invBatteryVoltage;
+	//double BatteryRampingMax = RAMPING_RATE_MAX*invBatteryVoltage;
 	previousX = joyStickX;//rampInput(previousX, joyStickX, BatteryRampingMin, BatteryRampingMax); //Left Motors are forward=negative
-	previousY = rampInput(previousY, joyStickY, BatteryRampingMin, BatteryRampingMax); //Right Motors are forward=positive
-	leftPow = previousY * Y_SCALING - previousX * X_SCALING;
-	rightPow = previousY * Y_SCALING + previousX * X_SCALING;
+	previousY = joyStickY;//rampInput(previousY, joyStickY, BatteryRampingMin, BatteryRampingMax); //Right Motors are forward=positive
+	//leftPow = previousY * Y_SCALING - previousX * X_SCALING;
+	leftPow = previousY - previousX;
+	//rightPow = previousY * Y_SCALING + previousX * X_SCALING;
+	rightPow = previousY + previousX;
 	leftSpeed = leftTalons->GetSpeed();
 	rightSpeed = rightTalons->GetSpeed();
 	leftPosition = leftTalons->GetPosition();
 	rightPosition = rightTalons->GetPosition();
 
-	leftTalons->Set(invertLeft * coasting * LeftMotor(invMaxValueXPlusY) * MOTOR_SCALING);
-	rightTalons->Set(invertRight * coasting * RightMotor(invMaxValueXPlusY) * MOTOR_SCALING);
+	leftTalons->Set(invertLeft * coasting * LeftMotor(invMaxValueXPlusY) * LEFT_MOTOR_SCALING);
+	rightTalons->Set(invertRight * coasting * RightMotor(invMaxValueXPlusY) * RIGHT_MOTOR_SCALING);
 
 	SmartDashboard::PutNumber("LeftPow", invertLeft*leftPow); //Left Motors are forward=negative
 	SmartDashboard::PutNumber("RightPow", invertRight*rightPow); //Right Motors are forward=positive
@@ -486,16 +488,16 @@ void Drivetrain::driveDistance(double distance)
 		timer1->Start();
 		previousX = rampInput(previousX,0.5,batteryRamping,batteryRamping);
 		//previousY = rampInput(previousY,0.5,batteryRamping,batteryRamping);
-		leftTalons->Set(invertLeft * previousX* MOTOR_SCALING);
-		rightTalons->Set(invertRight * previousX* MOTOR_SCALING);
+		leftTalons->Set(invertLeft * previousX* LEFT_MOTOR_SCALING);
+		rightTalons->Set(invertRight * previousX* RIGHT_MOTOR_SCALING);
 	}
 	else
 	if (timer1->Get() >= distance)
 	{
 		previousX = rampInput(previousX,0,batteryRamping,RAMPING_RATE_MAX*invBatteryVoltage);
 		//previousY = rampInput(previousY,0,batteryRamping,batteryRamping);
-		leftTalons->Set(invertLeft * previousX* MOTOR_SCALING);
-		rightTalons->Set(invertRight * previousX* MOTOR_SCALING);
+		leftTalons->Set(invertLeft * previousX* LEFT_MOTOR_SCALING);
+		rightTalons->Set(invertRight * previousX* RIGHT_MOTOR_SCALING);
 		if (previousX == 0)
 			isDoneDriving = true;
 	}

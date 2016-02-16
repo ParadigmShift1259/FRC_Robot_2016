@@ -39,8 +39,7 @@
 // Inverts
 #define INVERT_LEFT -1.0
 #define INVERT_RIGHT 1.0
-// Talons
-#define MOTOR_SCALING 0.975
+// Talons ports
 #define LEFT_PORT 0
 #define SECOND_LEFT_PORT 2
 #define RIGHT_PORT 1
@@ -55,6 +54,8 @@
 #define RAMPING_RATE_MAX 0.3
 #define X_SCALING 0.5
 #define Y_SCALING 1.0
+#define LEFT_MOTOR_SCALING 1
+#define RIGHT_MOTOR_SCALING 1
 // Encoders
 #define ENCODER_TOP_SPEED 0.6
 #define ENCODER_WAIT_TIME 168
