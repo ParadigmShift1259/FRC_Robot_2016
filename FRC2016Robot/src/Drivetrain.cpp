@@ -152,7 +152,7 @@ void Drivetrain::Loop()
 }
 
 
-void Drivetrain::Drive(double x, double y, bool ramp = false)
+void Drivetrain::Drive(double x, double y, bool ramp)
 {
 	double maxpower;
 	if (x == 0 || y == 0) 
@@ -202,7 +202,7 @@ void Drivetrain::Drive(double x, double y, bool ramp = false)
 }
 
 
-void Drivetrain::DriveXY(double joyStickX, double joyStickY)
+/*void Drivetrain::DriveXY(double joyStickX, double joyStickY)
 {
 	double invMaxValueXPlusY;
 
@@ -345,7 +345,7 @@ void Drivetrain::setPowerXYright(double joyStickX, double joyStickY)
 
 	SmartDashboard::PutNumber("LeftPow", invertLeft*leftPow); //Left Motors are forward=negative
 	SmartDashboard::PutNumber("RightPow", invertRight*rightPow); //Right Motors are forward=positive
-}
+}*/
 
 
 //Sets the motors to coasting mode, shifts, and then sets them back to break mode

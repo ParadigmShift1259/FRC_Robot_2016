@@ -53,18 +53,18 @@ void VisionTargeting::Loop()
 			case kInitialX:
 				if (xpos < -5)			// turn left
 				{
-					m_drivetrain->setPowerXY(max(-xpos/840.0, 0.13), 0);
+					m_drivetrain->Drive(max(-xpos/840.0, 0.13), 0);
 					m_steady = 0;
 				}
 				else
 				if (xpos > 5)			// turn right
 				{
-					m_drivetrain->setPowerXY(min(-xpos/840.0, -0.13), 0);
+					m_drivetrain->Drive(min(-xpos/840.0, -0.13), 0);
 					m_steady = 0;
 				}
 				else
 				{
-					m_drivetrain->setPowerXY(0, 0);
+					m_drivetrain->Drive(0, 0);
 					m_stage = kInitialY;
 				}
 				break;
@@ -72,18 +72,18 @@ void VisionTargeting::Loop()
 			case kInitialY:
 				if (ypos < -10)			// drive backward
 				{
-					m_drivetrain->setPowerXY(0, min(ypos/200.0, -0.13));
+					m_drivetrain->Drive(0, min(ypos/200.0, -0.13));
 					m_steady = 0;
 				}
 				else
 				if (ypos > 10)			// drive forward
 				{
-					m_drivetrain->setPowerXY(0, max(ypos/200.0, 0.13));
+					m_drivetrain->Drive(0, max(ypos/200.0, 0.13));
 					m_steady = 0;
 				}
 				else
 				{
-					m_drivetrain->setPowerXY(0, 0);
+					m_drivetrain->Drive(0, 0);
 					m_stage = kFinalX;
 				}
 				break;
@@ -91,18 +91,22 @@ void VisionTargeting::Loop()
 			case kFinalX:
 				if (xpos < 0)			// turn left
 				{
-					m_drivetrain->setPowerXYleft(max(-xpos/840.0, 0.13), 0);
+					double left = max(-xpos/840.0, 0.13);
+					//drives just the left side
+					m_drivetrain->Drive(left, -left);
 					m_steady = 0;
 				}
 				else
 				if (xpos > 0)			// turn right
 				{
-					m_drivetrain->setPowerXYright(min(-xpos/840.0, -0.13), 0);
+					double right = min(-xpos/840.0, -0.13);
+					//drives just the right side
+					m_drivetrain->Drive(right, right);
 					m_steady = 0;
 				}
 				else
 				{
-					m_drivetrain->setPowerXY(0, 0);
+					m_drivetrain->Drive(0, 0);
 					m_stage = kFinalY;
 				}
 				break;
@@ -110,18 +114,18 @@ void VisionTargeting::Loop()
 			case kFinalY:
 				if (ypos < -5)			// drive backward
 				{
-					m_drivetrain->setPowerXY(0, min(ypos/200.0, -0.13));
+					m_drivetrain->Drive(0, min(ypos/200.0, -0.13));
 					m_steady = 0;
 				}
 				else
 				if (ypos > 5)			// drive forward
 				{
-					m_drivetrain->setPowerXY(0, max(ypos/200.0, 0.13));
+					m_drivetrain->Drive(0, max(ypos/200.0, 0.13));
 					m_steady = 0;
 				}
 				else
 				{
-					m_drivetrain->setPowerXY(0, 0);
+					m_drivetrain->Drive(0, 0);
 					m_stage = kFinalX;
 				}
 				break;
@@ -129,7 +133,7 @@ void VisionTargeting::Loop()
 			// aligned
 			if ((xpos == 0) && (ypos > -5) && (ypos < 5))
 			{
-				m_drivetrain->setPowerXY(0, 0);
+				m_drivetrain->Drive(0, 0);
 				// verify steady state count
 				m_steady += 1;
 			}
@@ -143,7 +147,7 @@ void VisionTargeting::Loop()
 		}
 		else
 		{
-			m_drivetrain->setPowerXY(0, 0);
+			m_drivetrain->Drive(0, 0);
 			m_stage = kInitialX;
 			m_targeting = 0;
 			m_steady = 0;
