@@ -173,7 +173,7 @@ void Drivetrain::Drive(double x, double y, bool ramp)
 		m_leftpow = m_previousy - m_previousx;
 		m_rightpow = m_previousy + m_previousx;
 	}
-	if (ramp)
+	else
 	{
 		double rampmin = RAMPING_RATE_MIN / m_driverstation->GetInstance().GetBatteryVoltage();
 		double rampmax = RAMPING_RATE_MAX / m_driverstation->GetInstance().GetBatteryVoltage();

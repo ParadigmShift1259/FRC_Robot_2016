@@ -92,7 +92,7 @@ void VisionTargeting::Loop()
 				if (xpos < 0)			// turn left
 				{
 					double left = max(-xpos/840.0, 0.13);
-					//drives just the left side
+					//if y=-x, drives just the left side
 					m_drivetrain->Drive(left, -left);
 					m_steady = 0;
 				}
@@ -100,7 +100,7 @@ void VisionTargeting::Loop()
 				if (xpos > 0)			// turn right
 				{
 					double right = min(-xpos/840.0, -0.13);
-					//drives just the right side
+					//if y=x, drives just the right side
 					m_drivetrain->Drive(right, right);
 					m_steady = 0;
 				}
