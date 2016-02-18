@@ -60,7 +60,7 @@ void RobotInit()
 	portcullis = new Portcullis(inputs);
 	climber = new Climber(inputs);
 	autonomous = new Autonomous(inputs, drivetrain);
-	vision = new VisionTargeting(inputs, drivetrain);
+	vision = new VisionTargeting(inputs, drivetrain, shooter);
 
 	// variable inits
 	compressor = new Compressor(PCM_COMPRESSOR_SOLENOID);

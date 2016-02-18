@@ -21,6 +21,8 @@ public:
 	void Init();
 	void setPower();
 	void setPowerXY(double joyStickX, double joyStickY);
+	void setPowerXYleft(double joyStickX, double joyStickY);
+	void setPowerXYright(double joyStickX, double joyStickY);
 	void childProofShift();
 	// change drivetrain direction and return true if going forward
 	bool ChangeDirection();
