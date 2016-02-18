@@ -34,6 +34,7 @@ void Climber::Loop()
 	if (climbbutton)
 	{
 		m_motor->Set(1);
+		m_solenoid->Set(false);
 	}
 	else
 	{

@@ -22,6 +22,8 @@ public:
 	void Loop();
 	void Drive(double x, double y, bool ramp = false);
 	void DriveXY(double x, double y, bool ramp = false);
+	void setPowerXYleft(double joyStickX, double joyStickY);
+	void setPowerXYright(double joyStickX, double joyStickY);
 	void Shift();
 	// change drivetrain direction and return true if going forward
 	bool ChangeDirection();

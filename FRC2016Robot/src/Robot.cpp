@@ -24,7 +24,7 @@ void Robot::RobotInit()
 	m_portcullis = new Portcullis(m_inputs);
 	m_climber = new Climber(m_inputs);
 	m_autonomous = new Autonomous(m_inputs, m_drivetrain);
-	m_vision = new VisionTargeting(m_inputs, m_drivetrain);
+	m_vision = new VisionTargeting(m_inputs, m_drivetrain, shooter);
 
 	// variable inits
 	m_compressor = new Compressor(PCM_COMPRESSOR_SOLENOID);

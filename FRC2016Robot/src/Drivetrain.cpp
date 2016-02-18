@@ -250,6 +250,104 @@ void Drivetrain::DriveXY(double joyStickX, double joyStickY)
 }
 
 
+void Drivetrain::setPowerXYleft(double joyStickX, double joyStickY)
+{
+	double invMaxValueXPlusY;
+
+	//set fixnum = the maxiumum value for this angle on the joystick
+	if (joyStickX == 0 || joyStickY == 0)
+	{
+		invMaxValueXPlusY = 1;
+	}
+	else
+	{
+		if (abs(joyStickX) > abs(joyStickY))
+		{
+			double invMaxValueXPlusYMult = 1 / abs(joyStickX);
+			invMaxValueXPlusY = abs(joyStickY) * invMaxValueXPlusYMult + 1;
+			//Invert for later use
+			invMaxValueXPlusY = 1 / invMaxValueXPlusY;
+		}
+		else
+		{
+			double invMaxValueXPlusYMult = 1 / abs(joyStickY);
+			invMaxValueXPlusY = abs(joyStickX) * invMaxValueXPlusYMult + 1;
+			//Invert for later use
+			invMaxValueXPlusY = 1 / invMaxValueXPlusY;
+		}
+	}
+	//double invBatteryVoltage = 1 / driverstation->GetInstance().GetBatteryVoltage();
+	//double BatteryRampingMin = RAMPING_RATE_MIN*invBatteryVoltage;
+	//double BatteryRampingMax = RAMPING_RATE_MAX*invBatteryVoltage;
+	previousX = joyStickX;//rampInput(previousX, joyStickX, BatteryRampingMin, BatteryRampingMax); //Left Motors are forward=negative
+	previousY = joyStickY;//rampInput(previousY, joyStickY, BatteryRampingMin, BatteryRampingMax); //Right Motors are forward=positive
+	//leftPow = previousY * Y_SCALING - previousX * X_SCALING;
+	leftPow = previousY - previousX;
+	//rightPow = previousY * Y_SCALING + previousX * X_SCALING;
+	rightPow = previousY + previousX;
+	leftSpeed = leftTalons->GetSpeed();
+	rightSpeed = rightTalons->GetSpeed();
+	leftPosition = leftTalons->GetPosition();
+	rightPosition = rightTalons->GetPosition();
+
+	leftTalons->Set(invertLeft * coasting * LeftMotor(invMaxValueXPlusY) * LEFT_MOTOR_SCALING);
+	//rightTalons->Set(invertRight * coasting * RightMotor(invMaxValueXPlusY) * RIGHT_MOTOR_SCALING);
+	rightTalons->Set(0);
+
+	SmartDashboard::PutNumber("LeftPow", invertLeft*leftPow); //Left Motors are forward=negative
+	SmartDashboard::PutNumber("RightPow", invertRight*rightPow); //Right Motors are forward=positive
+}
+
+
+void Drivetrain::setPowerXYright(double joyStickX, double joyStickY)
+{
+	double invMaxValueXPlusY;
+
+	//set fixnum = the maxiumum value for this angle on the joystick
+	if (joyStickX == 0 || joyStickY == 0)
+	{
+		invMaxValueXPlusY = 1;
+	}
+	else
+	{
+		if (abs(joyStickX) > abs(joyStickY))
+		{
+			double invMaxValueXPlusYMult = 1 / abs(joyStickX);
+			invMaxValueXPlusY = abs(joyStickY) * invMaxValueXPlusYMult + 1;
+			//Invert for later use
+			invMaxValueXPlusY = 1 / invMaxValueXPlusY;
+		}
+		else
+		{
+			double invMaxValueXPlusYMult = 1 / abs(joyStickY);
+			invMaxValueXPlusY = abs(joyStickX) * invMaxValueXPlusYMult + 1;
+			//Invert for later use
+			invMaxValueXPlusY = 1 / invMaxValueXPlusY;
+		}
+	}
+	//double invBatteryVoltage = 1 / driverstation->GetInstance().GetBatteryVoltage();
+	//double BatteryRampingMin = RAMPING_RATE_MIN*invBatteryVoltage;
+	//double BatteryRampingMax = RAMPING_RATE_MAX*invBatteryVoltage;
+	previousX = joyStickX;//rampInput(previousX, joyStickX, BatteryRampingMin, BatteryRampingMax); //Left Motors are forward=negative
+	previousY = joyStickY;//rampInput(previousY, joyStickY, BatteryRampingMin, BatteryRampingMax); //Right Motors are forward=positive
+	//leftPow = previousY * Y_SCALING - previousX * X_SCALING;
+	leftPow = previousY - previousX;
+	//rightPow = previousY * Y_SCALING + previousX * X_SCALING;
+	rightPow = previousY + previousX;
+	leftSpeed = leftTalons->GetSpeed();
+	rightSpeed = rightTalons->GetSpeed();
+	leftPosition = leftTalons->GetPosition();
+	rightPosition = rightTalons->GetPosition();
+
+	//leftTalons->Set(invertLeft * coasting * LeftMotor(invMaxValueXPlusY) * LEFT_MOTOR_SCALING);
+	leftTalons->Set(0);
+	rightTalons->Set(invertRight * coasting * RightMotor(invMaxValueXPlusY) * RIGHT_MOTOR_SCALING);
+
+	SmartDashboard::PutNumber("LeftPow", invertLeft*leftPow); //Left Motors are forward=negative
+	SmartDashboard::PutNumber("RightPow", invertRight*rightPow); //Right Motors are forward=positive
+}
+
+
 //Sets the motors to coasting mode, shifts, and then sets them back to break mode
 void Drivetrain::Shift()
 {

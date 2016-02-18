@@ -80,6 +80,7 @@
 // Shooter
 #define PCM_SHOOTER_SOLENOID 2
 #define PWM_SHOOTER_MOTOR 1
+#define DIO_SHOOTER_LIMIT_DOWN 2
 
 
 // Climber

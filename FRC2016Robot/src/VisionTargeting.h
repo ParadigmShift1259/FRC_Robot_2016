@@ -7,13 +7,16 @@
 
 #include "OperatorInputs.h"
 #include "Drivetrain.h"
+#include "Shooter.h"
 #include "NetworkTables/networktable.h"
 
 
 class VisionTargeting
 {
 public:
-	VisionTargeting(OperatorInputs *operatorinputs, Drivetrain *drivetrain);
+	enum Stage { kInitialX, kInitialY, kFinalX, kFinalY };
+
+	VisionTargeting(OperatorInputs *operatorinputs, Drivetrain *drivetrain, Shooter *shooter);
 	~VisionTargeting();
 	void Loop();
 	bool Targeting() {return (m_targeting > 0);}
@@ -21,9 +24,11 @@ public:
 protected:
 	OperatorInputs *m_inputs;
 	Drivetrain *m_drivetrain;
+	Shooter *m_shooter;
 	shared_ptr<NetworkTable> m_networktable;
 	int m_targeting;
-	bool m_fixy;
+	Stage m_stage;
+	int m_steady;
 };
 
 
