@@ -42,10 +42,9 @@ void Shooter::Loop(bool shoot)
 	case kRelease:
 		if (m_counter < 50)
 		{
-			m_solenoid->Set(false);
 			m_counter++;
 		}
-		if (m_counter > 50)
+		if (m_counter >= 50)
 		{
 			m_stage = kWinch;
 			m_counter = 0;
@@ -57,9 +56,10 @@ void Shooter::Loop(bool shoot)
 			m_motor->Set(1);
 			m_counter++;
 		}
-		if (!m_limitdown->Get())
+		if (!m_limitdown->Get() || (m_counter > 100))		// max motor runtime 2 seconds
 		{
 			m_motor->Set(0);
+			m_solenoid->Set(false);
 			m_stage = kReverse;
 		}
 		break;

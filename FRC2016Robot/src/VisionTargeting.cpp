@@ -51,86 +51,78 @@ void VisionTargeting::Loop()
 			{
 			// process coarse X direction
 			case kInitialX:
+				if (xpos < -5)			// turn left
 				{
-					if (xpos < -5)			// turn left
-					{
-						m_drivetrain->setPowerXY(max(-xpos/840.0, 0.13), 0);
-						m_steady = 0;
-					}
-					else
-					if (xpos > 5)			// turn right
-					{
-						m_drivetrain->setPowerXY(min(-xpos/840.0, -0.13), 0);
-						m_steady = 0;
-					}
-					else
-					{
-						m_drivetrain->setPowerXY(0, 0);
-						m_stage = kInitialY;
-					}
+					m_drivetrain->setPowerXY(max(-xpos/840.0, 0.13), 0);
+					m_steady = 0;
+				}
+				else
+				if (xpos > 5)			// turn right
+				{
+					m_drivetrain->setPowerXY(min(-xpos/840.0, -0.13), 0);
+					m_steady = 0;
+				}
+				else
+				{
+					m_drivetrain->setPowerXY(0, 0);
+					m_stage = kInitialY;
 				}
 				break;
 			// process coarse Y direction
 			case kInitialY:
+				if (ypos < -10)			// drive backward
 				{
-					if (ypos < -10)			// drive backward
-					{
-						m_drivetrain->setPowerXY(0, min(ypos/200.0, -0.13));
-						m_steady = 0;
-					}
-					else
-					if (ypos > 10)			// drive forward
-					{
-						m_drivetrain->setPowerXY(0, max(ypos/200.0, 0.13));
-						m_steady = 0;
-					}
-					else
-					{
-						m_drivetrain->setPowerXY(0, 0);
-						m_stage = kFinalX;
-					}
+					m_drivetrain->setPowerXY(0, min(ypos/200.0, -0.13));
+					m_steady = 0;
+				}
+				else
+				if (ypos > 10)			// drive forward
+				{
+					m_drivetrain->setPowerXY(0, max(ypos/200.0, 0.13));
+					m_steady = 0;
+				}
+				else
+				{
+					m_drivetrain->setPowerXY(0, 0);
+					m_stage = kFinalX;
 				}
 				break;
 			// process fine X direction
 			case kFinalX:
+				if (xpos < 0)			// turn left
 				{
-					if (xpos < 0)			// turn left
-					{
-						m_drivetrain->setPowerXYleft(max(-xpos/840.0, 0.13), 0);
-						m_steady = 0;
-					}
-					else
-					if (xpos > 0)			// turn right
-					{
-						m_drivetrain->setPowerXYright(min(-xpos/840.0, -0.13), 0);
-						m_steady = 0;
-					}
-					else
-					{
-						m_drivetrain->setPowerXY(0, 0);
-						m_stage = kFinalY;
-					}
+					m_drivetrain->setPowerXYleft(max(-xpos/840.0, 0.13), 0);
+					m_steady = 0;
+				}
+				else
+				if (xpos > 0)			// turn right
+				{
+					m_drivetrain->setPowerXYright(min(-xpos/840.0, -0.13), 0);
+					m_steady = 0;
+				}
+				else
+				{
+					m_drivetrain->setPowerXY(0, 0);
+					m_stage = kFinalY;
 				}
 				break;
 				// process fine Y direction
 			case kFinalY:
+				if (ypos < -5)			// drive backward
 				{
-					if (ypos < -5)			// drive backward
-					{
-						m_drivetrain->setPowerXY(0, min(ypos/200.0, -0.13));
-						m_steady = 0;
-					}
-					else
-					if (ypos > 5)			// drive forward
-					{
-						m_drivetrain->setPowerXY(0, max(ypos/200.0, 0.13));
-						m_steady = 0;
-					}
-					else
-					{
-						m_drivetrain->setPowerXY(0, 0);
-						m_stage = kFinalX;
-					}
+					m_drivetrain->setPowerXY(0, min(ypos/200.0, -0.13));
+					m_steady = 0;
+				}
+				else
+				if (ypos > 5)			// drive forward
+				{
+					m_drivetrain->setPowerXY(0, max(ypos/200.0, 0.13));
+					m_steady = 0;
+				}
+				else
+				{
+					m_drivetrain->setPowerXY(0, 0);
+					m_stage = kFinalX;
 				}
 				break;
 			}
