@@ -40,18 +40,18 @@
 #define INVERT_LEFT -1.0
 #define INVERT_RIGHT 1.0
 // Talons ports
-#define LEFT_PORT 0
-#define SECOND_LEFT_PORT 2
-#define RIGHT_PORT 1
-#define SECOND_RIGHT_PORT 3
+#define CAN_LEFT_PORT 0
+#define CAN_SECOND_LEFT_PORT 2
+#define CAN_RIGHT_PORT 1
+#define CAN_SECOND_RIGHT_PORT 3
 // Shifter
-#define SHIFT_PORT_LOW 0
-#define SHIFT_MODULE 0
+#define PCM_SHIFT_PORT_LOW 0
+#define PCM_SHIFT_MODULE 0
 #define CHILD_PROOF_SPEED 0.75
 #define FLIP_HIGH_GEAR true
 // Ramping
 #define RAMPING_RATE_MIN 0.1
-#define RAMPING_RATE_MAX 0.3
+#define RAMPING_RATE_MAX 0.2
 #define X_SCALING 0.5
 #define Y_SCALING 1.0
 #define LEFT_MOTOR_SCALING 1
@@ -59,7 +59,7 @@
 // Encoders
 #define ENCODER_TOP_SPEED 0.6
 #define ENCODER_WAIT_TIME 168
-#define DISTANCE_PER_PULSE 0.0006708
+#define CAN_DISTANCE_PER_PULSE 0.0006708
 
 
 // Compressor

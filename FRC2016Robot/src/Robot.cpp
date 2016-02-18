@@ -1,70 +1,34 @@
 // robot.cpp
 
 
-#include "WPILib.h"
-#include "OperatorInputs.h"
-#include "const.h"
-#include "drivetrain.h"
-#include "camera.h"
-#include "compressor.h"
-#include "Picker.h"
-#include "Shooter.h"
-#include "Portcullis.h"
-#include "Climber.h"
-#include "Autonomous.h"
-#include "VisionTargeting.h"
+#include "Robot.h"
 
 
-using namespace std;
-
-
-class Robot: public IterativeRobot
+void Robot::RobotInit()
 {
-private:
-	// live window variables
-	LiveWindow *lw = LiveWindow::GetInstance();
-	SendableChooser *chooser;
-	const string autoNameDefault = "Default";
-	const string autoNameCustom = "My Auto";
-	string autoSelected;
-
-	// class variables
-	OperatorInputs *inputs;
-	Drivetrain *drivetrain;
-	Camera *camera;
-	Picker *picker;
-	Shooter *shooter;
-	Portcullis *portcullis;
-	Climber *climber;
-	Autonomous *autonomous;
-	VisionTargeting *vision;
-
-	// variables
-	Compressor *compressor;
-
-
-void RobotInit()
-{
+	m_lw = LiveWindow::GetInstance();
+	m_autonamedefault = "Default";
+	m_autonamecustom = "My Auto";
 	// live window inits
-	chooser = new SendableChooser();
-	chooser->AddDefault(autoNameDefault, (void*)&autoNameDefault);
-	chooser->AddObject(autoNameCustom, (void*)&autoNameCustom);
-	SmartDashboard::PutData("Auto Modes", chooser);
+	m_chooser = new SendableChooser();
+	m_chooser->AddDefault(m_autonamedefault, (void*)&m_autonamedefault);
+	m_chooser->AddObject(m_autonamecustom, (void*)&m_autonamecustom);
+	SmartDashboard::PutData("Auto Modes", m_chooser);
 
 	// class inits
-	inputs = new OperatorInputs();
-	drivetrain = new Drivetrain(inputs, &m_ds);
-	camera = new Camera(inputs, drivetrain);
-	picker = new Picker(inputs);
-	shooter = new Shooter(inputs);
-	portcullis = new Portcullis(inputs);
-	climber = new Climber(inputs);
-	autonomous = new Autonomous(inputs, drivetrain);
-	vision = new VisionTargeting(inputs, drivetrain);
+	m_inputs = new OperatorInputs();
+	m_drivetrain = new Drivetrain(m_inputs, &m_ds);
+	m_camera = new Camera(m_inputs, m_drivetrain);
+	m_picker = new Picker(m_inputs);
+	m_shooter = new Shooter(m_inputs);
+	m_portcullis = new Portcullis(m_inputs);
+	m_climber = new Climber(m_inputs);
+	m_autonomous = new Autonomous(m_inputs, m_drivetrain);
+	m_vision = new VisionTargeting(m_inputs, m_drivetrain);
 
 	// variable inits
-	compressor = new Compressor(PCM_COMPRESSOR_SOLENOID);
-	camera->Init();
+	m_compressor = new Compressor(PCM_COMPRESSOR_SOLENOID);
+	m_camera->RobotInit();
 }
 
 
@@ -77,12 +41,12 @@ void RobotInit()
  * You can add additional auto modes by adding additional comparisons to the if-else structure below with additional strings.
  * If using the SendableChooser make sure to add them to the chooser code above as well.
  */
-void AutonomousInit()
+void Robot::AutonomousInit()
 {
-	drivetrain->Init();
-	camera->Start();
-	compressor->Start();
-	autonomous->Init();
+	m_drivetrain->Init();
+	m_camera->Init();
+	m_compressor->Start();
+	m_autonomous->Init();
 
 /*
 	autoSelected = *((string*)chooser->GetSelected());
@@ -101,10 +65,10 @@ void AutonomousInit()
 }
 
 
-void AutonomousPeriodic()
+void Robot::AutonomousPeriodic()
 {
-	autonomous->Loop();
-	camera->Loop();
+	m_autonomous->Loop();
+	m_camera->Loop();
 /*
 	if (autoSelected == autoNameCustom)
 	{
@@ -118,60 +82,57 @@ void AutonomousPeriodic()
 }
 
 
-void TeleopInit()
+void Robot::TeleopInit()
 {
-	drivetrain->Init();
-	camera->Start();
-	compressor->Start();
+	m_drivetrain->Init();
+	m_camera->Init();
+	m_compressor->Start();
 }
 
 
-void TeleopPeriodic()
+void Robot::TeleopPeriodic()
 {
-	if (!vision->Targeting())
+	if (!m_vision->Targeting())
 	{
-		drivetrain->setPower();
-		drivetrain->childProofShift();
-		camera->Loop();
-		picker->Loop();
-		shooter->Loop();
-		portcullis->Loop();
-		climber->Loop();
+		m_drivetrain->Drive();
+		m_drivetrain->Shift();
+		m_camera->Loop();
+		m_picker->Loop();
+		m_shooter->Loop();
+		m_portcullis->Loop();
+		m_climber->Loop();
 	}
-	vision->Loop();
+	m_vision->Loop();
 }
 
 
-void TestInit()
+void Robot::TestInit()
 {
-	drivetrain->Init();
-	camera->Start();
-	compressor->Start();
+	m_drivetrain->Init();
+	m_camera->Init();
+	m_compressor->Start();
 }
 
 
-void TestPeriodic()
+void Robot::TestPeriodic()
 {
-	drivetrain->setPower();
-	drivetrain->childProofShift();
-	camera->Loop();
-	picker->Loop();
-	shooter->Loop();
-	portcullis->Loop();
-	climber->Loop();
-	vision->Loop();
+	m_drivetrain->Drive();
+	m_drivetrain->Shift();
+	m_camera->Loop();
+	m_picker->Loop();
+	m_shooter->Loop();
+	m_portcullis->Loop();
+	m_climber->Loop();
+	m_vision->Loop();
 }
 
 
-void DisabledInit()
+void Robot::DisabledInit()
 {
-	drivetrain->setGearLow();
-	camera->Stop();
-	compressor->Stop();
+	m_drivetrain->Stop();
+	m_camera->Stop();
+	m_compressor->Stop();
 }
-
-
-};
 
 
 START_ROBOT_CLASS(Robot)

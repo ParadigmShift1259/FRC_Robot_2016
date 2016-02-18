@@ -15,8 +15,8 @@ class Camera
 public:
 	Camera(OperatorInputs *operatorinputs, Drivetrain *drivetrain);
 	~Camera();
+	void RobotInit();
 	void Init();
-	void Start();
 	void Stop();
 	void Loop();
 

@@ -19,85 +19,82 @@ public:
 	Drivetrain(OperatorInputs *inputs, DriverStation *ds);
 	~Drivetrain();
 	void Init();
-	void setPower();
-	void setPowerXY(double joyStickX, double joyStickY);
-	void childProofShift();
+	void Loop();
+	void Drive(double x, double y, bool ramp = false);
+	void DriveXY(double x, double y, bool ramp = false);
+	void Shift();
 	// change drivetrain direction and return true if going forward
 	bool ChangeDirection();
 
-	double rampInput(double previousPow, double desiredPow, double rampSpeedMin, double rampSpeedMax);
+	double Ramp(double previousPow, double desiredPow, double rampSpeedMin, double rampSpeedMax);
 	//void rampRightPower(double desiredPow, double rampSpeedMin, double rampSpeedMax);
 	//void resetEncoders();
-	double fix(double v, double &invMaxValueXPlusY);
 	double LeftMotor(double &invMaxValueXPlusY);
 	double RightMotor(double &invMaxValueXPlusY);
-	void compareEncoders();
-	void breakTime();
+	void SetRatioLR();
+	void CheckEncoderTimer();
 
-	bool getIsDoneDriving();
-	bool getIsTurning();
+	bool GetIsDoneDriving() { return m_isdonedriving; }
+	bool GetIsTurning() { return m_isturning; }
 	void turnAngle();
 	void setSpeedPositive();
-	void setGearLow();
-	void setAngle(double angle);
-	void driveDistance(double distance);
+	void Stop();
+	void SetAngle(double angle);
+	void DriveDistance(double distance);
 
-	void setCoasting(double newCoasting) {coasting = newCoasting;}
-	double getLeftPow() {return leftPow;}
-	double getRightPow() {return rightPow;}
-	double getRatio() {return ratio;}
-	bool getIsHighGear() {return isHighGear;}
-	bool getIsLeftFaster() {return isLeftFaster;}
-	double getLeftSpeed() {return leftSpeed;}
-	double getRightSpeed() {return rightSpeed;}
+	void setCoasting(double newCoasting) {m_coasting = newCoasting;}
+	double getLeftPow() {return m_leftpow;}
+	double getRightPow() {return m_rightpow;}
+	double getRatio() {return m_ratiolr;}
+	bool getIsHighGear() {return m_ishighgear;}
+	bool getIsLeftFaster() {return m_isleftfaster;}
+	double getLeftSpeed() {return m_leftspeed;}
+	double getRightSpeed() {return m_rightspeed;}
 	//double getRightEncoderPulses() {return rightEncoder->GetRaw();}
 	//double getLeftEncoderPulses() {return leftEncoder->GetRaw();}
 	//double getRightEncoderDistance() {return rightEncoder->GetDistance();}
 	//double getLeftEncoderDistance() {return leftEncoder->GetDistance();}
 
-private:
-	void shift(); //moved to protected to prevent people from accidentally calling it in Robot.cpp
-
 protected:
-	double leftPow;
-	double rightPow;
-	double maxLeftEncoderRate;
-	double maxRightEncoderRate;
-	double ratio;
-	double rightEncoderFix;
-	double leftEncoderFix;
-	bool isHighGear; //Robot starts in low gear
-	bool isLeftFaster;
-	double leftSpeed;
-	double rightSpeed;
-	double previousX;
-	double previousY;
-	double leftPosition;
-	double rightPosition;
-	double coasting;
-	bool isTurning;
-	double angle;
-	bool isDoneDriving;
-	bool isDownShifting;
+	double m_leftpow;
+	double m_rightpow;
+	double m_leftencodermax;
+	double m_rightencodermax;
+	double m_ratiolr;
+	double m_leftencoderfix;
+	double m_rightencoderfix;
+	bool m_ishighgear; //Robot starts in low gear
+	bool m_isleftfaster;
+	double m_leftspeed;
+	double m_rightspeed;
+	double m_previousx;
+	double m_previousy;
+	double m_leftposition;
+	double m_rightposition;
+	double m_coasting;
+	bool m_isturning;
+	double m_angle;
+	bool m_isdonedriving;
+	bool m_isdownshifting;
 
-	double invertLeft;
-	double invertRight;
-	double direction;
+	double m_invertleft;
+	double m_invertright;
+	double m_direction;
 
-	OperatorInputs *operatorInputs;
-	DriverStation *driverstation;
-	CANTalon *leftTalons;
-	CANTalon *leftTalons1;
-	CANTalon *rightTalons;
-	CANTalon *rightTalons1;
-	Solenoid *gearShift;
+	OperatorInputs *m_inputs;
+	DriverStation *m_driverstation;
+	CANTalon *m_lefttalonlead;
+	CANTalon *m_lefttalonfollow;
+	CANTalon *m_righttalonlead;
+	CANTalon *m_righttalonfollow;
+	Solenoid *m_shifter;
 	//Encoder *leftEncoder;
 	//Encoder *rightEncoder;
 
 	//ADXRS450_Gyro *gyro;
-	double prevGyro;
-	Timer *timer;
-	Timer *timer1;
+	double m_prevgyro;
+	Timer *m_timerencoder;
+	Timer *m_timerautonomous;
 };
 
 

@@ -25,7 +25,7 @@ Camera::~Camera()
 }
 
 
-void Camera::Init()
+void Camera::RobotInit()
 {
 	IMAQdxError imaqerror;
 
@@ -60,7 +60,7 @@ void Camera::Init()
 }
 
 
-void Camera::Start()
+void Camera::Init()
 {
 	// acquire images
 	if (m_current)
