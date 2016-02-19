@@ -44,6 +44,9 @@ public:
 	bool button7(ToggleChoice choice = kToggle);
 	bool button8(ToggleChoice choice = kToggle);
 
+	 Joystick *m_joystick;
+	 Joystick *m_xbox;
+	 Joystick *m_joystick2;
 private:
     bool toggle(string buttonName, bool buttonValue);
     double deadzoneFilterY(double joyStickValue);
@@ -51,8 +54,6 @@ private:
     double deadzoneFilterZ(double joyStickValue);
 
 protected:
-	 Joystick *m_joystick;
-	 Joystick *m_xbox;
 	 map<string, bool> m_togglebuttons;
 };
 

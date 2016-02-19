@@ -13,6 +13,7 @@ OperatorInputs::OperatorInputs()
 {
 	m_joystick = new Joystick(0);
 	m_xbox = new Joystick(1);
+	m_joystick2 = new Joystick(2);
 }
 
 

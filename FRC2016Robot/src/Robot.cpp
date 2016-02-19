@@ -102,6 +102,9 @@ void Robot::TeleopPeriodic()
 		m_climber->Loop();
 	}
 	m_vision->Loop();
+	SmartDashboard::PutNumber("Joystick",m_inputs->m_joystick->GetType());
+	SmartDashboard::PutNumber("Xbox",m_inputs->m_xbox->GetType());
+	SmartDashboard::PutNumber("Joystick2",m_inputs->m_joystick2->GetType());
 }
 
 
