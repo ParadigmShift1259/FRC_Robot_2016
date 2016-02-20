@@ -8,6 +8,7 @@
 #ifndef SRC_ROBOT_H_
 #define SRC_ROBOT_H_
 
+
 #include "WPILib.h"
 #include "OperatorInputs.h"
 #include "const.h"
@@ -46,7 +47,6 @@ private:
 	Autonomous *m_autonomous;
 	VisionTargeting *m_vision;
 	Compressor *m_compressor;
-
 
 	void RobotInit();
 	void AutonomousInit();

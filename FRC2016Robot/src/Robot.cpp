@@ -6,10 +6,10 @@
 
 void Robot::RobotInit()
 {
+	// live window inits
 	m_lw = LiveWindow::GetInstance();
 	m_autonamedefault = "Default";
 	m_autonamecustom = "My Auto";
-	// live window inits
 	m_chooser = new SendableChooser();
 	m_chooser->AddDefault(m_autonamedefault, (void*)&m_autonamedefault);
 	m_chooser->AddObject(m_autonamecustom, (void*)&m_autonamecustom);
@@ -102,9 +102,6 @@ void Robot::TeleopPeriodic()
 		m_climber->Loop();
 	}
 	m_vision->Loop();
-	SmartDashboard::PutNumber("Joystick",m_inputs->m_joystick->GetType());
-	SmartDashboard::PutNumber("Xbox",m_inputs->m_xbox->GetType());
-	SmartDashboard::PutNumber("Joystick2",m_inputs->m_joystick2->GetType());
 }
 
 
@@ -118,12 +115,14 @@ void Robot::TestInit()
 
 void Robot::TestPeriodic()
 {
-	m_drivetrain->Loop();
-	m_camera->Loop();
-	m_picker->Loop();
-	m_shooter->Loop();
-	m_portcullis->Loop();
-	m_climber->Loop();
+	if (!m_vision->Targeting())
+	{
+		m_drivetrain->Loop();
+		m_camera->Loop();
+		m_picker->Loop();
+		m_portcullis->Loop();
+		m_climber->Loop();
+	}
 	m_vision->Loop();
 }
 

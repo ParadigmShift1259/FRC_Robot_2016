@@ -23,21 +23,25 @@ Climber::~Climber()
 
 void Climber::Loop()
 {
-	bool deploybutton = m_inputs->xBoxDPadUp();
-	bool climbbutton = m_inputs->xBoxDPadDown(OperatorInputs::ToggleChoice::kHold);
+	bool deploybutton = m_inputs->xBoxStartButton();
+	bool climbdownbutton = m_inputs->xBoxDPadDown(OperatorInputs::ToggleChoice::kHold);
+	bool climbupbutton = m_inputs->xBoxDPadDown(OperatorInputs::ToggleChoice::kHold);
 
-	if (deploybutton)
+	if (deploybutton)				// deploy the climber
 	{
 		m_solenoid->Set(true);
 	}
 
-	if (climbbutton)
+	if (climbupbutton)				// raise the robot
 	{
 		m_motor->Set(1);
 		m_solenoid->Set(false);
 	}
 	else
+	if (climbdownbutton)			// lower the robot
 	{
-		m_motor->Set(0);
+		m_motor->Set(-1);
 	}
+	else
+		m_motor->Set(0);
 }

@@ -4,6 +4,7 @@
 #include <OperatorInputs.h>
 #include "Const.h"
 #include <cmath>
+#include "smartdashboard/smartdashboard.h"
 
 
 using namespace std;
@@ -13,7 +14,6 @@ OperatorInputs::OperatorInputs()
 {
 	m_joystick = new Joystick(0);
 	m_xbox = new Joystick(1);
-	m_joystick2 = new Joystick(2);
 }
 
 
@@ -180,12 +180,36 @@ bool OperatorInputs::xBoxDPadUp(ToggleChoice choice)
 }
 
 
+bool OperatorInputs::xBoxDPadRight(ToggleChoice choice)
+{
+	bool button = (m_xbox->GetPOV() == 90);
+
+	if (choice == kToggle)
+		return toggle("xBoxDPadLeft", button);
+	if (choice == kHold)
+		return button;
+	return false;
+}
+
+
 bool OperatorInputs::xBoxDPadDown(ToggleChoice choice)
 {
 	bool button = (m_xbox->GetPOV() == 180);
 
 	if (choice == kToggle)
 		return toggle("xBoxDPadDown", button);
+	if (choice == kHold)
+		return button;
+	return false;
+}
+
+
+bool OperatorInputs::xBoxDPadLeft(ToggleChoice choice)
+{
+	bool button = (m_xbox->GetPOV() == 270);
+
+	if (choice == kToggle)
+		return toggle("xBoxDPadRight", button);
 	if (choice == kHold)
 		return button;
 	return false;

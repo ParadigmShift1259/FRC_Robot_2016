@@ -7,6 +7,8 @@
 
 #include "OperatorInputs.h"
 #include "Drivetrain.h"
+#include <AnalogGyro.h>
+#include <BuiltinAccelerometer.h>
 
 
 class Autonomous
@@ -20,6 +22,9 @@ public:
 protected:
 	OperatorInputs *m_inputs;
 	Drivetrain *m_drivetrain;
+	AnalogGyro *m_gyro;
+	Accelerometer *m_accel;
+	double m_angle;
 	int m_counter;
 };
 

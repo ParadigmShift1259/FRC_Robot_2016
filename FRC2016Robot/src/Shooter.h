@@ -8,13 +8,14 @@
 #include "OperatorInputs.h"
 #include <Solenoid.h>
 #include <SpeedController.h>
-#include "DigitalInput.h"
+#include <DigitalInput.h>
+#include <Encoder.h>
 
 
 class Shooter
 {
 public:
-	enum Stage { kReady, kRelease, kWinch, kReverse };
+	enum Stage { kReady, kRelease, kWinch, kLock, kReverse, kOverride };
 
 	Shooter(OperatorInputs* inputs);
 	~Shooter();
@@ -25,6 +26,7 @@ protected:
 	Solenoid *m_solenoid;
 	SpeedController *m_motor;
 	DigitalInput *m_limitdown;
+	Encoder *m_encoder;
 	Stage m_stage;
 	int m_counter;
 };

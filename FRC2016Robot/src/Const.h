@@ -95,4 +95,8 @@
 #define DIO_PORTCULLIS_LIMIT_UP 1
 
 
+// Autonomous
+#define ALG_AUTONOMOUS_GYRO 0
+
+
 #endif /* SRC_CONST_H_ */

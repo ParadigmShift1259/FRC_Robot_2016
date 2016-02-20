@@ -70,15 +70,7 @@ Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 	m_invertright = INVERT_RIGHT;
 	m_direction = 1.0;
 
-	//gyro = new ADXRS450_Gyro();
-	//gyro->Calibrate();
-	//gyro->Reset();
 	m_timerencoder = new Timer();
-	m_timerautonomous = new Timer();
-	m_angle = 0;
-	m_isturning = false;
-	m_isdonedriving = false;
-	m_prevgyro = 0.0;
 }
 
 
@@ -92,7 +84,6 @@ Drivetrain::~Drivetrain()
 	//delete rightEncoder;
 	delete m_shifter;
 	delete m_timerencoder;
-	delete m_timerautonomous;
 }
 
 
@@ -111,11 +102,9 @@ void Drivetrain::Init()
 	m_previousx = 0;
 	m_previousy = 0;
 	m_coasting = 1;
-	m_angle = 0;
 	m_lefttalonlead->Set(0);
 	m_righttalonlead->Set(0);
 	m_timerencoder->Reset();
-	m_timerautonomous->Reset();
 }
 
 
@@ -149,6 +138,13 @@ void Drivetrain::Loop()
 		Shift();
 		m_isdownshifting = false;
 	}
+}
+
+
+void Drivetrain::Stop()
+{
+	m_ishighgear = false;
+	m_shifter->Set(true ^ m_ishighgear);
 }
 
 
@@ -202,7 +198,8 @@ void Drivetrain::Drive(double x, double y, bool ramp)
 }
 
 
-/*void Drivetrain::DriveXY(double joyStickX, double joyStickY)
+/*
+void Drivetrain::DriveXY(double joyStickX, double joyStickY)
 {
 	double invMaxValueXPlusY;
 
@@ -345,7 +342,8 @@ void Drivetrain::setPowerXYright(double joyStickX, double joyStickY)
 
 	SmartDashboard::PutNumber("LeftPow", invertLeft*leftPow); //Left Motors are forward=negative
 	SmartDashboard::PutNumber("RightPow", invertRight*rightPow); //Right Motors are forward=positive
-}*/
+}
+*/
 
 
 //Sets the motors to coasting mode, shifts, and then sets them back to break mode
@@ -471,89 +469,23 @@ void Drivetrain::SetRatioLR()
 }
 
 
-/*
-void Drivetrain::resetEncoders()
+
+void Drivetrain::ResetEncoders()
 {
-	leftEncoder->Reset();
-	rightEncoder->Reset();
-	gearShift->Set(!(FLIP_HIGH_GEAR^isHighGear));
+//	leftEncoder->Reset();
+//	rightEncoder->Reset();
 }
-*/
+
 
 
 void Drivetrain::CheckEncoderTimer()
 {
-	SmartDashboard::PutNumber("Ratio", m_ratiolr);
-	SmartDashboard::PutBoolean("Left > Right", m_isleftfaster);
-	SmartDashboard::PutNumber("Timer time", m_timerencoder->Get());
+//	SmartDashboard::PutNumber("Ratio", m_ratiolr);
+//	SmartDashboard::PutBoolean("Left > Right", m_isleftfaster);
+//	SmartDashboard::PutNumber("Timer time", m_timerencoder->Get());
 	if (m_timerencoder->Get() > ENCODER_WAIT_TIME)
 	{
 		SetRatioLR();
 		m_timerencoder->Reset();
-	}
-}
-
-
-void Drivetrain::Stop()
-{
-	m_ishighgear = false;
-	m_shifter->Set(true ^ m_ishighgear);
-}
-
-
-void Drivetrain::SetAngle(double angle)
-{
-	//angle = angle + m_gyro->GetAngle();
-	m_isturning = false;
-}
-
-
-/*
-void Drivetrain::turnAngle()
-{
-	if (m_angle < m_gyro->GetAngle())
-	{
-		m_isturning = true;
-		double batteryramp = RAMPING_RATE / m_driverstation->GetInstance().GetBatteryVoltage();
-		rampLeftPower(0,batteryramp);
-		rampRightPower(0.5,batteryramp);
-	}
-	if (m_angle > m_gyro->GetAngle())
-	{
-		m_isturning = true;
-		double batteryramp = RAMPING_RATE / m_driverstation->GetInstance().GetBatteryVoltage();
-		rampLeftPower(0.5,batteryramp);
-		rampRightPower(0,batteryramp);
-	}
-	if (abs(m_gyro->GetAngle() - m_angle) < 5)
-	{
-		m_isturning = false;
-	}
-}
-*/
-
-
-void Drivetrain::DriveDistance(double distance)
-{
-	double batteryramp = RAMPING_RATE_MIN / m_driverstation->GetInstance().GetBatteryVoltage();
-
-	if (m_timerautonomous->Get() < distance)
-	{
-		m_isdonedriving = false;
-		m_timerautonomous->Start();
-		m_previousy = Ramp(m_previousx,0.5,batteryramp,batteryramp);
-		//previousY = rampInput(previousY,0.5,batteryramp,batteryramp);
-		m_lefttalonlead->Set(m_invertleft * LeftMotor(m_previousy));
-		m_righttalonlead->Set(m_invertright * RightMotor(m_previousy));
-	}
-	else
-	if (m_timerautonomous->Get() >= distance)
-	{
-		m_previousy = Ramp(m_previousx,0,batteryramp,RAMPING_RATE_MAX / m_driverstation->GetInstance().GetBatteryVoltage());
-		//previousY = rampInput(previousY,0,batteryRamping,batteryRamping);
-		m_lefttalonlead->Set(m_invertleft * LeftMotor(m_previousy));
-		m_righttalonlead->Set(m_invertright * RightMotor(m_previousy));
-		if (m_previousx == 0)
-			m_isdonedriving = true;
 	}
 }
