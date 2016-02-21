@@ -6,13 +6,16 @@
 #include <driverstation.h>
 
 
-Autonomous::Autonomous(OperatorInputs *operatorinputs, Drivetrain *drivetrain)
+Autonomous::Autonomous(DriverStation *driverstation, OperatorInputs *operatorinputs, Drivetrain *drivetrain)
 {
+	m_driverstation = driverstation;
 	m_inputs = operatorinputs;
 	m_drivetrain = drivetrain;
 	m_gyro = new AnalogGyro(ALG_AUTONOMOUS_GYRO);
+	m_gyro->Calibrate();
 	m_accel = new BuiltInAccelerometer(Accelerometer::Range::kRange_4G);
-	m_angle = 0;
+	m_stage = kStop;
+	m_driveangle = 0;
 	m_counter = 0;
 }
 
@@ -25,15 +28,26 @@ Autonomous::~Autonomous()
 void Autonomous::Init()
 {
 	m_gyro->Reset();
-	m_gyro->Calibrate();
+	m_stage = kStop;
+	m_driveangle = 0;
 	m_counter = 0;
+	while (!m_instructions.empty())
+		m_instructions.pop();
+	m_instructions.push({50, 0, 0.5});
+	m_instructions.push({50, 90, 0.5});
+	m_instructions.push({50, 90, 0.5});
+	m_instructions.push({50, 90, 0.5});
+	m_instructions.push({50, 90, 0.5});
 }
 
 
 void Autonomous::Loop()
 {
-	m_angle = m_gyro->GetAngle();
-	SmartDashboard::PutNumber("Gyro", m_angle);
+	double angle = m_gyro->GetAngle();
+	SmartDashboard::PutNumber("Gyro Raw", angle);
+
+	double driveangle = angle - m_driveangle;
+	SmartDashboard::PutNumber("Gyro Heading", driveangle);
 
 	double xaccel = m_accel->GetX();
 	double yaccel = m_accel->GetY();
@@ -42,26 +56,37 @@ void Autonomous::Loop()
 	SmartDashboard::PutNumber("Yaccel", yaccel);
 	SmartDashboard::PutNumber("Zaccel", zaccel);
 
-/*
-	if (m_counter < 4)
+	if (!m_driverstation->IsAutonomous())
+		return;
+
+	switch (m_stage)
 	{
-		if (m_drivetrain->getIsDoneDriving() == false)
+	case kStop:
+		if (!m_instructions.empty())
 		{
-			m_drivetrain->driveDistance(2.0);
+			m_instruction = m_instructions.front();
+			m_instructions.pop();
+			m_counter = m_instruction.time;
+			m_driveangle += m_instruction.angle;
+			m_stage = kDrive;
 		}
-		if (m_drivetrain->getIsDoneDriving() == true)
+		break;
+	case kDrive:
+		if (m_counter > 0)
 		{
-			m_drivetrain->setAngle(90);
+			m_drivetrain->Drive(driveangle * -0.03, m_instruction.speed);
+			m_counter--;
 		}
-		if (m_drivetrain->getIsTurning() == true && m_drivetrain->getIsDoneDriving() == true)
+		else
 		{
-			//m_drivetrain->turnAngle();
+			m_stage = kStop;
 		}
-		if (m_drivetrain->getIsTurning() == false && m_drivetrain->getIsDoneDriving() == true)
-		{
-			m_counter++;
-			m_drivetrain->driveDistance(2);
-		}
+		break;
 	}
-*/
+}
+
+
+void Autonomous::Calibrate()
+{
+	m_gyro->Calibrate();
 }

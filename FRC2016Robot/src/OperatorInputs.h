@@ -43,11 +43,18 @@ public:
 	double joystickY();
 	double joystickZ();
 	bool joystickTrigger(ToggleChoice choice = kToggle);
+	bool button2(ToggleChoice choice = kToggle);
+	bool button3(ToggleChoice choice = kToggle);
+	bool button5(ToggleChoice choice = kToggle);
+	bool button6(ToggleChoice choice = kToggle);
 	bool button7(ToggleChoice choice = kToggle);
 	bool button8(ToggleChoice choice = kToggle);
+	bool button9(ToggleChoice choice = kToggle);
+	bool button10(ToggleChoice choice = kToggle);
 
 	Joystick *m_joystick;
 	Joystick *m_xbox;
+
 private:
 	bool toggle(string buttonName, bool buttonValue);
 	double deadzoneFilterY(double joyStickValue);

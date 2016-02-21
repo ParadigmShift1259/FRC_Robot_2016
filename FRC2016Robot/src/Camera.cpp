@@ -25,31 +25,35 @@ Camera::~Camera()
 }
 
 
-void Camera::RobotInit()
+void Camera::Init()
 {
 	IMAQdxError imaqerror;
 
 	// camera inits
-	// create an image
-	m_front = 0;
-	m_rear = 0;
 	// the camera name (ex "cam0") can be found through the roborio web interface
-	// front camera "cam4"
-	imaqerror = IMAQdxOpenCamera(USB_CAMERA_FRONT, IMAQdxCameraControlModeController, &m_front);
-	if (imaqerror != IMAQdxErrorSuccess)
+	if (m_front == 0)
 	{
-		DriverStation::ReportError("Front IMAQdxOpenCamera error: " + std::to_string((long)imaqerror) + "\n");
-		m_front = 0;
+		// front camera "cam4"
+		imaqerror = IMAQdxOpenCamera(USB_CAMERA_FRONT, IMAQdxCameraControlModeController, &m_front);
+		if (imaqerror != IMAQdxErrorSuccess)
+		{
+			DriverStation::ReportError("Front IMAQdxOpenCamera error: " + std::to_string((long)imaqerror) + "\n");
+			m_front = 0;
+		}
 	}
-	// rear camera "cam2"
-	imaqerror = IMAQdxOpenCamera(USB_CAMERA_REAR, IMAQdxCameraControlModeController, &m_rear);
-	if (imaqerror != IMAQdxErrorSuccess)
+	if (m_rear == 0)
 	{
-		DriverStation::ReportError("Rear IMAQdxOpenCamera error: " + std::to_string((long)imaqerror) + "\n");
-		m_rear = 0;
+		// rear camera "cam2"
+		imaqerror = IMAQdxOpenCamera(USB_CAMERA_REAR, IMAQdxCameraControlModeController, &m_rear);
+		if (imaqerror != IMAQdxErrorSuccess)
+		{
+			DriverStation::ReportError("Rear IMAQdxOpenCamera error: " + std::to_string((long)imaqerror) + "\n");
+			m_rear = 0;
+		}
 	}
+
 	// assign initial session
-	if (m_front)
+	if (m_current == 0)
 	{
 		imaqerror = IMAQdxConfigureGrab(m_front);
 		if (imaqerror != IMAQdxErrorSuccess)
@@ -57,22 +61,10 @@ void Camera::RobotInit()
 		else
 			m_current = m_front;
 	}
-}
 
-
-void Camera::Init()
-{
 	// acquire images
 	if (m_current)
 		IMAQdxStartAcquisition(m_current);
-}
-
-
-void Camera::Stop()
-{
-	// stop acquire images
-	if (m_current)
-		IMAQdxStopAcquisition(m_current);
 }
 
 
@@ -140,4 +132,12 @@ void Camera::Loop()
 			CameraServer::GetInstance()->SetImage(m_frame);
 		}
 	}
+}
+
+
+void Camera::Stop()
+{
+	// stop acquire images
+	if (m_current)
+		IMAQdxStopAcquisition(m_current);
 }

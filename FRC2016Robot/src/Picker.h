@@ -13,6 +13,8 @@
 class Picker
 {
 public:
+	enum State { kDown, kShoot1, kShoot2, kUpDelay, kUp };
+
 	Picker(OperatorInputs* inputs);
 	~Picker();
 	void Init();
@@ -22,7 +24,9 @@ protected:
 	OperatorInputs *m_inputs;
 	SpeedController *m_motor;
 	Solenoid *m_solenoid;
-	bool m_down;
+	State m_state;
+	int m_counter;
+	bool m_prevreverse;
 };
 
 

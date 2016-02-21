@@ -258,6 +258,54 @@ bool OperatorInputs::joystickTrigger(ToggleChoice choice)
 }
 
 
+bool OperatorInputs::button2(ToggleChoice choice)
+{
+	bool button = m_joystick->GetRawButton(2);
+
+	if (choice == kToggle)
+		return toggle("joystickbutton2", button);
+	if (choice == kHold)
+		return button;
+	return false;
+}
+
+
+bool OperatorInputs::button3(ToggleChoice choice)
+{
+	bool button = m_joystick->GetRawButton(3);
+
+	if (choice == kToggle)
+		return toggle("joystickbutton3", button);
+	if (choice == kHold)
+		return button;
+	return false;
+}
+
+
+bool OperatorInputs::button5(ToggleChoice choice)
+{
+	bool button = m_joystick->GetRawButton(5);
+
+	if (choice == kToggle)
+		return toggle("joystickbutton5", button);
+	if (choice == kHold)
+		return button;
+	return false;
+}
+
+
+bool OperatorInputs::button6(ToggleChoice choice)
+{
+	bool button = m_joystick->GetRawButton(6);
+
+	if (choice == kToggle)
+		return toggle("joystickbutton6", button);
+	if (choice == kHold)
+		return button;
+	return false;
+}
+
+
 bool OperatorInputs::button7(ToggleChoice choice)
 {
 	bool button = m_joystick->GetRawButton(7);
@@ -276,6 +324,30 @@ bool OperatorInputs::button8(ToggleChoice choice)
 
 	if (choice == kToggle)
 		return toggle("joystickbutton8", button);
+	if (choice == kHold)
+		return button;
+	return false;
+}
+
+
+bool OperatorInputs::button9(ToggleChoice choice)
+{
+	bool button = m_joystick->GetRawButton(9);
+
+	if (choice == kToggle)
+		return toggle("joystickbutton9", button);
+	if (choice == kHold)
+		return button;
+	return false;
+}
+
+
+bool OperatorInputs::button10(ToggleChoice choice)
+{
+	bool button = m_joystick->GetRawButton(10);
+
+	if (choice == kToggle)
+		return toggle("joystickbutton10", button);
 	if (choice == kHold)
 		return button;
 	return false;

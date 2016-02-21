@@ -9,22 +9,41 @@
 #include "Drivetrain.h"
 #include <AnalogGyro.h>
 #include <BuiltinAccelerometer.h>
+#include <queue>
+
+
+using namespace std;
+
+
+struct Instruction
+{
+	int time;
+	int angle;
+	double speed;
+};
 
 
 class Autonomous
 {
 public:
-	Autonomous(OperatorInputs *operatorinputs, Drivetrain *drivetrain);
+	enum Stage { kStop, kDrive };
+
+	Autonomous(DriverStation *driverstation, OperatorInputs *operatorinputs, Drivetrain *drivetrain);
 	~Autonomous();
 	void Init();
 	void Loop();
+	void Calibrate();
 
 protected:
+	DriverStation *m_driverstation;
 	OperatorInputs *m_inputs;
 	Drivetrain *m_drivetrain;
 	AnalogGyro *m_gyro;
 	Accelerometer *m_accel;
-	double m_angle;
+	queue<Instruction> m_instructions;
+	Instruction m_instruction;
+	int m_stage;
+	double m_driveangle;
 	int m_counter;
 };
 

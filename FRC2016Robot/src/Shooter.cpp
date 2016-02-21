@@ -31,7 +31,7 @@ Shooter::~Shooter()
 
 void Shooter::Loop(bool shoot)
 {
-	bool shootbutton = m_inputs->xBoxBackButton();
+	bool shootbutton = m_inputs->button6();
 	bool winchdown = m_inputs->xBoxDPadRight(OperatorInputs::ToggleChoice::kHold);
 	bool winchup = m_inputs->xBoxDPadLeft(OperatorInputs::ToggleChoice::kHold);
 
@@ -104,6 +104,7 @@ void Shooter::Loop(bool shoot)
 		if (m_counter > 0)						// continue reverse
 		{
 			m_motor->Set(-1);						// reverse motor
+			m_counter--;
 			int distance = m_encoder->Get();		// get distance the motor ran
 			DriverStation::ReportError("Winch encoder: " + to_string(distance) + "\n");
 			if (distance < -1400)
