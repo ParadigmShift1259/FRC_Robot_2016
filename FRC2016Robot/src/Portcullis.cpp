@@ -34,6 +34,7 @@ void Portcullis::Loop()
 {
 	bool downbutton = m_inputs->xBoxXButton();
 	bool upbutton = m_inputs->xBoxYButton();
+	int maxcounter = 100;
 
 	switch (m_state)
 	{
@@ -41,13 +42,13 @@ void Portcullis::Loop()
 		if (downbutton)					// lower the bar
 		{
 			m_motor->Set(-1);				// reverse the motor
-			m_counter = 100;					// max runtime
+			m_counter = maxcounter;					// max runtime
 			m_state = kLower;
 		}
 		if (!m_limit->Get() && upbutton)// bar didn't finish storing, try raising again
 		{
 			m_motor->Set(1);				// turn on the motor
-			m_counter = 100;				// max runtime
+			m_counter = maxcounter;				// max runtime
 			m_state = kRaise;
 		}
 		break;
@@ -71,13 +72,13 @@ void Portcullis::Loop()
 		if (upbutton)					// raise the bar
 		{
 			m_motor->Set(1);				// turn on the motor
-			m_counter = 100;					// max runtime
+			m_counter = maxcounter;					// max runtime
 			m_state = kRaise;
 		}
 		if (!m_limit->Get() && downbutton)// bar didn't finish deploying, try deploying again
 		{
 			m_motor->Set(-1);				// turn on the motor
-			m_counter = 100;					// max runtime
+			m_counter = maxcounter;					// max runtime
 			m_state = kRaise;
 		}
 		break;
