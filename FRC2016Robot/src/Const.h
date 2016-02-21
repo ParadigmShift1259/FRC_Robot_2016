@@ -91,8 +91,7 @@
 
 // Portcullis
 #define PWM_PORTCULLIS_MOTOR 3
-#define DIO_PORTCULLIS_LIMIT_DOWN 0
-#define DIO_PORTCULLIS_LIMIT_UP 1
+#define DIO_PORTCULLIS_LIMIT 0
 
 
 // Autonomous

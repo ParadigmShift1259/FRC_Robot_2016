@@ -13,15 +13,19 @@
 class Portcullis
 {
 public:
+	enum State { kStored, kLower, kDeployed, kRaise };
+
 	Portcullis(OperatorInputs *inputs);
 	~Portcullis();
+	void Init();
 	void Loop();
 
 protected:
 	OperatorInputs *m_inputs;
 	SpeedController *m_motor;
-	DigitalInput *m_limitdown;
-	DigitalInput *m_limitup;
+	DigitalInput *m_limit;
+	State m_state;
+	int m_counter;
 };
 
 
