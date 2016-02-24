@@ -246,6 +246,54 @@ double OperatorInputs::joystickZ()
 }
 
 
+bool OperatorInputs::joystickAxis0Left(ToggleChoice choice)
+{
+	double axis = m_joystick->GetRawAxis(JOYSTICK_X_AXIS);
+
+	if (choice == kToggle)
+		return toggle("joystickAxis0Left", (AXIS0_LEFT_MIN <= axis && axis <= AXIS0_LEFT_MAX));
+	if (choice == kHold)
+		return (AXIS0_LEFT_MIN <= axis && axis <= AXIS0_LEFT_MAX);
+	return false;
+}
+
+
+bool OperatorInputs::joystickAxis0Right(ToggleChoice choice)
+{
+	double axis = m_joystick->GetRawAxis(JOYSTICK_X_AXIS);
+
+	if (choice == kToggle)
+		return toggle("joystickAxis0Right", (AXIS0_RIGHT_MIN <= axis && axis <= AXIS0_RIGHT_MAX));
+	if (choice == kHold)
+		return (AXIS0_RIGHT_MIN <= axis && axis <= AXIS0_RIGHT_MAX);
+	return false;
+}
+
+
+bool OperatorInputs::joystickAxis1Back(ToggleChoice choice)
+{
+	double axis = m_joystick->GetRawAxis(JOYSTICK_Y_AXIS);
+
+	if (choice == kToggle)
+		return toggle("joystickAxis1Back", (AXIS1_BACK_MIN <= axis && axis <= AXIS1_BACK_MAX));
+	if (choice == kHold)
+		return (AXIS1_BACK_MIN <= axis && axis <= AXIS1_BACK_MAX);
+	return false;
+}
+
+
+bool OperatorInputs::joystickAxis1Forward(ToggleChoice choice)
+{
+	double axis = m_joystick->GetRawAxis(JOYSTICK_Y_AXIS);
+
+	if (choice == kToggle)
+		return toggle("joystickAxis1Forward", (AXIS1_FORWARD_MIN <= axis && axis <= AXIS1_FORWARD_MAX));
+	if (choice == kHold)
+		return (AXIS1_FORWARD_MIN <= axis && axis <= AXIS1_FORWARD_MAX);
+	return false;
+}
+
+
 bool OperatorInputs::joystickTrigger(ToggleChoice choice)
 {
 	bool button = m_joystick->GetTrigger();

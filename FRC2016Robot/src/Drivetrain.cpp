@@ -22,21 +22,28 @@ Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 	m_lefttalonlead = new CANTalon(CAN_LEFT_PORT);
 	m_lefttalonfollow = new CANTalon(CAN_SECOND_LEFT_PORT);
 	// set leftTalons1 to follow leftTalons
-	m_lefttalonfollow->SetControlMode(CANSpeedController::ControlMode::kFollower);
-	m_lefttalonfollow->Set(CAN_LEFT_PORT);
+//	m_lefttalonfollow->SetControlMode(CANSpeedController::ControlMode::kFollower);
+//	m_lefttalonfollow->Set(CAN_LEFT_PORT);
 
 	m_righttalonlead = new CANTalon(CAN_RIGHT_PORT);
 	m_righttalonfollow = new CANTalon(CAN_SECOND_RIGHT_PORT);
 	// set rightTalons1 to follow rightTalons
-	m_righttalonfollow->SetControlMode(CANSpeedController::ControlMode::kFollower);
-	m_righttalonfollow->Set(CAN_RIGHT_PORT);
+//	m_righttalonfollow->SetControlMode(CANSpeedController::ControlMode::kFollower);
+//	m_righttalonfollow->Set(CAN_RIGHT_PORT);
 
 	m_lefttalonlead->Set(0);
-	m_lefttalonlead->SetFeedbackDevice(CANTalon::QuadEncoder);
-	m_lefttalonlead->ConfigEncoderCodesPerRev(1024);
+	m_lefttalonfollow->Set(0);
+//	m_lefttalonlead->SetFeedbackDevice(CANTalon::QuadEncoder);
+//	m_lefttalonlead->ConfigEncoderCodesPerRev(1024);
 	m_righttalonlead->Set(0);
-	m_righttalonlead->SetFeedbackDevice(CANTalon::QuadEncoder);
-	m_righttalonlead->ConfigEncoderCodesPerRev(1024);
+	m_righttalonlead->Set(0);
+//	m_righttalonlead->SetFeedbackDevice(CANTalon::QuadEncoder);
+//	m_righttalonlead->ConfigEncoderCodesPerRev(1024);
+
+	m_lefttalonlead->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
+	m_lefttalonfollow->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
+	m_righttalonlead->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
+	m_righttalonfollow->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
 
 	//Setup Encoders
 	//leftEncoder = new Encoder(3, 4);
@@ -68,7 +75,7 @@ Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 	m_coasting = 1;
 	m_invertleft = INVERT_LEFT;
 	m_invertright = INVERT_RIGHT;
-	m_direction = 1.0;
+	m_direction = DT_DEFAULT_DIRECTION;
 
 	m_timerencoder = new Timer();
 }
@@ -103,38 +110,59 @@ void Drivetrain::Init()
 	m_previousy = 0;
 	m_coasting = 1;
 	m_lefttalonlead->Set(0);
+	m_lefttalonfollow->Set(0);
 	m_righttalonlead->Set(0);
+	m_righttalonfollow->Set(0);
 	m_timerencoder->Reset();
 }
 
 
 void Drivetrain::Loop()
 {
+	static unsigned int loopcnt = 0;
+	static unsigned int shiftcnt = 0;
 	double x;
 	double y;
 
-	x = m_inputs->joystickX()+m_inputs->xBoxLeftX();
+	//x = m_inputs->joystickX()+
+	x = m_inputs->xBoxLeftX();
 
 	if (m_isdownshifting)
 		y=0;
 	else
-	{
-		y = m_inputs->joystickY()+m_inputs->xBoxLeftY();
-		y *= m_direction;
-	}
+		y = m_inputs->xBoxLeftY();
 
 	Drive(x, y, true);
 
-	if (m_inputs->joystickTrigger() || m_inputs->xBoxLeftTrigger())
+	bool shift = m_inputs->xBoxLeftTrigger();
+	//if (m_inputs->joystickTrigger() ||
+	if (shift)
 	{
+		shiftcnt += 4;
 		if (m_ishighgear)
+		{
 			m_isdownshifting = true;
+			shiftcnt += 2;
+		}
 		else
+		{
 			Shift();
 			m_isdownshifting = false;
+			shiftcnt += 1;
+		}
 	}
-	if (m_isdownshifting && (abs(m_previousx) < ENCODER_TOP_SPEED) && (abs(m_previousy) < ENCODER_TOP_SPEED))
+	SmartDashboard::PutNumber("SHIFT1_x",abs(m_previousx * X_SCALING));
+	SmartDashboard::PutNumber("SHIFT2_y",abs(m_previousy * Y_SCALING));
+	SmartDashboard::PutNumber("SHIFT3_Top",ENCODER_TOP_SPEED);
+	SmartDashboard::PutNumber("SHIFT4_Count",loopcnt);
+	SmartDashboard::PutNumber("SHIFT5_SHIFT",shift);
+	SmartDashboard::PutNumber("SHIFT6_SCNT",shiftcnt);
+	SmartDashboard::PutNumber("SHIFT7_IS",m_isdownshifting);
+	SmartDashboard::PutNumber("SHIFT8_absx",(abs(m_previousx * X_SCALING) < ENCODER_TOP_SPEED));
+	SmartDashboard::PutNumber("SHIFT9_absy",(abs(m_previousy * Y_SCALING) < ENCODER_TOP_SPEED));
+	if (m_isdownshifting && (abs(m_previousx * X_SCALING) < ENCODER_TOP_SPEED) && (abs(m_previousy * Y_SCALING) < ENCODER_TOP_SPEED))
 	{
+		loopcnt++;
 		Shift();
 		m_isdownshifting = false;
 	}
@@ -150,22 +178,24 @@ void Drivetrain::Stop()
 
 void Drivetrain::Drive(double x, double y, bool ramp)
 {
+
+	double yd = y * m_direction;
 	double maxpower;
-	if (x == 0 || y == 0) 
+	if (x == 0 || yd == 0)
 	{
 		maxpower = 1;
 	}
 	else
 	{
-		if (abs(x) > abs(y))
-			maxpower = (abs(y) / abs(x)) + 1;
+		if (abs(x) > abs(yd))
+			maxpower = (abs(yd) / abs(x)) + 1;
 		else
-			maxpower = (abs(x) / abs(y)) + 1;
+			maxpower = (abs(x) / abs(yd)) + 1;
 	}
 	if (!ramp)
 	{
 		m_previousx = x;//rampInput(previousX, joyStickX, BatteryRampingMin, BatteryRampingMax);
-		m_previousy = y;
+		m_previousy = yd;
 		m_leftpow = m_previousy - m_previousx;
 		m_rightpow = m_previousy + m_previousx;
 	}
@@ -173,28 +203,31 @@ void Drivetrain::Drive(double x, double y, bool ramp)
 	{
 		double rampmin = RAMPING_RATE_MIN / m_driverstation->GetInstance().GetBatteryVoltage();
 		double rampmax = RAMPING_RATE_MAX / m_driverstation->GetInstance().GetBatteryVoltage();
-		m_previousx = x;//rampInput(previousX, joyStickX, rampmin, rampmax);
-		m_previousy = Ramp(m_previousy, y, rampmin, rampmax);
+		SmartDashboard::PutNumber("DT6_BatVol",m_driverstation->GetInstance().GetBatteryVoltage());
+;		m_previousx = x;//rampInput(previousX, joyStickX, rampmin, rampmax);
+		m_previousy = Ramp(m_previousy, yd, rampmin, rampmax);
 		m_leftpow = m_previousy * Y_SCALING - m_previousx * X_SCALING;
 		m_rightpow = m_previousy * Y_SCALING + m_previousx * X_SCALING;
 	}
-	m_leftspeed = m_lefttalonlead->GetSpeed();
+	/*m_leftspeed = m_lefttalonlead->GetSpeed();
 	m_rightspeed = m_righttalonlead->GetSpeed();
 	m_leftposition = m_lefttalonlead->GetPosition();
-	m_rightposition = m_righttalonlead->GetPosition();
+	m_rightposition = m_righttalonlead->GetPosition();*/
 
 	m_lefttalonlead->Set(m_invertleft * m_coasting * LeftMotor(maxpower));
+	m_lefttalonfollow->Set(m_invertleft * m_coasting * LeftMotor(maxpower));
 	m_righttalonlead->Set(m_invertright * m_coasting * RightMotor(maxpower));
-	SmartDashboard::PutNumber("TurningRamp", m_previousx); //Left Motors are forward=negative
-	SmartDashboard::PutNumber("LeftPow", m_invertleft*m_leftpow); //Left Motors are forward=negative
-	SmartDashboard::PutNumber("DrivingRamp", m_previousy); //Right Motors are forward=positive
-	SmartDashboard::PutNumber("RightPow", m_invertright*m_rightpow); //Right Motors are forward=positive
-	SmartDashboard::PutString("Gear", m_ishighgear ? "High" : "Low");
+	m_righttalonfollow->Set(m_invertright * m_coasting * RightMotor(maxpower));
+	SmartDashboard::PutNumber("DT1_TurningRamp", m_previousx); //Left Motors are forward=negative
+	SmartDashboard::PutNumber("DT3_LeftPow", m_invertleft*m_leftpow); //Left Motors are forward=negative
+	SmartDashboard::PutNumber("DT2_DrivingRamp", m_previousy); //Right Motors are forward=positive
+	SmartDashboard::PutNumber("DT4_RightPow", m_invertright*m_rightpow); //Right Motors are forward=positive
+	SmartDashboard::PutNumber("DT5_Gear", m_ishighgear);
 
-	SmartDashboard::PutNumber("leftSpeed", m_leftspeed);
+	/*SmartDashboard::PutNumber("leftSpeed", m_leftspeed);
 	SmartDashboard::PutNumber("leftPosition", m_leftposition);
 	SmartDashboard::PutNumber("rightSpeed", m_rightspeed);
-	SmartDashboard::PutNumber("rightPosition", m_rightposition);
+	SmartDashboard::PutNumber("rightPosition", m_rightposition);*/
 }
 
 
@@ -366,7 +399,7 @@ void Drivetrain::Shift()
 bool Drivetrain::ChangeDirection()
 {
 	m_direction *= -1.0;
-	return (m_direction == 1.0);
+	return (m_direction == DT_DEFAULT_DIRECTION);
 }
 
 
@@ -417,14 +450,14 @@ double Drivetrain::LeftMotor(double &maxpower)
 	double leftpow = m_leftpow * LEFT_MOTOR_SCALING / maxpower;
 	//moved rightSpeed to class scope, it is being set in setPower()
 
-	if (m_leftpow != 0 && m_rightpow != 0)
+	/*if (m_leftpow != 0 && m_rightpow != 0)
 	{
 		m_leftencodermax = abs(m_leftspeed / m_leftpow);
 		if (min(abs(m_leftspeed), abs(m_rightspeed)) > ENCODER_TOP_SPEED)
 			CheckEncoderTimer();
 		if (m_isleftfaster)
 			leftpow = m_ratiolr * leftpow;
-	}
+	}*/
 	return leftpow;
 }
 
@@ -435,14 +468,14 @@ double Drivetrain::RightMotor(double &maxpower)
 
 	double rightpow = m_rightpow * RIGHT_MOTOR_SCALING / maxpower;
 
-	if (m_leftpow != 0 && m_rightpow != 0)
+	/*if (m_leftpow != 0 && m_rightpow != 0)
 	{
 		m_rightencodermax = abs(m_rightspeed / m_rightpow);
 		if (min(abs(m_leftspeed), abs(m_rightspeed)) > ENCODER_TOP_SPEED)
 			CheckEncoderTimer();
 		if (!m_isleftfaster)
 			rightpow = m_ratiolr * rightpow;
-	}
+	}*/
 	return rightpow;
 }
 

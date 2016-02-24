@@ -72,13 +72,13 @@ void VisionTargeting::Loop()
 			case kInitialY:
 				if (ypos < -10)			// drive backward
 				{
-					m_drivetrain->Drive(0, min(ypos/200.0, -0.13));
+					m_drivetrain->Drive(0, max(ypos/200.0, 0.13));
 					m_steady = 0;
 				}
 				else
 				if (ypos > 10)			// drive forward
 				{
-					m_drivetrain->Drive(0, max(ypos/200.0, 0.13));
+					m_drivetrain->Drive(0, min(ypos/200.0, -0.13));
 					m_steady = 0;
 				}
 				else
@@ -114,13 +114,13 @@ void VisionTargeting::Loop()
 			case kFinalY:
 				if (ypos < -5)			// drive backward
 				{
-					m_drivetrain->Drive(0, min(ypos/200.0, -0.13));
+					m_drivetrain->Drive(0, max(ypos/200.0, 0.13));
 					m_steady = 0;
 				}
 				else
 				if (ypos > 5)			// drive forward
 				{
-					m_drivetrain->Drive(0, max(ypos/200.0, 0.13));
+					m_drivetrain->Drive(0, min(ypos/200.0, -0.13));
 					m_steady = 0;
 				}
 				else

@@ -43,6 +43,10 @@ public:
 	double joystickY();
 	double joystickZ();
 	bool joystickTrigger(ToggleChoice choice = kToggle);
+	bool joystickAxis0Left(ToggleChoice choice = kToggle);
+	bool joystickAxis0Right(ToggleChoice choice = kToggle);
+	bool joystickAxis1Back(ToggleChoice choice = kToggle);
+	bool joystickAxis1Forward(ToggleChoice choice = kToggle);
 	bool button2(ToggleChoice choice = kToggle);
 	bool button3(ToggleChoice choice = kToggle);
 	bool button5(ToggleChoice choice = kToggle);

@@ -6,6 +6,7 @@
 
 void Robot::RobotInit()
 {
+	NetworkTable::GlobalDeleteAll();
 	// live window inits
 	m_lw = LiveWindow::GetInstance();
 	m_autonamedefault = "Default";
@@ -19,7 +20,7 @@ void Robot::RobotInit()
 	m_inputs = new OperatorInputs();
 	m_drivetrain = new Drivetrain(m_inputs, &m_ds);
 	m_camera = new Camera(m_inputs, m_drivetrain);
-	m_picker = new Picker(m_inputs);
+	m_picker = new Picker(m_inputs, &m_ds);
 	m_shooter = new Shooter(m_inputs);
 	m_portcullis = new Portcullis(m_inputs);
 	m_climber = new Climber(m_inputs);
@@ -44,6 +45,7 @@ void Robot::AutonomousInit()
 	m_camera->Init();
 	m_compressor->Start();
 	m_autonomous->Init();
+	m_shooter->Init();
 
 /*
 	autoSelected = *((string*)chooser->GetSelected());
@@ -64,8 +66,8 @@ void Robot::AutonomousInit()
 
 void Robot::AutonomousPeriodic()
 {
-	m_autonomous->Loop();
-	m_camera->Loop();
+	//m_autonomous->Loop();
+	//m_camera->Loop();
 /*
 	if (autoSelected == autoNameCustom)
 	{
@@ -85,6 +87,7 @@ void Robot::TeleopInit()
 	m_camera->Init();
 	m_compressor->Start();
 	m_autonomous->Init();
+	m_shooter->Init();
 }
 
 
@@ -100,7 +103,7 @@ void Robot::TeleopPeriodic()
 		m_climber->Loop();
 	}
 	m_vision->Loop();
-	m_autonomous->Loop();
+	//m_autonomous->Loop();
 }
 
 
@@ -110,6 +113,7 @@ void Robot::TestInit()
 	m_camera->Init();
 	m_compressor->Start();
 	m_autonomous->Calibrate();
+	m_shooter->Init();
 }
 
 

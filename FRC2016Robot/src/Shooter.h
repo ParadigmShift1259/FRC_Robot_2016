@@ -19,6 +19,7 @@ public:
 
 	Shooter(OperatorInputs* inputs);
 	~Shooter();
+	void Init();
 	void Loop(bool shoot = false);
 
 protected:

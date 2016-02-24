@@ -41,13 +41,13 @@ void Portcullis::Loop()
 	case kStored:					// portcullis bar is in the upright position
 		if (downbutton)					// lower the bar
 		{
-			m_motor->Set(-1);				// reverse the motor
+			m_motor->Set(-.75);				// reverse the motor
 			m_counter = maxcounter;					// max runtime
 			m_state = kLower;
 		}
 		if (!m_limit->Get() && upbutton)// bar didn't finish storing, try raising again
 		{
-			m_motor->Set(1);				// turn on the motor
+			m_motor->Set(.75);				// turn on the motor
 			m_counter = maxcounter;				// max runtime
 			m_state = kRaise;
 		}
@@ -57,7 +57,8 @@ void Portcullis::Loop()
 		{
 			m_counter--;					// decrement max time counter
 		}
-		if (m_limit->Get())				// limit switch tripped
+		if ((m_counter <= (maxcounter-5)) &&
+			m_limit->Get())				// limit switch tripped
 		{
 			m_counter = 0;					// stop moving bar down
 		}
@@ -71,13 +72,13 @@ void Portcullis::Loop()
 	case kDeployed:					// portcullis bar is in the deployed position
 		if (upbutton)					// raise the bar
 		{
-			m_motor->Set(1);				// turn on the motor
+			m_motor->Set(.75);				// turn on the motor
 			m_counter = maxcounter;					// max runtime
 			m_state = kRaise;
 		}
 		if (!m_limit->Get() && downbutton)// bar didn't finish deploying, try deploying again
 		{
-			m_motor->Set(-1);				// turn on the motor
+			m_motor->Set(-.75);				// turn on the motor
 			m_counter = maxcounter;					// max runtime
 			m_state = kRaise;
 		}
@@ -87,7 +88,8 @@ void Portcullis::Loop()
 		{
 			m_counter--;					// decrement max time counter
 		}
-		if (m_limit->Get())				// limit switch tripped
+		if ((m_counter <= (maxcounter-5)) &&
+			m_limit->Get())				// limit switch tripped
 		{
 			m_counter = 0;					// stop moving bar up
 		}
