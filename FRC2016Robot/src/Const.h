@@ -82,7 +82,8 @@
 
 
 // Picker
-#define PCM_PICKER_SOLENOID 1
+#define PCM_PICKER_SOLENOID_A 1
+#define PCM_PICKER_SOLENOID_B 5
 #define PCM_PICKER_VENT 4
 #define PWM_PICKER_MOTOR 4
 

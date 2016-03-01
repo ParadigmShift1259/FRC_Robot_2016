@@ -8,7 +8,8 @@
 #include "OperatorInputs.h"
 #include "SpeedController.h"
 #include "Solenoid.h"
-#include <Driverstation.h>
+#include "Driverstation.h"
+#include "DoubleSolenoid.h"
 
 
 class Picker
@@ -25,7 +26,7 @@ protected:
 	OperatorInputs *m_inputs;
 	DriverStation *m_driverstation;
 	SpeedController *m_motor;
-	Solenoid *m_solenoid;
+	DoubleSolenoid *m_solenoid;
 	Solenoid *m_vent;
 	State m_state;
 	int m_counter;

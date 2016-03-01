@@ -11,7 +11,7 @@ Picker::Picker(OperatorInputs* inputs, DriverStation* driverstation)
 	m_inputs = inputs;
 	m_driverstation = driverstation;
 	m_motor = new Spark(PWM_PICKER_MOTOR);
-	m_solenoid = new Solenoid(PCM_PICKER_SOLENOID);
+	m_solenoid = new Solenoid(PCM_PICKER_SOLENOID_A, PCM_PICKER_SOLENOID_B);
 	m_vent = new Solenoid(PCM_PICKER_VENT);
 	m_state = kUp;
 	m_counter = 0;
@@ -29,7 +29,7 @@ Picker::~Picker()
 
 void Picker::Init()
 {
-	m_solenoid->Set(true);
+	m_solenoid->Set(DoubleSolenoid::kForward);
 	m_vent->Set(true);
 	m_counter = 0;
 	m_prevreverse = false;
@@ -104,7 +104,7 @@ void Picker::Loop()
 	case kDown:
 		if (shootbutton)
 		{
-			m_solenoid->Set(false);
+			m_solenoid->Set(DoubleSolenoid::kReverse);
 			m_vent->Set(true);
 			m_counter = 5;
 			m_state = kShoot1;
@@ -148,7 +148,7 @@ void Picker::Loop()
 		}
 		else
 		{
-			m_solenoid->Set(false);
+			m_solenoid->Set(DoubleSolenoid::kReverse);
 			m_motor->Set(0);
 			m_counter = 0;
 			m_state = kUp;
@@ -157,7 +157,7 @@ void Picker::Loop()
 	case kUp:
 		if (downbutton)
 		{
-			m_solenoid->Set(true);
+			m_solenoid->Set(DoubleSolenoid::kForward);
 			//m_motor->Set(0.7*m_stop);
 			m_state = kDownDelay;
 			m_counter = 5;
