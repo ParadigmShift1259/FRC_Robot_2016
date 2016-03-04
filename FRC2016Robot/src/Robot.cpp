@@ -126,6 +126,7 @@ void Robot::TestPeriodic()
 	{
 		m_drivetrain->Loop();
 		m_camera->Loop();
+		//m_camera->Attributes();
 		m_picker->Loop();
 		m_shooter->Loop();
 		m_portcullis->Loop();

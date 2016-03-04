@@ -8,6 +8,7 @@
 #include "OperatorInputs.h"
 #include "Drivetrain.h"
 #include "Relay.h"
+#include "USBCamera.h"
 
 
 class Camera
@@ -17,6 +18,7 @@ public:
 	~Camera();
 	void Init();
 	void Loop();
+	void Attributes();
 	void Stop();
 
 protected:
@@ -28,6 +30,9 @@ protected:
 	IMAQdxSession m_front;
 	IMAQdxSession m_rear;
 	IMAQdxSession m_current;
+	//USBCamera* m_front;
+	//USBCamera* m_rear;
+	//USBCamera* m_current;
 
 	// led variables
 	Relay *m_led;
