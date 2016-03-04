@@ -43,11 +43,12 @@ void Shooter::Loop(bool shoot)
 	bool winchdown = m_inputs->xBoxDPadRight(OperatorInputs::ToggleChoice::kHold);
 	bool winchup = m_inputs->xBoxDPadLeft(OperatorInputs::ToggleChoice::kHold);
 
-	SmartDashboard::PutNumber("limit switch",m_solenoid->Get());
 	// manual override
 	if (winchdown)								// draw down the shooter
 	{
 		m_motor->Set(1);							// start winch
+		int distance = m_encoder->Get();		// get distance the motor ran
+		DriverStation::ReportError("Winch encoder: " + to_string(distance) + "\n");
 		if (m_limitdown->Get())					// if limit switch pressed
 			m_solenoid->Set(false);						// lock shooter
 		m_stage = kOverride;
@@ -56,6 +57,8 @@ void Shooter::Loop(bool shoot)
 	if (winchup)								// reverse the winch
 	{
 		m_motor->Set(-1);							// reverse winch
+		int distance = m_encoder->Get();		// get distance the motor ran
+		DriverStation::ReportError("Winch encoder: " + to_string(distance) + "\n");
 		m_stage = kOverride;
 	}
 
@@ -76,7 +79,7 @@ void Shooter::Loop(bool shoot)
 		}
 		if (m_counter <= 0)						// start winching
 		{
-			m_counter = 50;						// delay ~4 second max runtime before auto shutoff
+			m_counter = 100;						// delay ~4 second max runtime before auto shutoff
 			m_stage = kWinch;
 		}
 		break;

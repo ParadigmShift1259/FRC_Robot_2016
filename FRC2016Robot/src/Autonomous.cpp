@@ -88,5 +88,5 @@ void Autonomous::Loop()
 
 void Autonomous::Calibrate()
 {
-	//m_gyro->Calibrate();
+	m_gyro->Calibrate();
 }

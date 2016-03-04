@@ -76,14 +76,14 @@
 
 
 // Camera
-#define USB_CAMERA_FRONT "cam2"
+#define USB_CAMERA_FRONT "cam0"
 #define USB_CAMERA_REAR "cam1"
 #define RLY_CAMERA_LED 0
 
 
 // Picker
-#define PCM_PICKER_SOLENOID_A 1
-#define PCM_PICKER_SOLENOID_B 5
+#define PCM_PICKER_SOLENOID_A 5
+#define PCM_PICKER_SOLENOID_B 1
 #define PCM_PICKER_VENT 4
 #define PWM_PICKER_MOTOR 4
 

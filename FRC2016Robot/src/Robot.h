@@ -36,7 +36,6 @@ private:
 	string m_autonamecustom;
 	string m_autoselected;
 
-
 	OperatorInputs *m_inputs;
 	Drivetrain *m_drivetrain;
 	Camera *m_camera;
@@ -48,14 +47,14 @@ private:
 	VisionTargeting *m_vision;
 	Compressor *m_compressor;
 
-	void RobotInit();
-	void AutonomousInit();
-	void AutonomousPeriodic();
-	void TeleopInit();
-	void TeleopPeriodic();
-	void TestInit();
-	void TestPeriodic();
-	void DisabledInit();
+	virtual void RobotInit();
+	virtual void AutonomousInit();
+	virtual void AutonomousPeriodic();
+	virtual void TeleopInit();
+	virtual void TeleopPeriodic();
+	virtual void TestInit();
+	virtual void TestPeriodic();
+	virtual void DisabledInit();
 };
 
 

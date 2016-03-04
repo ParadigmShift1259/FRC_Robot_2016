@@ -41,11 +41,12 @@ void Robot::RobotInit()
  */
 void Robot::AutonomousInit()
 {
+	m_compressor->Start();
 	m_drivetrain->Init();
 	m_camera->Init();
-	m_compressor->Start();
-	m_autonomous->Init();
+	m_picker->Init();
 	m_shooter->Init();
+	//m_autonomous->Calibrate();
 
 /*
 	autoSelected = *((string*)chooser->GetSelected());
@@ -67,7 +68,7 @@ void Robot::AutonomousInit()
 void Robot::AutonomousPeriodic()
 {
 	//m_autonomous->Loop();
-	//m_camera->Loop();
+	m_camera->Loop();
 /*
 	if (autoSelected == autoNameCustom)
 	{
@@ -83,11 +84,12 @@ void Robot::AutonomousPeriodic()
 
 void Robot::TeleopInit()
 {
+	m_compressor->Start();
 	m_drivetrain->Init();
 	m_camera->Init();
-	m_compressor->Start();
-	m_autonomous->Init();
+	m_picker->Init();
 	m_shooter->Init();
+	//m_autonomous->Calibrate();
 }
 
 
@@ -103,17 +105,18 @@ void Robot::TeleopPeriodic()
 		m_climber->Loop();
 	}
 	m_vision->Loop();
-	//m_autonomous->Loop();
+	m_autonomous->Loop();
 }
 
 
 void Robot::TestInit()
 {
+	m_compressor->Start();
 	m_drivetrain->Init();
 	m_camera->Init();
-	m_compressor->Start();
-	m_autonomous->Calibrate();
+	m_picker->Init();
 	m_shooter->Init();
+	m_autonomous->Calibrate();
 }
 
 
@@ -135,9 +138,9 @@ void Robot::TestPeriodic()
 
 void Robot::DisabledInit()
 {
+	m_compressor->Stop();
 	m_drivetrain->Stop();
 	m_camera->Stop();
-	m_compressor->Stop();
 }
 
 

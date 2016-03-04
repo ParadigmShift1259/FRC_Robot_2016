@@ -4,6 +4,7 @@
 #include <Portcullis.h>
 #include <spark.h>
 #include "Const.h"
+#include <driverstation.h>
 
 
 Portcullis::Portcullis(OperatorInputs *inputs)
