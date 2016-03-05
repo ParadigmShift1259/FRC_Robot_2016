@@ -37,9 +37,9 @@ void Picker::Init()
 }
 
 
-void Picker::Loop()
+void Picker::Loop(bool drop)
 {
-	bool downbutton = m_inputs->xBoxAButton();
+	bool downbutton = m_inputs->xBoxAButton() || drop;
 	bool upbutton = m_inputs->xBoxBButton();
 	bool shootbutton = m_inputs->xBoxRightBumper();
 	bool reversebutton = m_inputs->xBoxRightTrigger(OperatorInputs::ToggleChoice::kHold);
@@ -148,8 +148,9 @@ void Picker::Loop()
 		if (downbutton)
 		{
 			m_solenoid->Set(DoubleSolenoid::kForward);
+			m_motor->Set(0.7 * m_stop);
 			m_state = kDownDelay;
-			m_counter = 25;
+			m_counter = 50;
 		}
 		break;
 	case kDownDelay:
@@ -161,7 +162,6 @@ void Picker::Loop()
 		{
 			m_counter = 0;
 			m_stop = 1;
-			m_motor->Set(0.7 * m_stop);
 			m_state = kDown;
 		}
 		break;

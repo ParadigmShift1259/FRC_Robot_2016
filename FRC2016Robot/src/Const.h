@@ -67,6 +67,7 @@
 #define Y_SCALING 1.0
 #define LEFT_MOTOR_SCALING 1
 #define RIGHT_MOTOR_SCALING 1
+#define TURN_SPEED 0.5
 // Encoders
 #define ENCODER_TOP_SPEED 0.6
 #define ENCODER_WAIT_TIME 168

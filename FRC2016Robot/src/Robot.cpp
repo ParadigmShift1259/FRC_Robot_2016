@@ -21,7 +21,7 @@ void Robot::RobotInit()
 	m_drivetrain = new Drivetrain(m_inputs, &m_ds);
 	m_camera = new Camera(m_inputs, m_drivetrain);
 	m_picker = new Picker(m_inputs, &m_ds);
-	m_shooter = new Shooter(m_inputs);
+	m_shooter = new Shooter(m_inputs, m_picker);
 	m_portcullis = new Portcullis(m_inputs);
 	m_climber = new Climber(m_inputs);
 	m_autonomous = new Autonomous(&m_ds, m_inputs, m_drivetrain);

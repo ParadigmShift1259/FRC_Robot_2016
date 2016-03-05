@@ -12,7 +12,7 @@ Portcullis::Portcullis(OperatorInputs *inputs)
 	m_inputs = inputs;
 	m_motor = new Spark(PWM_PORTCULLIS_MOTOR);
 	m_limit = new DigitalInput(DIO_PORTCULLIS_LIMIT);
-	m_state = kStored;
+	m_state = kDeployed;
 	m_counter = 0;
 }
 
@@ -26,7 +26,7 @@ Portcullis::~Portcullis()
 
 void Portcullis::Init()
 {
-	m_state = kStored;
+	m_state = kDeployed;
 	m_counter = 0;
 }
 
@@ -42,7 +42,7 @@ void Portcullis::Loop()
 	case kStored:					// portcullis bar is in the upright position
 		if (downbutton)					// lower the bar
 		{
-			m_motor->Set(-.75);				// reverse the motor
+			m_motor->Set(-1.0);				// reverse the motor
 			m_counter = maxcounter;					// max runtime
 			m_state = kLower;
 		}
@@ -79,7 +79,7 @@ void Portcullis::Loop()
 		}
 		if (!m_limit->Get() && downbutton)// bar didn't finish deploying, try deploying again
 		{
-			m_motor->Set(-.75);				// turn on the motor
+			m_motor->Set(-1.0);				// turn on the motor
 			m_counter = maxcounter;					// max runtime
 			m_state = kRaise;
 		}

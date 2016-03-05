@@ -61,7 +61,7 @@ void Climber::Loop()
 		}
 		else
 		{
-			m_counter = 50;
+			m_counter = 25;
 			m_state = kClimb;
 		}
 		break;
@@ -72,7 +72,7 @@ void Climber::Loop()
 				m_counter--;
 			else
 				m_solenoid->Set(false);					// reset the solenoid
-			m_motor->Set(-0.5);
+			m_motor->Set(-1);
 		}
 		else
 		if (climbdownbutton)					// lower the robot
@@ -81,7 +81,7 @@ void Climber::Loop()
 				m_counter--;
 			else
 				m_solenoid->Set(false);					// reset the solenoid
-			m_motor->Set(0.5);
+			m_motor->Set(1);
 		}
 		else
 		{

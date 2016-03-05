@@ -6,6 +6,7 @@
 
 
 #include "OperatorInputs.h"
+#include "Picker.h"
 #include <Solenoid.h>
 #include <SpeedController.h>
 #include <DigitalInput.h>
@@ -15,15 +16,16 @@
 class Shooter
 {
 public:
-	enum Stage { kReady, kRelease, kWinch, kLock, kReverse, kOverride };
+	enum Stage { kReady, kPickerDrop, kRelease, kWinch, kLock, kReverse, kOverride };
 
-	Shooter(OperatorInputs* inputs);
+	Shooter(OperatorInputs* inputs, Picker* picker);
 	~Shooter();
 	void Init();
 	void Loop(bool shoot = false);
 
 protected:
 	OperatorInputs *m_inputs;
+	Picker *m_picker;
 	Solenoid *m_solenoid;
 	SpeedController *m_motor;
 	DigitalInput *m_limitdown;

@@ -8,9 +8,10 @@
 #include <driverstation.h>
 
 
-Shooter::Shooter(OperatorInputs* inputs)
+Shooter::Shooter(OperatorInputs* inputs, Picker* picker)
 {
 	m_inputs = inputs;
+	m_picker = picker;
 	m_solenoid = new Solenoid(PCM_SHOOTER_SOLENOID);
 	m_motor = new Spark(PWM_SHOOTER_MOTOR);
 	m_limitdown = new DigitalInput(DIO_SHOOTER_LIMIT_DOWN);
@@ -65,11 +66,20 @@ void Shooter::Loop(bool shoot)
 	switch (m_stage)
 	{
 	case kReady:
-		if (shootbutton || shoot)				// shoot button pressed or shoot action
+	case kPickerDrop:
+		if (shootbutton || shoot || (m_stage == kPickerDrop))				// shoot button pressed or shoot action
 		{
-			m_solenoid->Set(true);					// release shooter
-			m_counter = 25;							// delay ~1 second before winching
-			m_stage = kRelease;
+			if (m_picker->GetState() != Picker::State::kDown)
+			{
+				m_picker->Loop(true);
+				m_stage = kPickerDrop;
+			}
+			else
+			{
+				m_solenoid->Set(true);					// release shooter
+				m_counter = 25;							// delay ~1 second before winching
+				m_stage = kRelease;
+			}
 		}
 		break;
 	case kRelease:

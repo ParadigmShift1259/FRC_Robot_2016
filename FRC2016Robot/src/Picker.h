@@ -20,7 +20,8 @@ public:
 	Picker(OperatorInputs* inputs, DriverStation* driverstation);
 	~Picker();
 	void Init();
-	void Loop();
+	void Loop(bool drop = false);
+	State GetState() { return m_state; }
 
 protected:
 	OperatorInputs *m_inputs;
