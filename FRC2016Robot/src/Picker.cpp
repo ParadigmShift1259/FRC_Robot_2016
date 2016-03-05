@@ -92,7 +92,6 @@ void Picker::Loop()
 		if (shootbutton)
 		{
 			m_vent->Set(true);			// close vent
-			m_solenoid->Set(DoubleSolenoid::kReverse);
 			m_counter = 5;
 			m_state = kShoot1;
 		}
@@ -115,8 +114,8 @@ void Picker::Loop()
 		}
 		else
 		{
-			m_motor->Set(-1.0 * m_stop);
-			m_counter = 25;
+			m_solenoid->Set(DoubleSolenoid::kReverse);
+			m_counter = 5;
 			m_state = kShoot2;
 		}
 		break;
@@ -127,9 +126,9 @@ void Picker::Loop()
 		}
 		else
 		{
-			m_motor->Set(0);
-			m_counter = 0;
-			m_state = kUp;
+			m_motor->Set(-1.0 * m_stop);
+			m_counter = 5;
+			m_state = kUpDelay;
 		}
 		break;
 	case kUpDelay:
