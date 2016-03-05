@@ -46,6 +46,7 @@ void Robot::AutonomousInit()
 	m_camera->Init();
 	m_picker->Init();
 	m_shooter->Init();
+	m_vision->Init();
 	//m_autonomous->Calibrate();
 
 /*
@@ -90,6 +91,7 @@ void Robot::TeleopInit()
 	m_picker->Init();
 	m_shooter->Init();
 	//m_autonomous->Calibrate();
+	m_vision->Init();
 }
 
 
@@ -117,6 +119,7 @@ void Robot::TestInit()
 	m_picker->Init();
 	m_shooter->Init();
 	m_autonomous->Calibrate();
+	m_vision->Init();
 }
 
 
@@ -141,6 +144,7 @@ void Robot::DisabledInit()
 	m_compressor->Stop();
 	m_drivetrain->Stop();
 	m_camera->Stop();
+	m_vision->Stop();
 }
 
 
