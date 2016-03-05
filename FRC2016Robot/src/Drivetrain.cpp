@@ -78,6 +78,8 @@ Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 	m_direction = DT_DEFAULT_DIRECTION;
 
 	m_timerencoder = new Timer();
+
+	m_batterspeedmodified = false;
 }
 
 
@@ -123,6 +125,9 @@ void Drivetrain::Loop()
 	static unsigned int shiftcnt = 0;
 	double x;
 	double y;
+	m_shift = m_inputs->xBoxLeftTrigger();
+
+	BatterDriving();
 
 	//x = m_inputs->joystickX()+
 	x = m_inputs->xBoxLeftX();
@@ -132,11 +137,14 @@ void Drivetrain::Loop()
 	else
 		y = m_inputs->xBoxLeftY();
 
+	if (m_batterspeedmodified)
+		y=y*BATTER_SPEED_MODIFIER;
+
 	Drive(x, y, true);
 
-	bool shift = m_inputs->xBoxLeftTrigger();
+
 	//if (m_inputs->joystickTrigger() ||
-	if (shift)
+	if (m_shift)
 	{
 		shiftcnt += 4;
 		if (m_ishighgear)
@@ -155,7 +163,7 @@ void Drivetrain::Loop()
 	SmartDashboard::PutNumber("SHIFT2_y",abs(m_previousy * Y_SCALING));
 	SmartDashboard::PutNumber("SHIFT3_Top",ENCODER_TOP_SPEED);
 	SmartDashboard::PutNumber("SHIFT4_Count",loopcnt);
-	SmartDashboard::PutNumber("SHIFT5_SHIFT",shift);
+	SmartDashboard::PutNumber("SHIFT5_SHIFT",m_shift);
 	SmartDashboard::PutNumber("SHIFT6_SCNT",shiftcnt);
 	SmartDashboard::PutNumber("SHIFT7_IS",m_isdownshifting);
 	SmartDashboard::PutNumber("SHIFT8_absx",(abs(m_previousx * X_SCALING) < ENCODER_TOP_SPEED));
@@ -204,7 +212,7 @@ void Drivetrain::Drive(double x, double y, bool ramp)
 		double rampmin = RAMPING_RATE_MIN / m_driverstation->GetInstance().GetBatteryVoltage();
 		double rampmax = RAMPING_RATE_MAX / m_driverstation->GetInstance().GetBatteryVoltage();
 		SmartDashboard::PutNumber("DT6_BatVol",m_driverstation->GetInstance().GetBatteryVoltage());
-;		m_previousx = x;//rampInput(previousX, joyStickX, rampmin, rampmax);
+		m_previousx = x;//rampInput(previousX, joyStickX, rampmin, rampmax);
 		m_previousy = Ramp(m_previousy, yd, rampmin, rampmax);
 		m_leftpow = m_previousy * Y_SCALING - (m_previousx * X_SCALING * TURN_SPEED);
 		m_rightpow = m_previousy * Y_SCALING + (m_previousx * X_SCALING * TURN_SPEED);
@@ -520,5 +528,27 @@ void Drivetrain::CheckEncoderTimer()
 	{
 		SetRatioLR();
 		m_timerencoder->Reset();
+	}
+}
+
+void Drivetrain::BatterDriving()
+{
+	if (m_batterspeedmodified)
+		m_shift = false;
+
+	if (m_inputs->button10())
+	{
+		m_batterspeedmodified = !m_batterspeedmodified;
+		SmartDashboard::PutNumber("In Batter Mode", m_batterspeedmodified);
+
+		if (!m_ishighgear && m_batterspeedmodified)
+		{
+			m_shift = true;
+		}
+		else
+		if (!m_batterspeedmodified && m_ishighgear)
+		{
+			m_shift = true;
+		}
 	}
 }

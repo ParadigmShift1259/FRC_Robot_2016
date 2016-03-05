@@ -48,6 +48,8 @@ public:
 	//double getLeftEncoderPulses() {return m_leftencoder->GetRaw();}
 	//double getRightEncoderDistance() {return m_rightencoder->GetDistance();}
 	//double getLeftEncoderDistance() {return m_leftencoder->GetDistance();}
+	void BatterDriving();
+
 
 protected:
 	OperatorInputs *m_inputs;
@@ -82,6 +84,8 @@ protected:
 	double m_invertleft;
 	double m_invertright;
 	double m_direction;
+	bool m_batterspeedmodified;
+	bool m_shift;
 };
 
 
