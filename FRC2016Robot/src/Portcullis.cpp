@@ -12,7 +12,7 @@ Portcullis::Portcullis(OperatorInputs *inputs)
 	m_inputs = inputs;
 	m_motor = new Spark(PWM_PORTCULLIS_MOTOR);
 	m_limit = new DigitalInput(DIO_PORTCULLIS_LIMIT);
-	m_state = kStored;
+	m_state = kDeployed;
 	m_counter = 0;
 }
 
@@ -26,7 +26,7 @@ Portcullis::~Portcullis()
 
 void Portcullis::Init()
 {
-	m_state = kStored;
+	m_state = kDeployed;
 	m_counter = 0;
 }
 
