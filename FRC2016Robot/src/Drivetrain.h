@@ -8,8 +8,12 @@
 #include "WPILib.h"
 #include "OperatorInputs.h"
 #include <driverstation.h>
-#include <SpeedController.h>
+#include <CANTalon.h>
 #include <timer.h>
+#include "Const.h"
+
+
+#define FIRSTDRIVE
 
 
 class Drivetrain
@@ -17,6 +21,23 @@ class Drivetrain
 public:
 	Drivetrain(OperatorInputs *inputs, DriverStation *ds);
 	~Drivetrain();
+#ifdef FIRSTDRIVE
+	void TeleopLoop();
+	void AutonoumousLoop();
+	void Drive(double , double rotation);
+	void Shift();
+	void OverwrittenShift();
+	void UpdateStates();
+	void DisableUserControl();
+	void EnableUserControl();
+	void Stop();
+	bool ChangeDirection();
+	void ResetEncoderPosition();
+	void DisableShift();
+
+	const double GetRightRotations() {return m_righttalonlead->GetPosition()/DRIVE_ENC_CPR;}
+	const double GetLeftRotations() {return m_lefttalonlead->GetPosition()/DRIVE_ENC_CPR;}
+#else
 	void Init();
 	void Loop();
 	void Stop();
@@ -48,8 +69,10 @@ public:
 	//double getLeftEncoderPulses() {return m_leftencoder->GetRaw();}
 	//double getRightEncoderDistance() {return m_rightencoder->GetDistance();}
 	//double getLeftEncoderDistance() {return m_leftencoder->GetDistance();}
+#endif
 
 protected:
+
 	OperatorInputs *m_inputs;
 	DriverStation *m_driverstation;
 	CANTalon *m_lefttalonlead;
@@ -59,6 +82,14 @@ protected:
 	Solenoid *m_shifter;
 	//Encoder *m_leftencoder;
 	//Encoder *m_rightencoder;
+#if defined FIRSTDRIVE
+	bool m_shiftstate;
+	bool m_requestshift = false;
+	bool m_shiftbraking = false;
+	bool m_usercontrol= true;
+	bool m_userforward;
+	RobotDrive *m_robotdrive;
+#else
 	Timer *m_timerencoder;
 
 	double m_leftpow;
@@ -82,6 +113,7 @@ protected:
 	double m_invertleft;
 	double m_invertright;
 	double m_direction;
+#endif
 };
 
 

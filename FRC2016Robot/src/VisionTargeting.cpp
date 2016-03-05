@@ -2,6 +2,7 @@
 
 
 #include "visiontargeting.h"
+#include "DriverStation.h"
 #include <vector>
 
 
@@ -21,7 +22,9 @@ VisionTargeting::~VisionTargeting()
 {
 }
 
-
+/**
+ * todo verify that the rotate direction is still the same
+ */
 void VisionTargeting::Loop()
 {
 	bool alignbutton = m_inputs->xBoxLeftBumper();

@@ -46,21 +46,38 @@
 
 
 // Drivetrain
-#define DT_DEFAULT_DIRECTION -1.0
+#define DT_DEFAULT_DIRECTION -1.0 // not used by current code, current code uses a boolean
+#define	START_FORWARD true	//replaces DT_DEFAULT_DIRECTION, more clear and uses a boolean
+#define DRIVE_ENC_CPR 4096 //multiplied by four due to how the encoders are read
+
+//todo SET THESE
+#define START_HIGH false;
+#define MAX_RPS_FOR_SHIFT 1.25 //rotations per second
+#define GEAR_RATIO_ENC_TO_OUTPUT 1.0
+#define PERCENT_RAMP_PER_SECOND 4.0	// Volts per second
+
 // Inverts
+#define LEFT_INVERTED true //Replaces INVERT_LEFT, uses a boolean for interfacing with the CANTalon class
+#define RIGHT_INVERTED false //Replaces INVERT_RIGHT, uses a boolean for interfacing with the CANTalon class
+//todo remove these
 #define INVERT_LEFT -1.0
 #define INVERT_RIGHT 1.0
-// Talons ports
-#define CAN_LEFT_PORT 0
-#define CAN_SECOND_LEFT_PORT 2
-#define CAN_RIGHT_PORT 1
-#define CAN_SECOND_RIGHT_PORT 3
+
+// Talons ports todo set the regular ones to the ports with sensors, these were refactored to properly represent their values
+#define CAN_MASTER_LEFT_PORT 0
+#define CAN_SLAVE_LEFT_PORT 2
+#define CAN_MASTER_RIGHT_PORT 1
+#define CAN_SLAVE_RIGHT_PORT 3
 // Shifter
 #define PCM_SHIFT_PORT_LOW 0
 #define PCM_SHIFT_MODULE 0
 #define CHILD_PROOF_SPEED 0.75
 #define FLIP_HIGH_GEAR true
 // Ramping
+#define DRIVE_SCALE_MAGNITUDE_LOW_GEAR 1.0
+#define DRIVE_SCALE_ROTATION_LOW_GEAR 1.0
+#define DRIVE_SCALE_MAGNITUDE_HIGH_GEAR 1.0
+#define DRIVE_SCALE_ROTATION_HIGH_GEAR 1.0
 #define RAMPING_RATE_MIN 0.6
 #define RAMPING_RATE_MAX 1.5
 #define X_SCALING 0.5

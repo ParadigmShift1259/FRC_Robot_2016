@@ -1,19 +1,18 @@
 // robot.cpp
 
-
 #include "Robot.h"
 
+#define FIRSTDRIVE
 
-void Robot::RobotInit()
-{
+void Robot::RobotInit() {
 	NetworkTable::GlobalDeleteAll();
 	// live window inits
 	m_lw = LiveWindow::GetInstance();
 	m_autonamedefault = "Default";
 	m_autonamecustom = "My Auto";
 	m_chooser = new SendableChooser();
-	m_chooser->AddDefault(m_autonamedefault, (void*)&m_autonamedefault);
-	m_chooser->AddObject(m_autonamecustom, (void*)&m_autonamecustom);
+	m_chooser->AddDefault(m_autonamedefault, (void*) &m_autonamedefault);
+	m_chooser->AddObject(m_autonamecustom, (void*) &m_autonamecustom);
 	SmartDashboard::PutData("Auto Modes", m_chooser);
 
 	// class inits
@@ -29,7 +28,6 @@ void Robot::RobotInit()
 	m_compressor = new Compressor(PCM_COMPRESSOR_SOLENOID);
 }
 
-
 /*
  * This autonomous (along with the chooser code above) shows how to select between different autonomous modes
  * using the dashboard. The sendable chooser code works with the Java SmartDashboard. If you prefer the LabVIEW
@@ -39,65 +37,71 @@ void Robot::RobotInit()
  * You can add additional auto modes by adding additional comparisons to the if-else structure below with additional strings.
  * If using the SendableChooser make sure to add them to the chooser code above as well.
  */
-void Robot::AutonomousInit()
-{
+void Robot::AutonomousInit() {
 	m_compressor->Start();
+#ifdef FIRSTDRIVE
+
+#else
 	m_drivetrain->Init();
+#endif
 	m_camera->Init();
 	m_picker->Init();
 	m_shooter->Init();
 	//m_autonomous->Calibrate();
 
-/*
-	autoSelected = *((string*)chooser->GetSelected());
-	//string autoSelected = SmartDashboard::GetString("Auto Selector", autoNameDefault);
-	cout << "Auto selected: " << autoSelected << endl;
+	/*
+	 autoSelected = *((string*)chooser->GetSelected());
+	 //string autoSelected = SmartDashboard::GetString("Auto Selector", autoNameDefault);
+	 cout << "Auto selected: " << autoSelected << endl;
 
-	if (autoSelected == autoNameCustom)
-	{
-		//Custom Auto goes here
-	}
-	else
-	{
-		//Default Auto goes here
-	}
-*/
+	 if (autoSelected == autoNameCustom)
+	 {
+	 //Custom Auto goes here
+	 }
+	 else
+	 {
+	 //Default Auto goes here
+	 }
+	 */
 }
 
-
-void Robot::AutonomousPeriodic()
-{
+void Robot::AutonomousPeriodic() {
 	//m_autonomous->Loop();
 	m_camera->Loop();
-/*
-	if (autoSelected == autoNameCustom)
-	{
-		//Custom Auto goes here
-	}
-	else
-	{
-		//Default Auto goes here
-	}
-*/
+	/*
+	 if (autoSelected == autoNameCustom)
+	 {
+	 //Custom Auto goes here
+	 }
+	 else
+	 {
+	 //Default Auto goes here
+	 }
+	 */
 }
 
-
-void Robot::TeleopInit()
-{
+void Robot::TeleopInit() {
 	m_compressor->Start();
+
+#ifdef FIRSTDRIVE
+
+#else
 	m_drivetrain->Init();
+#endif
 	m_camera->Init();
 	m_picker->Init();
 	m_shooter->Init();
 	//m_autonomous->Calibrate();
 }
 
+void Robot::TeleopPeriodic() {
+	if (!m_vision->Targeting()) {
 
-void Robot::TeleopPeriodic()
-{
-	if (!m_vision->Targeting())
-	{
+#ifdef FIRSTDRIVE
+		m_drivetrain->TeleopLoop();
+#else
 		m_drivetrain->Loop();
+#endif
 		m_camera->Loop();
 		m_picker->Loop();
 		m_shooter->Loop();
@@ -108,23 +112,26 @@ void Robot::TeleopPeriodic()
 	m_autonomous->Loop();
 }
 
-
-void Robot::TestInit()
-{
+void Robot::TestInit() {
 	m_compressor->Start();
+#ifdef FIRSTDRIVE
+	m_drivetrain->TeleopLoop();
+#else
 	m_drivetrain->Init();
+#endif
 	m_camera->Init();
 	m_picker->Init();
 	m_shooter->Init();
 	m_autonomous->Calibrate();
 }
 
+void Robot::TestPeriodic() {
+	if (!m_vision->Targeting()) {
+#ifdef FIRSTDRIVE
+#else
 
-void Robot::TestPeriodic()
-{
-	if (!m_vision->Targeting())
-	{
 		m_drivetrain->Loop();
+#endif
 		m_camera->Loop();
 		m_picker->Loop();
 		m_shooter->Loop();
@@ -135,13 +142,10 @@ void Robot::TestPeriodic()
 	m_autonomous->Loop();
 }
 
-
-void Robot::DisabledInit()
-{
+void Robot::DisabledInit() {
 	m_compressor->Stop();
 	m_drivetrain->Stop();
 	m_camera->Stop();
 }
-
 
 START_ROBOT_CLASS(Robot)
