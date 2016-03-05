@@ -63,11 +63,10 @@
 // Ramping
 #define RAMPING_RATE_MIN 0.6
 #define RAMPING_RATE_MAX 1.5
-#define X_SCALING 0.5
+#define X_SCALING 1.0
 #define Y_SCALING 1.0
 #define LEFT_MOTOR_SCALING 1
 #define RIGHT_MOTOR_SCALING 1
-#define TURN_SPEED 0.5
 #define BATTER_SPEED_MODIFIER 0.25
 // Encoders
 #define ENCODER_TOP_SPEED 0.6

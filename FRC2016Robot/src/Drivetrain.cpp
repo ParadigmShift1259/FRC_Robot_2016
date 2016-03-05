@@ -214,8 +214,8 @@ void Drivetrain::Drive(double x, double y, bool ramp)
 		SmartDashboard::PutNumber("DT6_BatVol",m_driverstation->GetInstance().GetBatteryVoltage());
 		m_previousx = x;//rampInput(previousX, joyStickX, rampmin, rampmax);
 		m_previousy = Ramp(m_previousy, yd, rampmin, rampmax);
-		m_leftpow = m_previousy * Y_SCALING - (m_previousx * X_SCALING * TURN_SPEED);
-		m_rightpow = m_previousy * Y_SCALING + (m_previousx * X_SCALING * TURN_SPEED);
+		m_leftpow = m_previousy * Y_SCALING - (m_previousx * X_SCALING);
+		m_rightpow = m_previousy * Y_SCALING + (m_previousx * X_SCALING);
 	}
 	/*m_leftspeed = m_lefttalonlead->GetSpeed();
 	m_rightspeed = m_righttalonlead->GetSpeed();
