@@ -95,10 +95,12 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
+#ifdef FIRSTDRIVE
+	m_drivetrain->TeleopLoop();
+#endif
 	if (!m_vision->Targeting()) {
 
 #ifdef FIRSTDRIVE
-		m_drivetrain->TeleopLoop();
 #else
 		m_drivetrain->Loop();
 #endif
@@ -109,7 +111,10 @@ void Robot::TeleopPeriodic() {
 		m_climber->Loop();
 	}
 	m_vision->Loop();
+#ifdef FIRSTDRIVE
+#else
 	m_autonomous->Loop();
+#endif
 }
 
 void Robot::TestInit() {
