@@ -198,8 +198,9 @@ void Drivetrain::Stop() {
  * if under the speed limit, changes the shift state
  */
 void Drivetrain::Shift() {
-	double currentspeed = DRIVE_ENC_CPR * m_righttalonlead->GetSpeed();
-	if (currentspeed > DRIVE_ENC_CPR * MAX_RPS_FOR_SHIFT) {
+	double currentrightspeed = DRIVE_ENC_CPR * m_righttalonlead->GetSpeed();
+	double currentleftspeed = DRIVE_ENC_CPR * m_lefttalonlead->GetSpeed();
+	if (currentrightspeed > DRIVE_ENC_CPR * MAX_RPS_FOR_SHIFT || currentleftspeed > DRIVE_ENC_CPR * MAX_RPS_FOR_SHIFT) {
 		m_shiftbraking = true;
 		m_requestshift = true;
 	} else {
