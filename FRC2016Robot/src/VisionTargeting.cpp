@@ -70,7 +70,7 @@ void VisionTargeting::Loop()
 					Disable();
 					GetPIDController()->SetPID(PID_VISION_P_Y, PID_VISION_I_Y, PID_VISION_D_Y);
 					m_drivetrain->Drive(0, 0);
-					m_stage = kInitialY;
+					m_stage = kInitialX;
 					Enable();
 				}
 				break;
@@ -126,7 +126,7 @@ void VisionTargeting::Loop()
 				break;
 			}
 			// aligned
-			if ((xpos == 0) && (ypos > -5) && (ypos < 5))
+			if ((xpos == 0))// && (ypos > -5) && (ypos < 5))
 			{
 				Disable();
 				m_drivetrain->Drive(0, 0);

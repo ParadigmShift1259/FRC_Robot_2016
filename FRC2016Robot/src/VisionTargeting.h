@@ -12,8 +12,8 @@
 #include "Commands/PIDSubsystem.h"
 
 
-#define PID_VISION_P_X -0.005
-#define PID_VISION_I_X 0
+#define PID_VISION_P_X -0.001
+#define PID_VISION_I_X -0.00001
 #define PID_VISION_D_X 0
 #define PID_VISION_P_Y 0.005
 #define PID_VISION_I_Y 0
