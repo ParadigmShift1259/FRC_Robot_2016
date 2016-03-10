@@ -35,7 +35,7 @@ void Portcullis::Loop()
 {
 	bool downbutton = m_inputs->xBoxXButton();
 	bool upbutton = m_inputs->xBoxYButton();
-	int maxcounter = 100;
+	int maxcounter = 50;
 
 	switch (m_state)
 	{

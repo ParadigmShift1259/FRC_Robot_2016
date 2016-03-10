@@ -63,11 +63,12 @@
 // Ramping
 #define RAMPING_RATE_MIN 0.6
 #define RAMPING_RATE_MAX 1.5
-#define X_SCALING 1.0
+#define X_SCALING 0.75
 #define Y_SCALING 1.0
 #define LEFT_MOTOR_SCALING 1
 #define RIGHT_MOTOR_SCALING 1
-#define BATTER_SPEED_MODIFIER 0.25
+#define LOWSPEED_MODIFIER_X 0.75
+#define LOWSPEED_MODIFIER_Y 0.25
 // Encoders
 #define ENCODER_TOP_SPEED 0.6
 #define ENCODER_WAIT_TIME 168
@@ -77,8 +78,8 @@
 
 
 // Camera
-#define USB_CAMERA_FRONT "cam0"
-#define USB_CAMERA_REAR "cam1"
+#define USB_CAMERA_FRONT "cam1"
+#define USB_CAMERA_REAR "cam0"
 #define RLY_CAMERA_LED 0
 
 

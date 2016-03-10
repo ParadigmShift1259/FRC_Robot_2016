@@ -27,15 +27,16 @@ public:
 	void Shift();
 	// change drivetrain direction and return true if going forward
 	bool ChangeDirection();
+	void LowSpeedDriving();
 
-	double Ramp(double previousPow, double desiredPow, double rampSpeedMin, double rampSpeedMax);
-	//void rampRightPower(double desiredPow, double rampSpeedMin, double rampSpeedMax);
 	double LeftMotor(double &invMaxValueXPlusY);
 	double RightMotor(double &invMaxValueXPlusY);
 	void SetRatioLR();
 	void ResetEncoders();
 	void CheckEncoderTimer();
 
+	double Ramp(double previousPow, double desiredPow, double rampSpeedMin, double rampSpeedMax);
+	//void rampRightPower(double desiredPow, double rampSpeedMin, double rampSpeedMax);
 	void setCoasting(double newCoasting) {m_coasting = newCoasting;}
 	double getLeftPow() {return m_leftpow;}
 	double getRightPow() {return m_rightpow;}
@@ -44,12 +45,14 @@ public:
 	bool getIsLeftFaster() {return m_isleftfaster;}
 	double getLeftSpeed() {return m_leftspeed;}
 	double getRightSpeed() {return m_rightspeed;}
+	double getLeftPosition() {return m_lefttalonlead->GetPosition();}
+	double getRightPosition() {return m_righttalonlead->GetPosition();}
+	void resetLeftEncoder() {m_lefttalonlead->SetEncPosition(0);}
+	void resetRightEncoder() {m_righttalonlead->SetEncPosition(0);}
 	//double getRightEncoderPulses() {return m_rightencoder->GetRaw();}
 	//double getLeftEncoderPulses() {return m_leftencoder->GetRaw();}
 	//double getRightEncoderDistance() {return m_rightencoder->GetDistance();}
 	//double getLeftEncoderDistance() {return m_leftencoder->GetDistance();}
-	void BatterDriving();
-
 
 protected:
 	OperatorInputs *m_inputs;
@@ -80,12 +83,12 @@ protected:
 	double m_rightposition;
 	double m_coasting;
 	bool m_isdownshifting;
+	bool m_lowspeedmode;
+	bool m_shift;
 
 	double m_invertleft;
 	double m_invertright;
 	double m_direction;
-	bool m_batterspeedmodified;
-	bool m_shift;
 };
 
 

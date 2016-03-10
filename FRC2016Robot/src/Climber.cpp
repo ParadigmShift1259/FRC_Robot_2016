@@ -61,7 +61,7 @@ void Climber::Loop()
 		}
 		else
 		{
-			m_counter = 25;
+			m_counter = 10;
 			m_state = kClimb;
 		}
 		break;

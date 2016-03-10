@@ -41,8 +41,8 @@ void Picker::Loop(bool drop)
 {
 	bool downbutton = m_inputs->xBoxAButton() || drop;
 	bool upbutton = m_inputs->xBoxBButton();
-	bool shootbutton = m_inputs->xBoxRightBumper();
-	bool reversebutton = m_inputs->xBoxRightTrigger(OperatorInputs::ToggleChoice::kHold);
+	bool shootbutton = false; //m_inputs->xBoxRightBumper();
+	bool reversebutton = m_inputs->xBoxRightTrigger(OperatorInputs::ToggleChoice::kHold) || m_inputs->xBoxRightBumper(OperatorInputs::ToggleChoice::kHold);
 	bool motorbutton = m_inputs->xBoxStartButton();
 
 	if (reversebutton)
@@ -70,7 +70,7 @@ void Picker::Loop(bool drop)
 			break;
 		case kDown:
 		case kUpDelay:
-			m_motor->Set(0.7 * m_stop);
+			m_motor->Set(0.75 * m_stop);
 			break;
 		case kUp:
 			m_motor->Set(0);
@@ -83,7 +83,7 @@ void Picker::Loop(bool drop)
 	if (motorbutton)
 	{
 		m_stop = 1 - m_stop;
-		m_motor->Set(0.7 * m_stop);
+		m_motor->Set(0.75 * m_stop);
 	}
 
 	switch (m_state)
@@ -148,7 +148,7 @@ void Picker::Loop(bool drop)
 		if (downbutton)
 		{
 			m_solenoid->Set(DoubleSolenoid::kForward);
-			m_motor->Set(0.7 * m_stop);
+			m_motor->Set(0.75 * m_stop);
 			m_state = kDownDelay;
 			m_counter = 50;
 		}
