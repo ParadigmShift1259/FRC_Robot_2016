@@ -36,7 +36,7 @@ void Climber::Loop()
 {
 	bool deploybutton1 = m_inputs->joystickTrigger(OperatorInputs::ToggleChoice::kHold);
 	bool deploybutton2 = m_inputs->button2(OperatorInputs::ToggleChoice::kHold);
-	bool climbdownbutton = m_inputs->button3(OperatorInputs::ToggleChoice::kHold);
+	bool climbdownbutton = false; //m_inputs->button3(OperatorInputs::ToggleChoice::kHold);
 	bool climbupbutton = m_inputs->button5(OperatorInputs::ToggleChoice::kHold);
 
 	switch (m_state)
