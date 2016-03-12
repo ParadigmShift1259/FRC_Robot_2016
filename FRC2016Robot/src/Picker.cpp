@@ -150,7 +150,7 @@ void Picker::Loop(bool drop)
 			m_solenoid->Set(DoubleSolenoid::kForward);
 			m_motor->Set(0.75 * m_stop);
 			m_state = kDownDelay;
-			m_counter = 50;
+			m_counter = 25;
 		}
 		break;
 	case kDownDelay:

@@ -25,7 +25,7 @@ void Robot::RobotInit()
 	m_portcullis = new Portcullis(m_inputs);
 	m_climber = new Climber(m_inputs);
 	m_autonomous = new Autonomous(&m_ds, m_inputs, m_drivetrain);
-	m_vision = new VisionTargeting(m_inputs, m_drivetrain, m_shooter);
+	m_vision = new VisionTargeting(m_inputs, m_drivetrain, m_shooter, m_picker);
 	m_compressor = new Compressor(PCM_COMPRESSOR_SOLENOID);
 }
 
@@ -90,8 +90,8 @@ void Robot::TeleopInit()
 	m_camera->Init();
 	m_picker->Init();
 	m_shooter->Init();
-	//m_autonomous->Calibrate();
 	m_vision->Init();
+	//m_autonomous->Calibrate();
 }
 
 
@@ -100,12 +100,12 @@ void Robot::TeleopPeriodic()
 	if (!m_vision->Targeting())
 	{
 		m_drivetrain->Loop();
-		m_camera->Loop();
-		m_picker->Loop();
-		m_shooter->Loop();
-		m_portcullis->Loop();
 		m_climber->Loop();
 	}
+	m_camera->Loop();
+	m_picker->Loop();
+	m_shooter->Loop();
+	m_portcullis->Loop();
 	m_vision->Loop();
 	m_autonomous->Loop();
 }
@@ -118,8 +118,8 @@ void Robot::TestInit()
 	m_camera->Init();
 	m_picker->Init();
 	m_shooter->Init();
-	m_autonomous->Calibrate();
 	m_vision->Init();
+	m_autonomous->Calibrate();
 }
 
 
@@ -128,12 +128,12 @@ void Robot::TestPeriodic()
 	if (!m_vision->Targeting())
 	{
 		m_drivetrain->Loop();
-		m_camera->Loop();
-		m_picker->Loop();
-		m_shooter->Loop();
-		m_portcullis->Loop();
 		m_climber->Loop();
 	}
+	m_camera->Loop();
+	m_picker->Loop();
+	m_shooter->Loop();
+	m_portcullis->Loop();
 	m_vision->Loop();
 	m_autonomous->Loop();
 }

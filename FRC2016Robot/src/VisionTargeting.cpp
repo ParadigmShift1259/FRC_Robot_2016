@@ -6,11 +6,12 @@
 #include <cmath>
 
 
-VisionTargeting::VisionTargeting(OperatorInputs *operatorinputs, Drivetrain *drivetrain, Shooter *shooter)
+VisionTargeting::VisionTargeting(OperatorInputs *operatorinputs, Drivetrain *drivetrain, Shooter *shooter, Picker *picker)
 {
 	m_inputs = operatorinputs;
 	m_drivetrain = drivetrain;
 	m_shooter = shooter;
+	m_picker = picker;
 	m_cvtable = NetworkTable::GetTable("OpenCV");
 	m_stage = kReady;
 	m_counter = 0;
@@ -67,6 +68,13 @@ void VisionTargeting::Loop()
 	SmartDashboard::PutNumber("VT6_kAdj", kAdj);
 	SmartDashboard::PutNumber("VT7_kPos", kPos);
 
+	if (m_shoot)
+	{
+		DriverStation::ReportError("Shooting\n");
+		if (m_shooter->GetStage() == Shooter::kRelease)
+			Stop();
+	}
+	else
 	if ((m_targeting > 0) || alignbutton)
 	{
 		switch (m_stage)
@@ -78,27 +86,27 @@ void VisionTargeting::Loop()
 			}
 			if (m_targeting > 0)
 			{
-				DriverStation::ReportError("Targeting: " + to_string(m_counter) + "\n");
+				DriverStation::ReportError("Targeting\n");
+
+				//m_drivetrain->LeftTalon()->SelectProfileSlot(0);
+				//m_drivetrain->LeftTalon()->ConfigNominalOutputVoltage(+0.0f, -0.0f);
+				//m_drivetrain->LeftTalon()->ConfigPeakOutputVoltage(+6.0f, -6.0f);
+				//m_drivetrain->LeftTalon()->SetAllowableClosedLoopErr(0.0);
 
 				m_drivetrain->LeftTalon()->SetP(kP);
 				m_drivetrain->LeftTalon()->SetI(kI);
 				m_drivetrain->LeftTalon()->SetD(0);
 				m_drivetrain->LeftTalon()->SetF(0);
 
+				//m_drivetrain->RightTalon()->SelectProfileSlot(0);
+				//m_drivetrain->RightTalon()->ConfigNominalOutputVoltage(+0.0f, -0.0f);
+				//m_drivetrain->RightTalon()->ConfigPeakOutputVoltage(+6.0f, -6.0f);
+				//m_drivetrain->RightTalon()->SetAllowableClosedLoopErr(0.0);
+
 				m_drivetrain->RightTalon()->SetP(kP);
 				m_drivetrain->RightTalon()->SetI(kI);
 				m_drivetrain->RightTalon()->SetD(0);
 				m_drivetrain->RightTalon()->SetF(0);
-
-				m_drivetrain->LeftTalon()->SelectProfileSlot(0);
-				m_drivetrain->LeftTalon()->ConfigNominalOutputVoltage(+0.0f, -0.0f);
-				m_drivetrain->LeftTalon()->ConfigPeakOutputVoltage(+6.0f, -6.0f);
-				m_drivetrain->LeftTalon()->SetAllowableClosedLoopErr(0.0);
-
-				m_drivetrain->RightTalon()->SelectProfileSlot(0);
-				m_drivetrain->RightTalon()->ConfigNominalOutputVoltage(+0.0f, -0.0f);
-				m_drivetrain->RightTalon()->ConfigPeakOutputVoltage(+6.0f, -6.0f);
-				m_drivetrain->RightTalon()->SetAllowableClosedLoopErr(0.0);
 
 				m_drivetrain->LeftTalon()->SetPosition(0);
 				m_drivetrain->LeftTalon()->SetControlMode(CANTalon::kPosition);
@@ -109,11 +117,11 @@ void VisionTargeting::Loop()
 				m_drivetrain->RightTalon()->Set(kPos);
 
 				m_stage = kTarget;
-				m_counter = 100;
+				m_counter = 15;
 			}
 			break;
 		case kTarget:
-			if (m_counter == 100)
+			if ((m_counter % 5) == 0)
 				DriverStation::ReportError("Waiting: " + to_string(m_counter) + "\n");
 			if (m_counter > 0)
 			{
@@ -126,21 +134,23 @@ void VisionTargeting::Loop()
 			}
 			break;
 		case kStop:
-			DriverStation::ReportError("Stopping: " + to_string(m_counter) + "\n");
+			DriverStation::ReportError("Stopping\n");
 			if (m_targeting > 0)
 			{
 				if (m_targeting > 1)
 				{
-					m_drivetrain->LeftTalon()->ConfigPeakOutputVoltage(+12.0f, -12.0f);
+					//m_drivetrain->LeftTalon()->ConfigPeakOutputVoltage(+12.0f, -12.0f);
 					m_drivetrain->LeftTalon()->SetControlMode(CANTalon::kPercentVbus);
 					m_drivetrain->LeftTalon()->Set(0);
-					m_drivetrain->RightTalon()->ConfigPeakOutputVoltage(+12.0f, -12.0f);
+					//m_drivetrain->RightTalon()->ConfigPeakOutputVoltage(+12.0f, -12.0f);
 					m_drivetrain->RightTalon()->SetControlMode(CANTalon::kPercentVbus);
 					m_drivetrain->RightTalon()->Set(0);
 					m_stage = kReady;
 					m_counter = 0;
 				}
 				m_targeting--;
+				if (m_targeting == 1)
+					m_picker->Loop(true);
 			}
 			if (m_targeting == 0)
 			{
@@ -152,32 +162,15 @@ void VisionTargeting::Loop()
 			break;
 		}
 	}
-
-	if (m_shoot)
-	{
-		DriverStation::ReportError("Shooting: " + to_string(m_counter) + "\n");
-		if (m_shooter->GetStage() == Shooter::kRelease)
-		{
-			m_drivetrain->LeftTalon()->ConfigPeakOutputVoltage(+12.0f, -12.0f);
-			m_drivetrain->LeftTalon()->SetControlMode(CANTalon::kPercentVbus);
-			m_drivetrain->LeftTalon()->Set(0);
-			m_drivetrain->RightTalon()->ConfigPeakOutputVoltage(+12.0f, -12.0f);
-			m_drivetrain->RightTalon()->SetControlMode(CANTalon::kPercentVbus);
-			m_drivetrain->RightTalon()->Set(0);
-			m_shoot = false;
-		}
-		else
-			m_shooter->Loop();
-	}
 }
 
 
 void VisionTargeting::Stop()
 {
-	m_drivetrain->LeftTalon()->ConfigPeakOutputVoltage(+12.0f, -12.0f);
+	//m_drivetrain->LeftTalon()->ConfigPeakOutputVoltage(+12.0f, -12.0f);
 	m_drivetrain->LeftTalon()->SetControlMode(CANTalon::kPercentVbus);
 	m_drivetrain->LeftTalon()->Set(0);
-	m_drivetrain->RightTalon()->ConfigPeakOutputVoltage(+12.0f, -12.0f);
+	//m_drivetrain->RightTalon()->ConfigPeakOutputVoltage(+12.0f, -12.0f);
 	m_drivetrain->RightTalon()->SetControlMode(CANTalon::kPercentVbus);
 	m_drivetrain->RightTalon()->Set(0);
 	m_stage = kReady;

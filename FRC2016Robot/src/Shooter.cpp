@@ -71,7 +71,8 @@ void Shooter::Loop(bool shoot)
 		{
 			if (m_picker->GetState() != Picker::State::kDown)
 			{
-				m_picker->Loop(true);
+				if (shoot)
+					m_picker->Loop(true);
 				m_stage = kPickerDrop;
 			}
 			else

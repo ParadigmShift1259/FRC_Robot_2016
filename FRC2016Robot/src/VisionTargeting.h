@@ -16,7 +16,7 @@ class VisionTargeting
 public:
 	enum Stage { /*kInitialX, kInitialY, kFinalX, kFinalY,*/ kReady, kTarget, kStop };
 
-	VisionTargeting(OperatorInputs *operatorinputs, Drivetrain *drivetrain, Shooter *shooter);
+	VisionTargeting(OperatorInputs *operatorinputs, Drivetrain *drivetrain, Shooter *shooter, Picker *picker);
 	~VisionTargeting();
 	void Init();
 	void Loop();
@@ -27,6 +27,7 @@ protected:
 	OperatorInputs *m_inputs;
 	Drivetrain *m_drivetrain;
 	Shooter *m_shooter;
+	Picker *m_picker;
 	shared_ptr<NetworkTable> m_cvtable;
 	Stage m_stage;
 	int m_counter;
