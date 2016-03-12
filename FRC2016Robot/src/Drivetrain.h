@@ -43,12 +43,9 @@ public:
 	double getRatio() {return m_ratiolr;}
 	bool getIsHighGear() {return m_ishighgear;}
 	bool getIsLeftFaster() {return m_isleftfaster;}
-	double getLeftSpeed() {return m_leftspeed;}
-	double getRightSpeed() {return m_rightspeed;}
-	double getLeftPosition() {return m_lefttalonlead->GetPosition();}
-	double getRightPosition() {return m_righttalonlead->GetPosition();}
-	void resetLeftEncoder() {m_lefttalonlead->SetEncPosition(0);}
-	void resetRightEncoder() {m_righttalonlead->SetEncPosition(0);}
+	CANTalon *LeftTalon() {return m_lefttalonlead;}
+	CANTalon *RightTalon() {return m_righttalonlead;}
+
 	//double getRightEncoderPulses() {return m_rightencoder->GetRaw();}
 	//double getLeftEncoderPulses() {return m_leftencoder->GetRaw();}
 	//double getRightEncoderDistance() {return m_rightencoder->GetDistance();}

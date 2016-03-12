@@ -24,17 +24,19 @@ Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 	m_righttalonlead = new CANTalon(CAN_RIGHT_PORT);
 	m_righttalonfollow = new CANTalon(CAN_SECOND_RIGHT_PORT);
 
+	m_lefttalonlead->SetControlMode(CANTalon::kPercentVbus);
 	m_lefttalonlead->Set(0);
 	m_lefttalonlead->SetFeedbackDevice(CANTalon::QuadEncoder);
 	m_lefttalonlead->ConfigEncoderCodesPerRev(1024);
-	m_lefttalonlead->SetEncPosition(0);
 	m_lefttalonlead->SetSensorDirection(true);
+	m_lefttalonlead->SetPosition(0);
 
+	m_righttalonlead->SetControlMode(CANTalon::kPercentVbus);
 	m_righttalonlead->Set(0);
 	m_righttalonlead->SetFeedbackDevice(CANTalon::QuadEncoder);
 	m_righttalonlead->ConfigEncoderCodesPerRev(1024);
-	m_righttalonlead->SetEncPosition(0);
 	m_righttalonlead->SetSensorDirection(true);
+	m_righttalonlead->SetPosition(0);
 
 	m_lefttalonfollow->SetControlMode(CANSpeedController::ControlMode::kFollower);
 	m_lefttalonfollow->Set(CAN_LEFT_PORT);

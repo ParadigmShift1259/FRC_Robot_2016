@@ -22,6 +22,7 @@ public:
 	~Shooter();
 	void Init();
 	void Loop(bool shoot = false);
+	Stage GetStage() { return m_stage; }
 
 protected:
 	OperatorInputs *m_inputs;

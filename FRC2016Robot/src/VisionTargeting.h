@@ -14,22 +14,24 @@
 class VisionTargeting
 {
 public:
-	enum Stage { /*kInitialX, kInitialY, kFinalX, kFinalY,*/ kStop, kLeft, kRight };
+	enum Stage { /*kInitialX, kInitialY, kFinalX, kFinalY,*/ kReady, kTarget, kStop };
 
 	VisionTargeting(OperatorInputs *operatorinputs, Drivetrain *drivetrain, Shooter *shooter);
 	~VisionTargeting();
 	void Init();
 	void Loop();
 	void Stop();
-	bool Targeting() {return (m_counter > 0);}
+	bool Targeting() {return ((m_targeting > 0) || m_shoot);}
 
 protected:
 	OperatorInputs *m_inputs;
 	Drivetrain *m_drivetrain;
 	Shooter *m_shooter;
-	shared_ptr<NetworkTable> m_networktable;
+	shared_ptr<NetworkTable> m_cvtable;
 	Stage m_stage;
 	int m_counter;
+	int m_targeting;
+	bool m_shoot;
 	double m_leftposition;
 	double m_rightposition;
 };
