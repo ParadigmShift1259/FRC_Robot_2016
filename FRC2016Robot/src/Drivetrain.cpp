@@ -414,3 +414,33 @@ void Drivetrain::CheckEncoderTimer()
 		m_timerencoder->Reset();
 	}
 }
+
+void Drivetrain::EnablePID(double kP, double kI, double kD, double kF, double kPosLeft, double kPosRight)
+{
+	LeftTalon()->SetP(kP);
+	LeftTalon()->SetI(kI);
+	LeftTalon()->SetD(kD);
+	LeftTalon()->SetF(kF);
+
+	RightTalon()->SetP(kP);
+	RightTalon()->SetI(kI);
+	RightTalon()->SetD(kD);
+	RightTalon()->SetF(kF);
+
+	LeftTalon()->SetPosition(0);
+	LeftTalon()->SetControlMode(CANTalon::kPosition);
+	RightTalon()->SetPosition(0);
+	RightTalon()->SetControlMode(CANTalon::kPosition);
+
+	LeftTalon()->Set(kPosLeft);
+	RightTalon()->Set(kPosRight);
+}
+
+void Drivetrain::DisablePID(float maxvolt, float minvolt)
+{
+	LeftTalon()->SetControlMode(CANTalon::kPercentVbus);
+	LeftTalon()->Set(0);
+	//RightTalon()->ConfigPeakOutputVoltage(maxvolt, minvolt);
+	RightTalon()->SetControlMode(CANTalon::kPercentVbus);
+	RightTalon()->Set(0);
+}

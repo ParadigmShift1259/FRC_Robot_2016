@@ -19,7 +19,7 @@ public:
 	VisionTargeting(OperatorInputs *operatorinputs, Drivetrain *drivetrain, Shooter *shooter, Picker *picker);
 	~VisionTargeting();
 	void Init();
-	void Loop();
+	void Loop(bool target = false, int nocamdelay = 1);
 	void Stop();
 	bool Targeting() {return ((m_targeting > 0) || m_shoot);}
 

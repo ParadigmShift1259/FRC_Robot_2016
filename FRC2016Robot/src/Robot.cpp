@@ -43,43 +43,22 @@ void Robot::AutonomousInit()
 {
 	m_compressor->Start();
 	m_drivetrain->Init();
-	m_camera->Init();
+	//m_camera->Init();
 	m_picker->Init();
 	m_shooter->Init();
 	m_vision->Init();
-	//m_autonomous->Calibrate();
-
-/*
-	autoSelected = *((string*)chooser->GetSelected());
-	//string autoSelected = SmartDashboard::GetString("Auto Selector", autoNameDefault);
-	cout << "Auto selected: " << autoSelected << endl;
-
-	if (autoSelected == autoNameCustom)
-	{
-		//Custom Auto goes here
-	}
-	else
-	{
-		//Default Auto goes here
-	}
-*/
+	m_autonomous->Init();
 }
 
 
 void Robot::AutonomousPeriodic()
 {
-	//m_autonomous->Loop();
-	m_camera->Loop();
-/*
-	if (autoSelected == autoNameCustom)
-	{
-		//Custom Auto goes here
-	}
-	else
-	{
-		//Default Auto goes here
-	}
-*/
+	//m_camera->Loop();
+	m_picker->Loop(false, 3);
+	m_shooter->Loop(false, 3);
+	m_portcullis->Loop();
+	m_vision->Loop(false, 3);
+	m_autonomous->Loop();
 }
 
 

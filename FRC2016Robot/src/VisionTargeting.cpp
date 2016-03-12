@@ -38,9 +38,11 @@ void VisionTargeting::Init()
 }
 
 
-void VisionTargeting::Loop()
+void VisionTargeting::Loop(bool target, int nocamdelay)
 {
-	bool alignbutton = m_inputs->xBoxLeftBumper();
+	DriverStation::ReportError("VisionTargeting: " + std::to_string(nocamdelay));
+
+	bool alignbutton = m_inputs->xBoxLeftBumper() || target;
 
 	double kP = SmartDashboard::GetNumber("DB/Slider 0", 0);
 	if (kP == 0) {kP = 0.2;}
@@ -88,36 +90,10 @@ void VisionTargeting::Loop()
 			{
 				DriverStation::ReportError("Targeting\n");
 
-				//m_drivetrain->LeftTalon()->SelectProfileSlot(0);
-				//m_drivetrain->LeftTalon()->ConfigNominalOutputVoltage(+0.0f, -0.0f);
-				//m_drivetrain->LeftTalon()->ConfigPeakOutputVoltage(+6.0f, -6.0f);
-				//m_drivetrain->LeftTalon()->SetAllowableClosedLoopErr(0.0);
-
-				m_drivetrain->LeftTalon()->SetP(kP);
-				m_drivetrain->LeftTalon()->SetI(kI);
-				m_drivetrain->LeftTalon()->SetD(0);
-				m_drivetrain->LeftTalon()->SetF(0);
-
-				//m_drivetrain->RightTalon()->SelectProfileSlot(0);
-				//m_drivetrain->RightTalon()->ConfigNominalOutputVoltage(+0.0f, -0.0f);
-				//m_drivetrain->RightTalon()->ConfigPeakOutputVoltage(+6.0f, -6.0f);
-				//m_drivetrain->RightTalon()->SetAllowableClosedLoopErr(0.0);
-
-				m_drivetrain->RightTalon()->SetP(kP);
-				m_drivetrain->RightTalon()->SetI(kI);
-				m_drivetrain->RightTalon()->SetD(0);
-				m_drivetrain->RightTalon()->SetF(0);
-
-				m_drivetrain->LeftTalon()->SetPosition(0);
-				m_drivetrain->LeftTalon()->SetControlMode(CANTalon::kPosition);
-				m_drivetrain->RightTalon()->SetPosition(0);
-				m_drivetrain->RightTalon()->SetControlMode(CANTalon::kPosition);
-
-				m_drivetrain->LeftTalon()->Set(kPos);
-				m_drivetrain->RightTalon()->Set(kPos);
+				m_drivetrain->EnablePID(kP,kI,0,0,kPos,kPos);
 
 				m_stage = kTarget;
-				m_counter = 15;
+				m_counter = 15 * nocamdelay;
 			}
 			break;
 		case kTarget:
@@ -130,7 +106,7 @@ void VisionTargeting::Loop()
 			else
 			{
 				m_stage = kStop;
-				m_counter = 0;
+				m_counter = 0 * nocamdelay;
 			}
 			break;
 		case kStop:
@@ -140,24 +116,20 @@ void VisionTargeting::Loop()
 				if (m_targeting > 1)
 				{
 					//m_drivetrain->LeftTalon()->ConfigPeakOutputVoltage(+12.0f, -12.0f);
-					m_drivetrain->LeftTalon()->SetControlMode(CANTalon::kPercentVbus);
-					m_drivetrain->LeftTalon()->Set(0);
-					//m_drivetrain->RightTalon()->ConfigPeakOutputVoltage(+12.0f, -12.0f);
-					m_drivetrain->RightTalon()->SetControlMode(CANTalon::kPercentVbus);
-					m_drivetrain->RightTalon()->Set(0);
+					m_drivetrain->DisablePID();
 					m_stage = kReady;
-					m_counter = 0;
+					m_counter = 0 * nocamdelay;
 				}
 				m_targeting--;
 				if (m_targeting == 1)
-					m_picker->Loop(true);
+					m_picker->Loop(true, nocamdelay);
 			}
 			if (m_targeting == 0)
 			{
-				m_shooter->Loop(true);
+				m_shooter->Loop(true, nocamdelay);
 				m_shoot = true;
 				m_stage = kReady;
-				m_counter = 0;
+				m_counter = 0 * nocamdelay;
 			}
 			break;
 		}

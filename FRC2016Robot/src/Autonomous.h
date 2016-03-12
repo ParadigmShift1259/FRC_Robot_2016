@@ -15,18 +15,20 @@
 using namespace std;
 
 
-struct Instruction
-{
-	int time;
-	int angle;
-	double speed;
-};
-
-
 class Autonomous
 {
 public:
-	enum Stage { kStop, kDrive };
+	enum Stage { kStop, kDrive, kDriveLoop, kShoot };
+
+	struct Instruction
+	{
+		int time;
+		int angle;
+		double distance;
+		double kP;
+		double kI;
+		Stage stage;
+	};
 
 	Autonomous(DriverStation *driverstation, OperatorInputs *operatorinputs, Drivetrain *drivetrain);
 	~Autonomous();
@@ -45,6 +47,7 @@ protected:
 	int m_stage;
 	double m_driveangle;
 	int m_counter;
+	double m_kS;
 };
 
 

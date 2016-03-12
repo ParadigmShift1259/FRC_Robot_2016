@@ -37,13 +37,15 @@ void Picker::Init()
 }
 
 
-void Picker::Loop(bool drop)
+void Picker::Loop(bool drop, int nocamdelay)
 {
 	bool downbutton = m_inputs->xBoxAButton() || drop;
 	bool upbutton = m_inputs->xBoxBButton();
 	bool shootbutton = false; //m_inputs->xBoxRightBumper();
 	bool reversebutton = m_inputs->xBoxRightTrigger(OperatorInputs::ToggleChoice::kHold) || m_inputs->xBoxRightBumper(OperatorInputs::ToggleChoice::kHold);
 	bool motorbutton = m_inputs->xBoxStartButton();
+
+	DriverStation::ReportError("Picker: " + std::to_string(nocamdelay));
 
 	if (reversebutton)
 	{
@@ -92,14 +94,14 @@ void Picker::Loop(bool drop)
 		if (shootbutton)
 		{
 			m_vent->Set(true);			// close vent
-			m_counter = 5;
+			m_counter = 5 * nocamdelay;
 			m_state = kShoot1;
 		}
 		else
 		if (upbutton)
 		{
 			m_vent->Set(true);			// close vent
-			m_counter = 5;
+			m_counter = 5 * nocamdelay;
 			m_state = kUpDelay;
 		}
 		else
@@ -115,7 +117,7 @@ void Picker::Loop(bool drop)
 		else
 		{
 			m_solenoid->Set(DoubleSolenoid::kReverse);
-			m_counter = 5;
+			m_counter = 5 * nocamdelay;
 			m_state = kShoot2;
 		}
 		break;
@@ -127,7 +129,7 @@ void Picker::Loop(bool drop)
 		else
 		{
 			m_motor->Set(-1.0 * m_stop);
-			m_counter = 5;
+			m_counter = 5 * nocamdelay;
 			m_state = kUpDelay;
 		}
 		break;
@@ -140,7 +142,7 @@ void Picker::Loop(bool drop)
 		{
 			m_solenoid->Set(DoubleSolenoid::kReverse);
 			m_motor->Set(0);
-			m_counter = 0;
+			m_counter = 0 * nocamdelay;
 			m_state = kUp;
 		}
 		break;
@@ -150,7 +152,7 @@ void Picker::Loop(bool drop)
 			m_solenoid->Set(DoubleSolenoid::kForward);
 			m_motor->Set(0.75 * m_stop);
 			m_state = kDownDelay;
-			m_counter = 25;
+			m_counter = 25 * nocamdelay;
 		}
 		break;
 	case kDownDelay:
@@ -160,7 +162,7 @@ void Picker::Loop(bool drop)
 		}
 		else
 		{
-			m_counter = 0;
+			m_counter = 0 * nocamdelay;
 			m_stop = 1;
 			m_state = kDown;
 		}
