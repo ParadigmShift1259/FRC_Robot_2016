@@ -78,8 +78,8 @@
 
 
 // Camera
-#define USB_CAMERA_FRONT "cam1"
-#define USB_CAMERA_REAR "cam0"
+#define USB_CAMERA_FRONT "cam5"
+#define USB_CAMERA_REAR "cam5"
 #define RLY_CAMERA_LED 0
 
 

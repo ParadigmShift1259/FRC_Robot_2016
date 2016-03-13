@@ -113,29 +113,29 @@ void Robot::TeleopPeriodic()
 
 void Robot::TestInit()
 {
-	m_compressor->Start();
-	m_drivetrain->Init();
+	/*m_compressor->Start();
+	m_drivetrain->Init();*/
 	m_camera->Init();
-	m_picker->Init();
+	/*m_picker->Init();
 	m_shooter->Init();
 	m_vision->Init();
-	m_autonomous->Calibrate();
+	m_autonomous->Calibrate();*/
 }
 
 
 void Robot::TestPeriodic()
 {
-	if (!m_vision->Targeting())
+	/*if (!m_vision->Targeting())
 	{
 		m_drivetrain->Loop();
 		m_climber->Loop();
-	}
+	}*/
 	m_camera->Loop();
-	m_picker->Loop();
+	/*m_picker->Loop();
 	m_shooter->Loop();
 	m_portcullis->Loop();
 	m_vision->Loop();
-	m_autonomous->Loop();
+	m_autonomous->Loop();*/
 }
 
 
