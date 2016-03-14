@@ -29,12 +29,12 @@ protected:
 	Shooter *m_shooter;
 	Picker *m_picker;
 	shared_ptr<NetworkTable> m_cvtable;
-	Stage m_stage;
 	int m_counter;
 	int m_targeting;
 	bool m_shoot;
 	double m_leftposition;
 	double m_rightposition;
+	Stage m_stage;
 };
 
 

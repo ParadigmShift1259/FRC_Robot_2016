@@ -1,7 +1,5 @@
 //  drivetrain.cpp
 
-
-#include "Drivetrain.h"
 #include "Const.h"
 #include "smartdashboard/smartdashboard.h"
 #include <Timer.h>
@@ -9,13 +7,19 @@
 #include <CanTalon.h>
 #include <Encoder.h>
 #include <cmath>
-
+#include <AnglePID.h>
+#include <DrivePID.h>
 
 using namespace std;
 
 
 Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 {
+	m_desiredangle = 0;
+	m_desiredmagnitude = 0;
+
+	m_drivepid = new DrivePID(this);
+	m_anglepid = new AnglePID(this);
 	m_inputs = inputs;
 	m_driverstation = ds;
 
@@ -27,14 +31,14 @@ Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 	m_lefttalonlead->SetControlMode(CANTalon::kPercentVbus);
 	m_lefttalonlead->Set(0);
 	m_lefttalonlead->SetFeedbackDevice(CANTalon::QuadEncoder);
-	m_lefttalonlead->ConfigEncoderCodesPerRev(1024);
+	m_lefttalonlead->ConfigEncoderCodesPerRev(DRIVE_ENCODER_CPR);
 	m_lefttalonlead->SetSensorDirection(true);
 	m_lefttalonlead->SetPosition(0);
 
 	m_righttalonlead->SetControlMode(CANTalon::kPercentVbus);
 	m_righttalonlead->Set(0);
 	m_righttalonlead->SetFeedbackDevice(CANTalon::QuadEncoder);
-	m_righttalonlead->ConfigEncoderCodesPerRev(1024);
+	m_righttalonlead->ConfigEncoderCodesPerRev(DRIVE_ENCODER_CPR);
 	m_righttalonlead->SetSensorDirection(true);
 	m_righttalonlead->SetPosition(0);
 
@@ -190,7 +194,51 @@ void Drivetrain::Loop()
 	SmartDashboard::PutNumber("DT08_abs_x", (abs(m_previousx * X_SCALING) < ENCODER_TOP_SPEED));
 	SmartDashboard::PutNumber("DT09_abs_y", (abs(m_previousy * Y_SCALING) < ENCODER_TOP_SPEED));
 }
+void Drivetrain::SetDistance(double distance) {
+	ResetEncoders();
+	m_drivepid->Reset();
+	m_anglepid->Reset();
+	m_anglepid->SetSetpoint(0);
+	m_drivepid->SetSetpoint(distance);
+	m_anglepid->Enable();
+	m_drivepid->Enable();
 
+}
+void Drivetrain::SetAngle(double distance) {
+	ResetEncoders();
+	m_drivepid->Reset();
+	m_anglepid->Reset();
+	m_drivepid->SetSetpoint(0);
+	m_anglepid->SetSetpoint(distance);
+	m_anglepid->Enable();
+	m_drivepid->Enable();
+
+}
+bool Drivetrain::AngleReached() {
+	if (abs(m_anglepid->GetSetpoint() - m_anglepid->GetPosition())<ANGLE_DEADZONE) {
+		m_drivepid->Disable();
+		m_anglepid->Disable();
+		m_drivepid->Reset();
+		m_anglepid->Reset();
+		return true;
+	}
+	return false;
+}
+
+double Drivetrain::GetDistance() {
+	return (GetLeftRotations() - GetRightRotations())*WHEEL_CIRCUMFERENCE*.5;
+}
+
+bool Drivetrain::DistanceReached() {
+	if (abs(m_drivepid->GetSetpoint() - m_drivepid->GetPosition())<DRIVE_DEADZONE) {
+		m_drivepid->Disable();
+		m_anglepid->Disable();
+		m_drivepid->Reset();
+		m_anglepid->Reset();
+		return true;
+	}
+	return false;
+}
 
 void Drivetrain::Stop()
 {
@@ -198,6 +246,21 @@ void Drivetrain::Stop()
 	m_shifter->Set(true ^ m_ishighgear);
 }
 
+void Drivetrain::SetDesiredDriveMagnitude(double x) {
+	m_desiredmagnitude = x;
+}
+
+void Drivetrain::SetDesiredDriveAngle(double y) {
+	m_desiredangle = y;
+}
+
+void Drivetrain::DriveAuto() {
+	Drive(m_desiredangle,m_desiredmagnitude,true);
+}
+
+double Drivetrain::GetAngle() {
+	return -(GetRightRotations() + GetLeftRotations())*WHEEL_CIRCUMFERENCE/WHEEL_BASE;
+}
 
 void Drivetrain::Drive(double x, double y, bool ramp)
 {
@@ -254,6 +317,14 @@ void Drivetrain::Drive(double x, double y, bool ramp)
 	SmartDashboard::PutNumber("DT19_rightposition", m_rightposition);
 }
 
+void Drivetrain::SetRamp(double rate) {
+
+	m_lefttalonlead->SetVoltageRampRate(rate);
+	m_lefttalonfollow->SetVoltageRampRate(rate);
+	m_righttalonlead->SetVoltageRampRate(rate);
+	m_righttalonfollow->SetVoltageRampRate(rate);
+}
+
 
 // sets the motors to coasting mode, shifts, and then sets them back to break mode
 void Drivetrain::Shift()
@@ -269,6 +340,10 @@ void Drivetrain::Shift()
 	m_righttalonlead->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
 	m_righttalonfollow->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
 	m_shift = false;
+}
+
+void Drivetrain::Shift(bool high) {
+	m_shifter->Set(high);
 }
 
 
@@ -398,8 +473,8 @@ void Drivetrain::SetRatioLR()
 
 void Drivetrain::ResetEncoders()
 {
-	//leftEncoder->Reset();
-	//rightEncoder->Reset();
+	LeftTalon()->SetPosition(0);
+	RightTalon()->SetPosition(0);
 }
 
 
@@ -413,6 +488,18 @@ void Drivetrain::CheckEncoderTimer()
 		SetRatioLR();
 		m_timerencoder->Reset();
 	}
+}
+
+double Drivetrain::GetLeftRotations(){
+	double p;
+	p = LeftTalon()->GetPosition()/ENCODER_TO_OUTPUT_GEAR_RATIO;
+	return p;
+}
+
+double Drivetrain::GetRightRotations(){
+	double p;
+	p = 0.96*RightTalon()->GetPosition()/ENCODER_TO_OUTPUT_GEAR_RATIO;
+	return p;
 }
 
 void Drivetrain::EnablePID(double kP, double kI, double kD, double kF, double kPosLeft, double kPosRight)

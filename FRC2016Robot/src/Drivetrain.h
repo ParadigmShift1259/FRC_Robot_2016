@@ -4,13 +4,18 @@
 #ifndef SRC_DRIVETRAIN_H_
 #define SRC_DRIVETRAIN_H_
 
-
 #include "WPILib.h"
 #include "OperatorInputs.h"
 #include <driverstation.h>
 #include <SpeedController.h>
 #include <timer.h>
+#include <Commands/PIDSubsystem.h>
+#include "AnglePID.h"
+#include "DrivePID.h"
 
+
+class AnglePID;
+class DrivePID;
 
 class Drivetrain
 {
@@ -25,9 +30,12 @@ public:
 	//void setPowerXYleft(double joyStickX, double joyStickY);
 	//void setPowerXYright(double joyStickX, double joyStickY);
 	void Shift();
+	void Shift(bool);
 	// change drivetrain direction and return true if going forward
 	bool ChangeDirection();
 	void LowSpeedDriving();
+
+	void SetRamp(double);
 
 	double LeftMotor(double &invMaxValueXPlusY);
 	double RightMotor(double &invMaxValueXPlusY);
@@ -47,7 +55,17 @@ public:
 	CANTalon *RightTalon() {return m_righttalonlead;}
 	void EnablePID(double kP, double kI, double kD, double kF, double kPosLeft, double kPosRight);
 	void DisablePID(float maxvolt = +12.0f, float minvolt = -12.0f);
-
+	double GetLeftRotations();
+	double GetRightRotations();
+	void SetDesiredDriveMagnitude(double);
+	void SetDesiredDriveAngle(double);
+	void DriveAuto();
+	double GetAngle();
+	double GetDistance();
+	void SetDistance(double);
+	void SetAngle(double);
+	bool AngleReached();
+	bool DistanceReached();
 	//double getRightEncoderPulses() {return m_rightencoder->GetRaw();}
 	//double getLeftEncoderPulses() {return m_leftencoder->GetRaw();}
 	//double getRightEncoderDistance() {return m_rightencoder->GetDistance();}
@@ -64,6 +82,8 @@ protected:
 	//Encoder *m_leftencoder;
 	//Encoder *m_rightencoder;
 	Timer *m_timerencoder;
+	AnglePID *m_anglepid;
+	DrivePID *m_drivepid;
 
 	double m_leftpow;
 	double m_rightpow;
@@ -88,8 +108,10 @@ protected:
 	double m_invertleft;
 	double m_invertright;
 	double m_direction;
+
+	double m_desiredangle;
+	double m_desiredmagnitude;
 };
 
-
-
 #endif /* SRC_DRIVETRAIN_H_ */
+

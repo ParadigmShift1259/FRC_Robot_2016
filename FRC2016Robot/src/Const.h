@@ -47,6 +47,12 @@
 
 // Drivetrain
 #define DT_DEFAULT_DIRECTION -1.0
+
+#define WHEEL_BASE 15.5 // wheels are 15.5 inches from the left side to the right
+#define WHEEL_CIRCUMFERENCE 18.849555921 // diameter * pi
+#define DRIVE_ENCODER_CPR 1024	//clicks per revolution of the drive encoders changed from 1024
+#define ENCODER_TO_OUTPUT_GEAR_RATIO 3.0 //rotations of the output per rotation of encoder todo remember there is a gear ratio on the encoder
+
 // Inverts
 #define INVERT_LEFT -1.0
 #define INVERT_RIGHT 1.0
