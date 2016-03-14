@@ -72,7 +72,6 @@ void Autonomous::Loop()
 		m_stage = kDrivingForward;
 		break;
 	case kDrivingForward:
-		m_drivetrain->DriveAuto();
 		if(m_drivetrain->DistanceReached()){
 			m_stage = kDelayBeforeShoot;
 			m_drivetrain->SetDesiredDriveAngle(0.0);
