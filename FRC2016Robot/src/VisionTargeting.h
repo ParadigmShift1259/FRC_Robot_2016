@@ -14,7 +14,7 @@
 class VisionTargeting
 {
 public:
-	enum Stage { /*kInitialX, kInitialY, kFinalX, kFinalY,*/ kReady, kTarget, kStop };
+	enum Stage { kReady, kTarget, kStop };
 
 	VisionTargeting(OperatorInputs *operatorinputs, Drivetrain *drivetrain, Shooter *shooter, Picker *picker);
 	~VisionTargeting();
@@ -33,8 +33,6 @@ protected:
 	int m_counter;
 	int m_targeting;
 	bool m_shoot;
-	double m_leftposition;
-	double m_rightposition;
 };
 
 

@@ -45,8 +45,6 @@ void Picker::Loop(bool drop, int nocamdelay)
 	bool reversebutton = m_inputs->xBoxRightTrigger(OperatorInputs::ToggleChoice::kHold) || m_inputs->xBoxRightBumper(OperatorInputs::ToggleChoice::kHold);
 	bool motorbutton = m_inputs->xBoxStartButton();
 
-	DriverStation::ReportError("Picker: " + std::to_string(nocamdelay));
-
 	if (reversebutton)
 	{
 		switch (m_state)

@@ -4,21 +4,21 @@
 #include "Autonomous.h"
 #include "const.h"
 #include <driverstation.h>
+#include <cmath>
 
 
-Autonomous::Autonomous(DriverStation *driverstation, OperatorInputs *operatorinputs, Drivetrain *drivetrain)
+Autonomous::Autonomous(DriverStation *driverstation, OperatorInputs *operatorinputs, Drivetrain *drivetrain, VisionTargeting *vision)
 {
 	m_driverstation = driverstation;
 	m_inputs = operatorinputs;
 	m_drivetrain = drivetrain;
+	m_vision = vision;
 	m_gyro = new AnalogGyro(ALG_AUTONOMOUS_GYRO);
 	m_gyro->Calibrate();
 	m_accel = new BuiltInAccelerometer(Accelerometer::Range::kRange_4G);
 	m_stage = kStop;
 	m_driveangle = 0;
 	m_counter = 0;
-	m_kS = SmartDashboard::GetNumber("DB/Slider 2", 0);
-	if (m_kS == 0) {m_kS = 0.0025;}
 }
 
 
@@ -30,13 +30,12 @@ Autonomous::~Autonomous()
 void Autonomous::Init()
 {
 	m_gyro->Reset();
-	m_stage = kStop;
+	if (m_driverstation->IsAutonomous())
+		m_stage = kDrive;
+	else
+		m_stage = kStop;
 	m_driveangle = 0;
 	m_counter = 0;
-	while (!m_instructions.empty())
-		m_instructions.pop();
-	m_instructions.push({140, 0, 6000, 0, 0.0003, kDrive});
-	m_instructions.push({0,  0,   0,   0,     0, kShoot});
 }
 
 
@@ -55,15 +54,8 @@ void Autonomous::Loop()
 	SmartDashboard::PutNumber("Yaccel", yaccel);
 	SmartDashboard::PutNumber("Zaccel", zaccel);
 
-	if ((!m_driverstation->IsAutonomous()) && (m_stage==kStop))
+	if ((!m_driverstation->IsAutonomous()) && (m_stage == kStop))
 		return;
-	else
-	if (!m_driverstation->IsAutonomous())
-	{
-		m_counter = 0;
-		while (!m_instructions.empty())
-			m_instructions.pop();
-	}
 
 	double leftposition = m_drivetrain->LeftTalon()->GetPosition();
 	double rightposition = m_drivetrain->RightTalon()->GetPosition();
@@ -74,49 +66,52 @@ void Autonomous::Loop()
 	switch (m_stage)
 	{
 	case kStop:
-		if (!m_instructions.empty())
-		{
-			m_instruction = m_instructions.front();
-			m_instructions.pop();
-			m_counter = m_instruction.time;
-			m_driveangle += m_instruction.angle;
-			m_stage = m_instruction.stage;
-			DriverStation::ReportError("kStop\n");
-		}
 		break;
 	case kDrive:
-		if (m_counter > 0)
-		{
-			//m_drivetrain->Shift();
-			m_drivetrain->EnablePID(m_instruction.kP,m_instruction.kI,0,0,-(m_instruction.distance*m_kS),(m_instruction.distance*m_kS));
-			m_counter--;
-			m_stage = kDriveLoop;
-			DriverStation::ReportError("kDrive\n");
-			//DriverStation::ReportError("kDriveLoop "+std::to_string(m_counter));
-		}
-		else
-		{
-			m_drivetrain->DisablePID();
-			m_stage = kStop;
-		}
+		DriverStation::ReportError("kDrive\n");
+		m_drivetrain->LeftTalon()->SetPosition(0);
+		m_drivetrain->RightTalon()->SetPosition(0);
+		m_drivetrain->Drive(0, -1);
+		m_counter = 50;
+		m_stage = kDriveLoop;
 		break;
 	case kDriveLoop:
 		if (m_counter > 0)
 		{
 			m_counter--;
-			DriverStation::ReportError("kDriveLoop "+std::to_string(m_counter)+"\n");
+			if ((m_counter % 5) == 0)
+				DriverStation::ReportError("kDriveLoop "+std::to_string(m_counter)+"\n");
+			if ((abs(m_drivetrain->LeftTalon()->GetPosition()) > 18) &&
+				(abs(m_drivetrain->RightTalon()->GetPosition()) > 18))
+			{
+				m_counter = 0;
+				m_drivetrain->Drive(0, -0.25);
+				m_stage = kShoot;
+			}
+			else
+				m_drivetrain->Drive(0, -1);
 		}
 		else
-		{
-			DriverStation::ReportError("\n");
-			//m_drivetrain->Shift();
-			m_drivetrain->DisablePID();
-			m_stage = kStop;
-		}
+			m_stage = kShoot;
 		break;
 	case kShoot:
 		DriverStation::ReportError("kShoot\n");
-		m_stage = kStop;
+		m_drivetrain->Drive(0, -0.25);
+		m_counter = 10;
+		m_stage = kShootLoop;
+		break;
+	case kShootLoop:
+		if (m_counter > 0)
+		{
+			DriverStation::ReportError("kShootLoop\n");
+			m_drivetrain->Drive(0, 0);
+			m_counter--;
+		}
+		else
+		{
+			m_stage = kStop;
+			m_vision->Loop(true);
+		}
 		break;
 	}
 }

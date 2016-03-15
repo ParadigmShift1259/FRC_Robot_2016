@@ -40,7 +40,6 @@ void Shooter::Init()
 
 void Shooter::Loop(bool shoot, int nocamdelay)
 {
-	DriverStation::ReportError("Shooter: " + std::to_string(nocamdelay));
 	bool shootbutton = m_inputs->xBoxBackButton();
 	bool winchdown = m_inputs->xBoxDPadRight(OperatorInputs::ToggleChoice::kHold);
 	bool winchup = m_inputs->xBoxDPadLeft(OperatorInputs::ToggleChoice::kHold);

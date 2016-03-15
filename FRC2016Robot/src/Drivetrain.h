@@ -46,7 +46,7 @@ public:
 	CANTalon *LeftTalon() {return m_lefttalonlead;}
 	CANTalon *RightTalon() {return m_righttalonlead;}
 	void EnablePID(double kP, double kI, double kD, double kF, double kPosLeft, double kPosRight);
-	void DisablePID(float maxvolt = +12.0f, float minvolt = -12.0f);
+	void DisablePID();
 
 	//double getRightEncoderPulses() {return m_rightencoder->GetRaw();}
 	//double getLeftEncoderPulses() {return m_leftencoder->GetRaw();}
