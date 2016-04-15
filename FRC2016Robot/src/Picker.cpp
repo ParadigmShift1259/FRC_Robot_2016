@@ -34,10 +34,11 @@ void Picker::Init()
 	m_vent->Set(true);			// close vent
 	m_counter = 0;
 	m_prevreverse = false;
+	m_stop = 1;
 }
 
 
-void Picker::Loop(bool drop, int nocamdelay)
+void Picker::Loop(bool drop, int delay)
 {
 	bool downbutton = m_inputs->xBoxAButton() || drop;
 	bool upbutton = m_inputs->xBoxBButton();
@@ -92,14 +93,14 @@ void Picker::Loop(bool drop, int nocamdelay)
 		if (shootbutton)
 		{
 			m_vent->Set(true);			// close vent
-			m_counter = 5 * nocamdelay;
+			m_counter = 5 * delay;
 			m_state = kShoot1;
 		}
 		else
 		if (upbutton)
 		{
 			m_vent->Set(true);			// close vent
-			m_counter = 5 * nocamdelay;
+			m_counter = 5 * delay;
 			m_state = kUpDelay;
 		}
 		else
@@ -115,7 +116,7 @@ void Picker::Loop(bool drop, int nocamdelay)
 		else
 		{
 			m_solenoid->Set(DoubleSolenoid::kReverse);
-			m_counter = 5 * nocamdelay;
+			m_counter = 5 * delay;
 			m_state = kShoot2;
 		}
 		break;
@@ -127,7 +128,7 @@ void Picker::Loop(bool drop, int nocamdelay)
 		else
 		{
 			m_motor->Set(-1.0 * m_stop);
-			m_counter = 5 * nocamdelay;
+			m_counter = 5 * delay;
 			m_state = kUpDelay;
 		}
 		break;
@@ -140,7 +141,7 @@ void Picker::Loop(bool drop, int nocamdelay)
 		{
 			m_solenoid->Set(DoubleSolenoid::kReverse);
 			m_motor->Set(0);
-			m_counter = 0 * nocamdelay;
+			m_counter = 0;
 			m_state = kUp;
 		}
 		break;
@@ -148,9 +149,8 @@ void Picker::Loop(bool drop, int nocamdelay)
 		if (downbutton)
 		{
 			m_solenoid->Set(DoubleSolenoid::kForward);
-			m_motor->Set(0.75 * m_stop);
 			m_state = kDownDelay;
-			m_counter = 25 * nocamdelay;
+			m_counter = 25 * delay;
 		}
 		break;
 	case kDownDelay:
@@ -160,8 +160,9 @@ void Picker::Loop(bool drop, int nocamdelay)
 		}
 		else
 		{
-			m_counter = 0 * nocamdelay;
+			m_counter = 0;
 			m_stop = 1;
+			m_motor->Set(0.75 * m_stop);
 			m_state = kDown;
 		}
 		break;

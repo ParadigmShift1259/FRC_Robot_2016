@@ -21,7 +21,8 @@ public:
 	Shooter(OperatorInputs* inputs, Picker* picker);
 	~Shooter();
 	void Init();
-	void Loop(bool shoot = false, int nocamdelay = 1);
+	void Loop(bool shoot = false, int delay = 1);
+	void Stop();
 	Stage GetStage() { return m_stage; }
 
 protected:

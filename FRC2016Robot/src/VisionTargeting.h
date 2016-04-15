@@ -14,14 +14,16 @@
 class VisionTargeting
 {
 public:
-	enum Stage { kReady, kTarget, kStop };
+	enum Stage { kReady, kTarget, kStop, kShoot };
 
 	VisionTargeting(OperatorInputs *operatorinputs, Drivetrain *drivetrain, Shooter *shooter, Picker *picker);
 	~VisionTargeting();
 	void Init();
-	void Loop(bool target = false, int nocamdelay = 1);
+	void Loop(bool target = false, int delay = 1);
 	void Stop();
-	bool Targeting() {return ((m_targeting > 0) || m_shoot);}
+	bool Targeting();
+	void EnablePID(double kP, double kI, double kPosLeft, double kPosRight);
+	void DisablePID();
 
 protected:
 	OperatorInputs *m_inputs;
@@ -32,7 +34,6 @@ protected:
 	Stage m_stage;
 	int m_counter;
 	int m_targeting;
-	bool m_shoot;
 };
 
 

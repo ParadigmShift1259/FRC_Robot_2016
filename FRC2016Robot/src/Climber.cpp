@@ -4,6 +4,7 @@
 #include <Climber.h>
 #include "Const.h"
 #include <Spark.h>
+#include <driverstation.h>
 
 
 Climber::Climber(OperatorInputs *operatorinputs)
@@ -36,7 +37,7 @@ void Climber::Loop()
 {
 	bool deploybutton1 = m_inputs->joystickTrigger(OperatorInputs::ToggleChoice::kHold);
 	bool deploybutton2 = m_inputs->button2(OperatorInputs::ToggleChoice::kHold);
-	bool climbdownbutton = false; //m_inputs->button3(OperatorInputs::ToggleChoice::kHold);
+	bool climbdownbutton = m_inputs->button3(OperatorInputs::ToggleChoice::kHold);
 	bool climbupbutton = m_inputs->button5(OperatorInputs::ToggleChoice::kHold);
 
 	switch (m_state)
@@ -44,6 +45,7 @@ void Climber::Loop()
 	case kDeploy:
 		if (deploybutton1 && deploybutton2)		// deploy the climber
 		{
+			DriverStation::ReportError("Climber Deploy");
 			m_solenoid->Set(true);
 			m_counter = 5;
 			m_state = kDelay;
@@ -72,7 +74,7 @@ void Climber::Loop()
 				m_counter--;
 			else
 				m_solenoid->Set(false);					// reset the solenoid
-			m_motor->Set(-1);
+			m_motor->Set(1);
 		}
 		else
 		if (climbdownbutton)					// lower the robot
@@ -81,7 +83,7 @@ void Climber::Loop()
 				m_counter--;
 			else
 				m_solenoid->Set(false);					// reset the solenoid
-			m_motor->Set(1);
+			m_motor->Set(-1);
 		}
 		else
 		{

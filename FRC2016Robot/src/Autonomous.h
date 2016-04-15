@@ -10,7 +10,6 @@
 #include "VisionTargeting.h"
 #include <AnalogGyro.h>
 #include <BuiltinAccelerometer.h>
-#include <queue>
 
 
 using namespace std;
@@ -19,12 +18,12 @@ using namespace std;
 class Autonomous
 {
 public:
-	enum Stage { kStop, kDrive, kDriveLoop, kShoot, kShootLoop };
+	enum Stage { kIdle, kStart, kDrive, kStop, kShoot };
 
 	Autonomous(DriverStation *driverstation, OperatorInputs *operatorinputs, Drivetrain *drivetrain, VisionTargeting *vision);
 	~Autonomous();
 	void Init();
-	void Loop();
+	void Loop(int delay = 1);
 	void Calibrate();
 
 protected:
@@ -35,8 +34,12 @@ protected:
 	AnalogGyro *m_gyro;
 	Accelerometer *m_accel;
 	int m_stage;
-	double m_driveangle;
 	int m_counter;
+	double m_maxspeed;
+	double m_minspeed;
+	double m_rate;
+	double m_speed;
+	double m_distance;
 };
 
 

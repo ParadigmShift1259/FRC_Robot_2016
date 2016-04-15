@@ -21,9 +21,6 @@ public:
 	void Loop();
 	void Stop();
 	void Drive(double x, double y, bool ramp = false);
-	//void DriveXY(double x, double y, bool ramp = false);
-	//void setPowerXYleft(double joyStickX, double joyStickY);
-	//void setPowerXYright(double joyStickX, double joyStickY);
 	void Shift();
 	// change drivetrain direction and return true if going forward
 	bool ChangeDirection();
@@ -45,8 +42,6 @@ public:
 	bool getIsLeftFaster() {return m_isleftfaster;}
 	CANTalon *LeftTalon() {return m_lefttalonlead;}
 	CANTalon *RightTalon() {return m_righttalonlead;}
-	void EnablePID(double kP, double kI, double kD, double kF, double kPosLeft, double kPosRight);
-	void DisablePID();
 
 	//double getRightEncoderPulses() {return m_rightencoder->GetRaw();}
 	//double getLeftEncoderPulses() {return m_leftencoder->GetRaw();}

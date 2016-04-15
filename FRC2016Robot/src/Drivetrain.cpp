@@ -26,27 +26,29 @@ Drivetrain::Drivetrain(OperatorInputs *inputs, DriverStation *ds)
 
 	m_lefttalonlead->SetControlMode(CANTalon::kPercentVbus);
 	m_lefttalonlead->Set(0);
+	m_lefttalonfollow->SetControlMode(CANTalon::kFollower);
+	m_lefttalonfollow->Set(CAN_LEFT_PORT);
+
+	m_righttalonlead->SetControlMode(CANTalon::kPercentVbus);
+	m_righttalonlead->Set(0);
+	m_righttalonfollow->SetControlMode(CANTalon::kFollower);
+	m_righttalonfollow->Set(CAN_RIGHT_PORT);
+
 	m_lefttalonlead->SetFeedbackDevice(CANTalon::QuadEncoder);
 	m_lefttalonlead->ConfigEncoderCodesPerRev(1024);
 	m_lefttalonlead->SetSensorDirection(true);
 	m_lefttalonlead->SetPosition(0);
+	m_lefttalonlead->ConfigNeutralMode(CANTalon::kNeutralMode_Brake);
 
-	m_righttalonlead->SetControlMode(CANTalon::kPercentVbus);
-	m_righttalonlead->Set(0);
 	m_righttalonlead->SetFeedbackDevice(CANTalon::QuadEncoder);
 	m_righttalonlead->ConfigEncoderCodesPerRev(1024);
 	m_righttalonlead->SetSensorDirection(true);
 	m_righttalonlead->SetPosition(0);
+	m_righttalonlead->ConfigNeutralMode(CANTalon::kNeutralMode_Brake);
 
-	m_lefttalonfollow->SetControlMode(CANSpeedController::ControlMode::kFollower);
-	m_lefttalonfollow->Set(CAN_LEFT_PORT);
-	m_righttalonfollow->SetControlMode(CANSpeedController::ControlMode::kFollower);
-	m_righttalonfollow->Set(CAN_RIGHT_PORT);
+	m_lefttalonfollow->ConfigNeutralMode(CANTalon::kNeutralMode_Brake);
 
-	m_lefttalonlead->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
-	m_lefttalonfollow->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
-	m_righttalonlead->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
-	m_righttalonfollow->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
+	m_righttalonfollow->ConfigNeutralMode(CANTalon::kNeutralMode_Brake);
 
 	//Setup Encoders
 	//m_leftEncoder = new Encoder(3, 4);
@@ -101,6 +103,37 @@ Drivetrain::~Drivetrain()
 
 void Drivetrain::Init()
 {
+	m_lefttalonlead = new CANTalon(CAN_LEFT_PORT);
+	m_lefttalonfollow = new CANTalon(CAN_SECOND_LEFT_PORT);
+	m_righttalonlead = new CANTalon(CAN_RIGHT_PORT);
+	m_righttalonfollow = new CANTalon(CAN_SECOND_RIGHT_PORT);
+
+	m_lefttalonlead->SetControlMode(CANTalon::kPercentVbus);
+	m_lefttalonlead->Set(0);
+	m_lefttalonfollow->SetControlMode(CANTalon::kFollower);
+	m_lefttalonfollow->Set(CAN_LEFT_PORT);
+
+	m_righttalonlead->SetControlMode(CANTalon::kPercentVbus);
+	m_righttalonlead->Set(0);
+	m_righttalonfollow->SetControlMode(CANTalon::kFollower);
+	m_righttalonfollow->Set(CAN_RIGHT_PORT);
+
+	m_lefttalonlead->SetFeedbackDevice(CANTalon::QuadEncoder);
+	m_lefttalonlead->ConfigEncoderCodesPerRev(1024);
+	m_lefttalonlead->SetSensorDirection(true);
+	m_lefttalonlead->SetPosition(0);
+	m_lefttalonlead->ConfigNeutralMode(CANTalon::kNeutralMode_Brake);
+
+	m_righttalonlead->SetFeedbackDevice(CANTalon::QuadEncoder);
+	m_righttalonlead->ConfigEncoderCodesPerRev(1024);
+	m_righttalonlead->SetSensorDirection(true);
+	m_righttalonlead->SetPosition(0);
+	m_righttalonlead->ConfigNeutralMode(CANTalon::kNeutralMode_Brake);
+
+	m_lefttalonfollow->ConfigNeutralMode(CANTalon::kNeutralMode_Brake);
+
+	m_righttalonfollow->ConfigNeutralMode(CANTalon::kNeutralMode_Brake);
+
 	m_leftpow = 0;
 	m_rightpow = 0;
 	m_leftencodermax = 0;
@@ -258,16 +291,16 @@ void Drivetrain::Drive(double x, double y, bool ramp)
 // sets the motors to coasting mode, shifts, and then sets them back to break mode
 void Drivetrain::Shift()
 {
-	m_lefttalonlead->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Coast);
-	m_lefttalonfollow->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Coast);
-	m_righttalonlead->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Coast);
-	m_righttalonfollow->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Coast);
+	//m_lefttalonlead->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Coast);
+	//m_lefttalonfollow->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Coast);
+	//m_righttalonlead->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Coast);
+	//m_righttalonfollow->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Coast);
 	m_ishighgear = !m_ishighgear;
 	m_shifter->Set(FLIP_HIGH_GEAR ^ m_ishighgear);
-	m_lefttalonlead->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
-	m_lefttalonfollow->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
-	m_righttalonlead->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
-	m_righttalonfollow->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
+	//m_lefttalonlead->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
+	//m_lefttalonfollow->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
+	//m_righttalonlead->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
+	//m_righttalonfollow->ConfigNeutralMode(CANSpeedController::NeutralMode::kNeutralMode_Brake);
 	m_shift = false;
 }
 
@@ -413,33 +446,4 @@ void Drivetrain::CheckEncoderTimer()
 		SetRatioLR();
 		m_timerencoder->Reset();
 	}
-}
-
-void Drivetrain::EnablePID(double kP, double kI, double kD, double kF, double kPosLeft, double kPosRight)
-{
-	m_lefttalonlead->SetP(kP);
-	m_lefttalonlead->SetI(kI);
-	m_lefttalonlead->SetD(kD);
-	m_lefttalonlead->SetF(kF);
-
-	m_righttalonlead->SetP(kP);
-	m_righttalonlead->SetI(kI);
-	m_righttalonlead->SetD(kD);
-	m_righttalonlead->SetF(kF);
-
-	m_lefttalonlead->SetPosition(0);
-	m_lefttalonlead->SetControlMode(CANTalon::kPosition);
-	m_righttalonlead->SetPosition(0);
-	m_righttalonlead->SetControlMode(CANTalon::kPosition);
-
-	m_lefttalonlead->Set(kPosLeft);
-	m_righttalonlead->Set(kPosRight);
-}
-
-void Drivetrain::DisablePID()
-{
-	m_lefttalonlead->SetControlMode(CANTalon::kPercentVbus);
-	m_lefttalonlead->Set(0);
-	m_righttalonlead->SetControlMode(CANTalon::kPercentVbus);
-	m_righttalonlead->Set(0);
 }

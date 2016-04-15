@@ -20,7 +20,7 @@ public:
 	Picker(OperatorInputs* inputs, DriverStation* driverstation);
 	~Picker();
 	void Init();
-	void Loop(bool drop = false, int nocamdelay = 1);
+	void Loop(bool drop = false, int delay = 1);
 	State GetState() { return m_state; }
 
 protected:

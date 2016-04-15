@@ -41,11 +41,14 @@ void Robot::RobotInit()
  */
 void Robot::AutonomousInit()
 {
+	DriverStation::ReportError("Autonomous Init");
 	m_compressor->Start();
 	m_drivetrain->Init();
 	m_camera->Init();
 	m_picker->Init();
 	m_shooter->Init();
+	m_portcullis->Init();
+	m_climber->Init();
 	m_vision->Init();
 	m_autonomous->Init();
 }
@@ -64,12 +67,16 @@ void Robot::AutonomousPeriodic()
 
 void Robot::TeleopInit()
 {
+	DriverStation::ReportError("Teleop Init");
 	m_compressor->Start();
 	m_drivetrain->Init();
 	m_camera->Init();
 	m_picker->Init();
 	m_shooter->Init();
+	m_portcullis->Init();
+	m_climber->Init();
 	m_vision->Init();
+	m_autonomous->Init();
 }
 
 
@@ -91,13 +98,16 @@ void Robot::TeleopPeriodic()
 
 void Robot::TestInit()
 {
+	DriverStation::ReportError("Test Init");
 	m_compressor->Start();
 	m_drivetrain->Init();
 	m_camera->Init();
 	m_picker->Init();
 	m_shooter->Init();
+	m_portcullis->Init();
+	m_climber->Init();
 	m_vision->Init();
-	m_autonomous->Calibrate();
+	m_autonomous->Init();
 }
 
 
@@ -119,9 +129,11 @@ void Robot::TestPeriodic()
 
 void Robot::DisabledInit()
 {
+	DriverStation::ReportError("Disabled Init");
 	m_compressor->Stop();
 	m_drivetrain->Stop();
 	m_camera->Stop();
+	m_shooter->Stop();
 	m_vision->Stop();
 }
 

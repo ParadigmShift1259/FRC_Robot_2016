@@ -46,7 +46,7 @@
 
 
 // Drivetrain
-#define DT_DEFAULT_DIRECTION -1.0
+#define DT_DEFAULT_DIRECTION 1.0
 // Inverts
 #define INVERT_LEFT -1.0
 #define INVERT_RIGHT 1.0
@@ -63,10 +63,10 @@
 // Ramping
 #define RAMPING_RATE_MIN 0.6
 #define RAMPING_RATE_MAX 1.5
-#define X_SCALING 0.75
+#define X_SCALING 0.5
 #define Y_SCALING 1.0
 #define LEFT_MOTOR_SCALING 1
-#define RIGHT_MOTOR_SCALING 1
+#define RIGHT_MOTOR_SCALING 0.95
 #define LOWSPEED_MODIFIER_X 0.75
 #define LOWSPEED_MODIFIER_Y 0.25
 // Encoders

@@ -1,4 +1,4 @@
-// shooter.cpp
+ // shooter.cpp
 
 
 #include "Shooter.h"
@@ -38,7 +38,7 @@ void Shooter::Init()
 }
 
 
-void Shooter::Loop(bool shoot, int nocamdelay)
+void Shooter::Loop(bool shoot, int delay)
 {
 	bool shootbutton = m_inputs->xBoxBackButton();
 	bool winchdown = m_inputs->xBoxDPadRight(OperatorInputs::ToggleChoice::kHold);
@@ -49,7 +49,7 @@ void Shooter::Loop(bool shoot, int nocamdelay)
 	{
 		m_motor->Set(1);							// start winch
 		int distance = m_encoder->Get();		// get distance the motor ran
-		DriverStation::ReportError("Winch encoder: " + to_string(distance) + "\n");
+		DriverStation::ReportError("Winch: " + to_string(distance));
 		if (m_limitdown->Get())					// if limit switch pressed
 			m_solenoid->Set(false);						// lock shooter
 		m_stage = kOverride;
@@ -59,7 +59,7 @@ void Shooter::Loop(bool shoot, int nocamdelay)
 	{
 		m_motor->Set(-1);							// reverse winch
 		int distance = m_encoder->Get();		// get distance the motor ran
-		DriverStation::ReportError("Winch encoder: " + to_string(distance) + "\n");
+		DriverStation::ReportError("Winch: " + to_string(distance));
 		m_stage = kOverride;
 	}
 
@@ -71,14 +71,14 @@ void Shooter::Loop(bool shoot, int nocamdelay)
 		{
 			if (m_picker->GetState() != Picker::State::kDown)
 			{
-				if (shoot)
-					m_picker->Loop(true);
+				if (shootbutton || shoot)
+					m_picker->Loop(true, delay);
 				m_stage = kPickerDrop;
 			}
 			else
 			{
 				m_solenoid->Set(true);					// release shooter
-				m_counter = 25 * nocamdelay;							// delay ~1 second before winching
+				m_counter = 15 * delay;							// delay ~1 second before winching
 				m_stage = kRelease;
 			}
 		}
@@ -90,7 +90,7 @@ void Shooter::Loop(bool shoot, int nocamdelay)
 		}
 		if (m_counter <= 0)						// start winching
 		{
-			m_counter = 100 * nocamdelay;						// delay ~4 second max runtime before auto shutoff
+			m_counter = 100 * delay;						// delay ~4 second max runtime before auto shutoff
 			m_stage = kWinch;
 		}
 		break;
@@ -99,14 +99,14 @@ void Shooter::Loop(bool shoot, int nocamdelay)
 		{
 			m_motor->Set(1);						// run the winch
 			if (m_limitdown->Get())				// if limit switch pressed
-				m_counter = 0 * nocamdelay;							// lock the shooter
+				m_counter = 0;							// lock the shooter
 			else
 				m_counter--;							// still run the winch
 		}
 		if (m_counter <= 0)						// lock the shooter
 		{
 			m_solenoid->Set(false);					// engage the lock
-			m_counter = 5 * nocamdelay;							// delay slightly while still winching
+			m_counter = 5 * delay;							// delay slightly while still winching
 			m_stage = kLock;
 		}
 		break;
@@ -119,7 +119,7 @@ void Shooter::Loop(bool shoot, int nocamdelay)
 		{
 			m_motor->Set(0);						// turn off motor
 			m_encoder->Reset();						// clear the encoder
-			m_counter = 50 * nocamdelay;							// delay ~2 second max runtime before auto shutoff
+			m_counter = 50 * delay;							// delay ~2 second max runtime before auto shutoff
 			m_stage = kReverse;
 		}
 		break;
@@ -129,15 +129,15 @@ void Shooter::Loop(bool shoot, int nocamdelay)
 			m_motor->Set(-1);						// reverse motor
 			m_counter--;
 			int distance = m_encoder->Get();		// get distance the motor ran
-			DriverStation::ReportError("Winch encoder: " + to_string(distance) + "\n");
+			DriverStation::ReportError("Winch: " + to_string(distance));
 			if (distance < -1400)
-				m_counter = 0 * nocamdelay;						// motor should stop
+				m_counter = 0;						// motor should stop
 		}
 		if (m_counter <= 0)						// stop motor
 		{
 			m_motor->Set(0);						// stop motor
 			m_encoder->Reset();						// clear the encoder
-			m_counter = 0 * nocamdelay;							// reset the counter
+			m_counter = 0;							// reset the counter
 			m_stage = kReady;
 		}
 		break;
@@ -146,9 +146,14 @@ void Shooter::Loop(bool shoot, int nocamdelay)
 		{
 			m_motor->Set(0);						// stop motor
 			m_encoder->Reset();						// clear the encoder
-			m_counter = 0 * nocamdelay;							// reset the counter
+			m_counter = 0;							// reset the counter
 			m_stage = kReady;
 		}
 		break;
 	}
+}
+
+
+void Shooter::Stop()
+{
 }
